@@ -361,3 +361,5 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/AMC_THEATER_1/Views/Home/SearchID.cshtml
+/AMC_THEATER_1/Views/Home/SearchID.cshtml
