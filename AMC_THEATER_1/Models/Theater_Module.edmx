@@ -1,0 +1,1753 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="THEATER_MODULEModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="ActionRequests">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="T_NAME" Type="nvarchar" MaxLength="100" />
+          <Property Name="T_OWNER_NAME" Type="nvarchar" MaxLength="100" />
+          <Property Name="Status" Type="int" />
+        </EntityType>
+        <EntityType Name="DEPARTMENT_LOGIN">
+          <Key>
+            <PropertyRef Name="D_ID" />
+          </Key>
+          <Property Name="D_ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="USERNAME" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="PASSWORD" Type="varchar" MaxLength="255" Nullable="false" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'THEATER_MODULE.dbo.DEPT_LOGIN_DETAILS' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="DEPT_LOGIN_DETAILS">
+          <Key>
+            <PropertyRef Name="DEPT_ID" />
+          </Key>
+          <Property Name="DEPT_ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="DEPT_USERNAME" Type="varchar" MaxLength="10" />
+          <Property Name="DEPT_PASS" Type="varchar" MaxLength="10" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'THEATER_MODULE.dbo.LOGIN_DETAILS' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="LOGIN_DETAILS">
+          <Key>
+            <PropertyRef Name="LOG_ID" />
+          </Key>
+          <Property Name="LOG_ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="PHONE_NUMBER" Type="int" />
+        </EntityType>
+        <EntityType Name="MST_DOC_SERVICE_MPG">
+          <Key>
+            <PropertyRef Name="MPG_ID" />
+          </Key>
+          <Property Name="MPG_ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="MPG_ACTIVE" Type="bit" />
+          <Property Name="S_SERVICE_ID" Type="int" />
+          <Property Name="DOC_ID" Type="int" />
+        </EntityType>
+        <EntityType Name="MST_DOCS">
+          <Key>
+            <PropertyRef Name="DOC_ID" />
+          </Key>
+          <Property Name="DOC_ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="DOC_NAME" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="DOC_ACTIVE" Type="bit" />
+          <Property Name="FILE_SIZE_MB" Type="int" />
+          <Property Name="FILE_TYPE" Type="varchar" MaxLength="10" />
+          <Property Name="MANDATORY_FLAG" Type="bit" />
+        </EntityType>
+        <EntityType Name="MST_SERVICE">
+          <Key>
+            <PropertyRef Name="S_SERVICE_ID" />
+          </Key>
+          <Property Name="S_SERVICE_ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="S_SERVICE_NAME" Type="nvarchar" MaxLength="255" Nullable="false" />
+          <Property Name="S_ACTIVE" Type="bit" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'THEATER_MODULE.dbo.MST_STATUS' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="MST_STATUS">
+          <Key>
+            <PropertyRef Name="STATUS_ID" />
+          </Key>
+          <Property Name="STATUS_ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="STATUS_TYPE" Type="varchar" MaxLength="10" />
+          <Property Name="T_ID" Type="int" />
+        </EntityType>
+        <EntityType Name="NO_OF_SCREENS">
+          <Key>
+            <PropertyRef Name="SCREEN_ID" />
+          </Key>
+          <Property Name="SCREEN_ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="T_ID" Type="int" Nullable="false" />
+          <Property Name="AUDIENCE_CAPACITY" Type="int" />
+          <Property Name="SCREEN_TYPE" Type="varchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="NO_OF_SCREENS_LOG">
+          <Key>
+            <PropertyRef Name="NO_OF_SCREENS_LOG_ID" />
+          </Key>
+          <Property Name="NO_OF_SCREENS_LOG_ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="SCREEN_ID" Type="int" Nullable="false" />
+          <Property Name="T_ID" Type="int" Nullable="false" />
+          <Property Name="AUDIENCE_CAPACITY" Type="int" />
+          <Property Name="SCREEN_TYPE" Type="varchar" MaxLength="255" />
+          <Property Name="ACTION_TYPE" Type="varchar" MaxLength="50" />
+          <Property Name="CHANGED_BY" Type="varchar" MaxLength="100" />
+          <Property Name="CHANGED_ON" Type="datetime" />
+        </EntityType>
+        <EntityType Name="NO_OF_SCREENS_TAX">
+          <Key>
+            <PropertyRef Name="S_TAX_ID" />
+          </Key>
+          <Property Name="S_TAX_ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="T_ID" Type="int" Nullable="false" />
+          <Property Name="TAX_ID" Type="int" Nullable="false" />
+          <Property Name="RATE_PER_SCREEN" Type="int" Nullable="false" />
+          <Property Name="SCREEN_TYPE" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="AMT_PER_SCREEN" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="CANCEL_SHOW" Type="int" Nullable="false" />
+          <Property Name="TOTAL_SHOW" Type="int" />
+          <Property Name="ACTUAL_SHOW" Type="int" />
+        </EntityType>
+        <EntityType Name="PAYMENT_HISTORY">
+          <Key>
+            <PropertyRef Name="PAYMENT_ID" />
+          </Key>
+          <Property Name="PAYMENT_ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="T_ID" Type="int" />
+          <Property Name="STATUS" Type="varchar" MaxLength="50" />
+          <Property Name="AMOUNT" Type="decimal" Precision="10" Scale="2" Nullable="false" />
+          <Property Name="PAYMENT_DATE" Type="date" Nullable="false" />
+        </EntityType>
+        <EntityType Name="PAYMENTLIST">
+          <Key>
+            <PropertyRef Name="P_ID" />
+          </Key>
+          <Property Name="P_ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="T_ID" Type="int" Nullable="false" />
+          <Property Name="T_NAME" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="OWNER_NAME" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="STARTDATE" Type="date" Nullable="false" />
+          <Property Name="ENDDATE" Type="date" Nullable="false" />
+          <Property Name="STATUS_PAYMENT" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="AMOUNT" Type="decimal" Precision="10" Scale="2" Nullable="false" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'THEATER_MODULE.dbo.PENDING_DUES' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="PENDING_DUES">
+          <Key>
+            <PropertyRef Name="DUE_ID" />
+          </Key>
+          <Property Name="DUE_ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="D_MON" Type="varchar" MaxLength="15" />
+          <Property Name="D_YEAR" Type="varchar" MaxLength="15" />
+          <Property Name="D_STATUS" Type="varchar" MaxLength="10" />
+          <Property Name="D_ACTIVE" Type="bit" />
+        </EntityType>
+        <EntityType Name="PENDINGDUEADMIN">
+          <Key>
+            <PropertyRef Name="PD_ID" />
+          </Key>
+          <Property Name="PD_ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="T_ID" Type="int" Nullable="false" />
+          <Property Name="P_STATUS" Type="varchar" MaxLength="10" Nullable="false" />
+        </EntityType>
+        <EntityType Name="RECEIPT_FILTER">
+          <Key>
+            <PropertyRef Name="RCPT_NO" />
+          </Key>
+          <Property Name="RCPT_NO" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="RCPT_GEN_DATE" Type="date" Nullable="false" />
+          <Property Name="T_ID" Type="int" />
+          <Property Name="PAY_MODE" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="STATUS" Type="varchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="T_RECEIPT">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="TheaterName" Type="nvarchar" MaxLength="100" />
+          <Property Name="CustomerName" Type="nvarchar" MaxLength="100" />
+          <Property Name="Email" Type="nvarchar" MaxLength="100" />
+          <Property Name="Address" Type="nvarchar" MaxLength="255" />
+          <Property Name="ReceiptNo" Type="nvarchar" MaxLength="50" />
+          <Property Name="Date" Type="datetime" />
+          <Property Name="Description" Type="nvarchar" MaxLength="255" />
+          <Property Name="Amount" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="PaymentMode" Type="nvarchar" MaxLength="50" />
+          <Property Name="T_ID" Type="int" />
+        </EntityType>
+        <EntityType Name="THEATER_TAX_PAYMENT">
+          <Key>
+            <PropertyRef Name="TAX_ID" />
+          </Key>
+          <Property Name="TAX_ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="T_ID" Type="int" Nullable="false" />
+          <Property Name="PAYMENT_MONTH" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="PAYMENT_YEAR" Type="int" Nullable="false" />
+          <Property Name="TAX_AMOUNT" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="SHOW_STATEMENT" Type="nvarchar(max)" />
+          <Property Name="CREATE_USER" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="CREATE_DATE" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="TRN_REGISTRATION">
+          <Key>
+            <PropertyRef Name="T_ID" />
+          </Key>
+          <Property Name="T_ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="T_NAME" Type="varchar" MaxLength="255" />
+          <Property Name="T_ADDRESS" Type="varchar" MaxLength="255" />
+          <Property Name="T_ACTIVE" Type="bit" />
+          <Property Name="T_OWNER_NAME" Type="varchar" MaxLength="255" />
+          <Property Name="T_OWNER_NUMBER" Type="bigint" />
+          <Property Name="T_OWNER_EMAIL" Type="varchar" MaxLength="255" />
+          <Property Name="T_COMMENCEMENT_DATE" Type="date" />
+          <Property Name="T_CITY" Type="varchar" MaxLength="100" />
+          <Property Name="T_ZONE" Type="varchar" MaxLength="100" />
+          <Property Name="T_WARD" Type="varchar" MaxLength="50" />
+          <Property Name="T_TENAMENT_NO" Type="varchar" MaxLength="15" />
+          <Property Name="T_PEC_NO" Type="varchar" MaxLength="18" />
+          <Property Name="T_PRC_NO" Type="varchar" MaxLength="18" />
+          <Property Name="T_TAX_PAYING_OFFLINE" Type="bit" />
+          <Property Name="OFFLINE_TAX_PAYMENT" Type="int" />
+          <Property Name="OFFLINE_TAX_PAID_DATE" Type="date" />
+          <Property Name="OFFLINE_DUE_DATE" Type="date" />
+          <Property Name="CREATE_USER" Type="varchar" MaxLength="10" />
+          <Property Name="CREATE_DATE" Type="date" />
+          <Property Name="UPDATE_USER" Type="varchar" MaxLength="10" />
+          <Property Name="UPDATE_DATE" Type="date" />
+          <Property Name="DELETE_USER" Type="varchar" MaxLength="10" />
+          <Property Name="DELETE_DATE" Type="date" />
+          <Property Name="STATUS" Type="varchar" MaxLength="10" />
+          <Property Name="REJECT_REASON" Type="varchar(max)" />
+          <Property Name="REG_ID" Type="varchar" MaxLength="10" />
+        </EntityType>
+        <EntityType Name="TRN_REGISTRATION_LOG">
+          <Key>
+            <PropertyRef Name="TRN_REGISTRATION_LOG_ID" />
+          </Key>
+          <Property Name="TRN_REGISTRATION_LOG_ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="T_ID" Type="int" Nullable="false" />
+          <Property Name="ACTION_TYPE" Type="varchar" MaxLength="50" />
+          <Property Name="T_NAME" Type="varchar" MaxLength="255" />
+          <Property Name="T_ADDRESS" Type="varchar" MaxLength="500" />
+          <Property Name="T_ACTIVE" Type="bit" />
+          <Property Name="T_OWNER_NAME" Type="varchar" MaxLength="255" />
+          <Property Name="T_OWNER_NUMBER" Type="bigint" />
+          <Property Name="T_OWNER_EMAIL" Type="varchar" MaxLength="255" />
+          <Property Name="T_COMMENCEMENT_DATE" Type="datetime" />
+          <Property Name="T_CITY" Type="varchar" MaxLength="255" />
+          <Property Name="T_ZONE" Type="varchar" MaxLength="255" />
+          <Property Name="T_WARD" Type="varchar" MaxLength="255" />
+          <Property Name="T_TENAMENT_NO" Type="varchar" MaxLength="255" />
+          <Property Name="T_PEC_NO" Type="varchar" MaxLength="255" />
+          <Property Name="T_PRC_NO" Type="varchar" MaxLength="255" />
+          <Property Name="T_TAX_PAYING_OFFLINE" Type="bit" />
+          <Property Name="OFFLINE_TAX_PAYMENT" Type="int" />
+          <Property Name="OFFLINE_TAX_PAID_DATE" Type="datetime" />
+          <Property Name="OFFLINE_DUE_DATE" Type="datetime" />
+          <Property Name="CREATE_USER" Type="varchar" MaxLength="100" />
+          <Property Name="CREATE_DATE" Type="datetime" />
+          <Property Name="UPDATE_USER" Type="varchar" MaxLength="100" />
+          <Property Name="UPDATE_DATE" Type="datetime" />
+          <Property Name="DELETE_USER" Type="varchar" MaxLength="100" />
+          <Property Name="DELETE_DATE" Type="datetime" />
+          <Property Name="STATUS" Type="varchar" MaxLength="100" />
+          <Property Name="REJECT_REASON" Type="varchar" MaxLength="500" />
+          <Property Name="LOG_TIMESTAMP" Type="datetime" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'THEATER_MODULE.dbo.TRN_SCREEN_TAX_PRICE' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="TRN_SCREEN_TAX_PRICE">
+          <Key>
+            <PropertyRef Name="PRICE_ID" />
+          </Key>
+          <Property Name="PRICE_ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="SCREEN_TYPE" Type="varchar" MaxLength="50" />
+          <Property Name="SCREEN_PRICE" Type="int" />
+        </EntityType>
+        <EntityType Name="TRN_THEATRE_DOCS">
+          <Key>
+            <PropertyRef Name="TH_DOC_ID" />
+          </Key>
+          <Property Name="TH_DOC_ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="DOC_FILEPATH" Type="nvarchar" MaxLength="255" />
+          <Property Name="T_ID" Type="int" />
+          <Property Name="CREATE_DATE" Type="date" />
+          <Property Name="CREATE_USER" Type="varchar" MaxLength="50" />
+          <Property Name="UPDATE_DATE" Type="date" />
+          <Property Name="UPDATE_USER" Type="varchar" MaxLength="50" />
+          <Property Name="DELETE_DATE" Type="date" />
+          <Property Name="DELETE_USER" Type="varchar" MaxLength="50" />
+          <Property Name="ACTIVE" Type="bit" Nullable="false" />
+          <Property Name="DOC_ID" Type="int" />
+        </EntityType>
+        <EntityType Name="TRN_THEATRE_DOCS_LOG">
+          <Key>
+            <PropertyRef Name="TRN_THEATRE_DOCS_LOG_ID" />
+          </Key>
+          <Property Name="TRN_THEATRE_DOCS_LOG_ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="TH_DOC_ID" Type="int" Nullable="false" />
+          <Property Name="DOC_FILEPATH" Type="varchar" MaxLength="500" />
+          <Property Name="T_ID" Type="int" Nullable="false" />
+          <Property Name="CREATE_DATE" Type="datetime" />
+          <Property Name="CREATE_USER" Type="varchar" MaxLength="100" />
+          <Property Name="UPDATE_DATE" Type="datetime" />
+          <Property Name="UPDATE_USER" Type="varchar" MaxLength="100" />
+          <Property Name="DELETE_DATE" Type="datetime" />
+          <Property Name="DELETE_USER" Type="varchar" MaxLength="100" />
+          <Property Name="ACTIVE" Type="bit" Nullable="false" />
+          <Property Name="DOC_ID" Type="int" />
+          <Property Name="ACTION_TYPE" Type="varchar" MaxLength="50" />
+          <Property Name="CHANGED_BY" Type="varchar" MaxLength="100" />
+          <Property Name="CHANGED_ON" Type="datetime" />
+        </EntityType>
+        <EntityType Name="USER_LOGIN">
+          <Key>
+            <PropertyRef Name="U_ID" />
+          </Key>
+          <Property Name="U_ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="PHONE_NUMBER" Type="varchar" MaxLength="15" Nullable="false" />
+        </EntityType>
+        <Association Name="FK__NO_OF_SCRE__T_ID__145C0A3F">
+          <End Role="TRN_REGISTRATION" Type="Self.TRN_REGISTRATION" Multiplicity="1" />
+          <End Role="NO_OF_SCREENS" Type="Self.NO_OF_SCREENS" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TRN_REGISTRATION">
+              <PropertyRef Name="T_ID" />
+            </Principal>
+            <Dependent Role="NO_OF_SCREENS">
+              <PropertyRef Name="T_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__PAYMENT_HI__T_ID__75A278F5">
+          <End Role="TRN_REGISTRATION" Type="Self.TRN_REGISTRATION" Multiplicity="0..1" />
+          <End Role="PAYMENT_HISTORY" Type="Self.PAYMENT_HISTORY" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TRN_REGISTRATION">
+              <PropertyRef Name="T_ID" />
+            </Principal>
+            <Dependent Role="PAYMENT_HISTORY">
+              <PropertyRef Name="T_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_DOC_ID">
+          <End Role="MST_DOCS" Type="Self.MST_DOCS" Multiplicity="0..1" />
+          <End Role="MST_DOC_SERVICE_MPG" Type="Self.MST_DOC_SERVICE_MPG" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MST_DOCS">
+              <PropertyRef Name="DOC_ID" />
+            </Principal>
+            <Dependent Role="MST_DOC_SERVICE_MPG">
+              <PropertyRef Name="DOC_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_NO_OF_SCREENS_LOG_SCREEN_ID">
+          <End Role="NO_OF_SCREENS" Type="Self.NO_OF_SCREENS" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="NO_OF_SCREENS_LOG" Type="Self.NO_OF_SCREENS_LOG" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="NO_OF_SCREENS">
+              <PropertyRef Name="SCREEN_ID" />
+            </Principal>
+            <Dependent Role="NO_OF_SCREENS_LOG">
+              <PropertyRef Name="SCREEN_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_NO_OF_SCREENS_LOG_T_ID">
+          <End Role="TRN_REGISTRATION" Type="Self.TRN_REGISTRATION" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="NO_OF_SCREENS_LOG" Type="Self.NO_OF_SCREENS_LOG" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TRN_REGISTRATION">
+              <PropertyRef Name="T_ID" />
+            </Principal>
+            <Dependent Role="NO_OF_SCREENS_LOG">
+              <PropertyRef Name="T_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_NO_OF_SCREENS_TAX_TAXID">
+          <End Role="THEATER_TAX_PAYMENT" Type="Self.THEATER_TAX_PAYMENT" Multiplicity="1" />
+          <End Role="NO_OF_SCREENS_TAX" Type="Self.NO_OF_SCREENS_TAX" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="THEATER_TAX_PAYMENT">
+              <PropertyRef Name="TAX_ID" />
+            </Principal>
+            <Dependent Role="NO_OF_SCREENS_TAX">
+              <PropertyRef Name="TAX_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_NO_OF_SCREENS_TAX_TID">
+          <End Role="TRN_REGISTRATION" Type="Self.TRN_REGISTRATION" Multiplicity="1" />
+          <End Role="NO_OF_SCREENS_TAX" Type="Self.NO_OF_SCREENS_TAX" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TRN_REGISTRATION">
+              <PropertyRef Name="T_ID" />
+            </Principal>
+            <Dependent Role="NO_OF_SCREENS_TAX">
+              <PropertyRef Name="T_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PAY_T_ID">
+          <End Role="TRN_REGISTRATION" Type="Self.TRN_REGISTRATION" Multiplicity="1" />
+          <End Role="PAYMENTLIST" Type="Self.PAYMENTLIST" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TRN_REGISTRATION">
+              <PropertyRef Name="T_ID" />
+            </Principal>
+            <Dependent Role="PAYMENTLIST">
+              <PropertyRef Name="T_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PENDINGDUEADMIN_TRN_REGISTRATION">
+          <End Role="TRN_REGISTRATION" Type="Self.TRN_REGISTRATION" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="PENDINGDUEADMIN" Type="Self.PENDINGDUEADMIN" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TRN_REGISTRATION">
+              <PropertyRef Name="T_ID" />
+            </Principal>
+            <Dependent Role="PENDINGDUEADMIN">
+              <PropertyRef Name="T_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_S_SERVICE_ID">
+          <End Role="MST_SERVICE" Type="Self.MST_SERVICE" Multiplicity="0..1" />
+          <End Role="MST_DOC_SERVICE_MPG" Type="Self.MST_DOC_SERVICE_MPG" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MST_SERVICE">
+              <PropertyRef Name="S_SERVICE_ID" />
+            </Principal>
+            <Dependent Role="MST_DOC_SERVICE_MPG">
+              <PropertyRef Name="S_SERVICE_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Status_TRN_Registration">
+          <End Role="TRN_REGISTRATION" Type="Self.TRN_REGISTRATION" Multiplicity="0..1" />
+          <End Role="MST_STATUS" Type="Self.MST_STATUS" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TRN_REGISTRATION">
+              <PropertyRef Name="T_ID" />
+            </Principal>
+            <Dependent Role="MST_STATUS">
+              <PropertyRef Name="T_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_T_ID">
+          <End Role="TRN_REGISTRATION" Type="Self.TRN_REGISTRATION" Multiplicity="0..1" />
+          <End Role="RECEIPT_FILTER" Type="Self.RECEIPT_FILTER" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TRN_REGISTRATION">
+              <PropertyRef Name="T_ID" />
+            </Principal>
+            <Dependent Role="RECEIPT_FILTER">
+              <PropertyRef Name="T_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_T_ID_REG">
+          <End Role="TRN_REGISTRATION" Type="Self.TRN_REGISTRATION" Multiplicity="0..1" />
+          <End Role="TRN_THEATRE_DOCS" Type="Self.TRN_THEATRE_DOCS" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TRN_REGISTRATION">
+              <PropertyRef Name="T_ID" />
+            </Principal>
+            <Dependent Role="TRN_THEATRE_DOCS">
+              <PropertyRef Name="T_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_TAX_TID">
+          <End Role="TRN_REGISTRATION" Type="Self.TRN_REGISTRATION" Multiplicity="1" />
+          <End Role="THEATER_TAX_PAYMENT" Type="Self.THEATER_TAX_PAYMENT" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TRN_REGISTRATION">
+              <PropertyRef Name="T_ID" />
+            </Principal>
+            <Dependent Role="THEATER_TAX_PAYMENT">
+              <PropertyRef Name="T_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_TReceipt_TRNRegistration">
+          <End Role="TRN_REGISTRATION" Type="Self.TRN_REGISTRATION" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="T_RECEIPT" Type="Self.T_RECEIPT" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TRN_REGISTRATION">
+              <PropertyRef Name="T_ID" />
+            </Principal>
+            <Dependent Role="T_RECEIPT">
+              <PropertyRef Name="T_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_TRN_REGISTRATION_LOG_T_ID">
+          <End Role="TRN_REGISTRATION" Type="Self.TRN_REGISTRATION" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="TRN_REGISTRATION_LOG" Type="Self.TRN_REGISTRATION_LOG" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TRN_REGISTRATION">
+              <PropertyRef Name="T_ID" />
+            </Principal>
+            <Dependent Role="TRN_REGISTRATION_LOG">
+              <PropertyRef Name="T_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_TRN_THEATRE_DOCS_LOG_T_ID">
+          <End Role="TRN_REGISTRATION" Type="Self.TRN_REGISTRATION" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="TRN_THEATRE_DOCS_LOG" Type="Self.TRN_THEATRE_DOCS_LOG" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TRN_REGISTRATION">
+              <PropertyRef Name="T_ID" />
+            </Principal>
+            <Dependent Role="TRN_THEATRE_DOCS_LOG">
+              <PropertyRef Name="T_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_TRN_THEATRE_DOCS_LOG_TH_DOC_ID">
+          <End Role="TRN_THEATRE_DOCS" Type="Self.TRN_THEATRE_DOCS" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="TRN_THEATRE_DOCS_LOG" Type="Self.TRN_THEATRE_DOCS_LOG" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TRN_THEATRE_DOCS">
+              <PropertyRef Name="TH_DOC_ID" />
+            </Principal>
+            <Dependent Role="TRN_THEATRE_DOCS_LOG">
+              <PropertyRef Name="TH_DOC_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_TRN_THEATRE_DOCS_MST_DOCS">
+          <End Role="MST_DOCS" Type="Self.MST_DOCS" Multiplicity="0..1" />
+          <End Role="TRN_THEATRE_DOCS" Type="Self.TRN_THEATRE_DOCS" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MST_DOCS">
+              <PropertyRef Name="DOC_ID" />
+            </Principal>
+            <Dependent Role="TRN_THEATRE_DOCS">
+              <PropertyRef Name="DOC_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="THEATER_MODULEModelStoreContainer">
+          <EntitySet Name="ActionRequests" EntityType="Self.ActionRequests" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DEPARTMENT_LOGIN" EntityType="Self.DEPARTMENT_LOGIN" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="MST_DOC_SERVICE_MPG" EntityType="Self.MST_DOC_SERVICE_MPG" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="MST_DOCS" EntityType="Self.MST_DOCS" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="MST_SERVICE" EntityType="Self.MST_SERVICE" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="NO_OF_SCREENS" EntityType="Self.NO_OF_SCREENS" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="NO_OF_SCREENS_LOG" EntityType="Self.NO_OF_SCREENS_LOG" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="NO_OF_SCREENS_TAX" EntityType="Self.NO_OF_SCREENS_TAX" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PAYMENT_HISTORY" EntityType="Self.PAYMENT_HISTORY" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PAYMENTLIST" EntityType="Self.PAYMENTLIST" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PENDINGDUEADMIN" EntityType="Self.PENDINGDUEADMIN" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="RECEIPT_FILTER" EntityType="Self.RECEIPT_FILTER" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="T_RECEIPT" EntityType="Self.T_RECEIPT" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="THEATER_TAX_PAYMENT" EntityType="Self.THEATER_TAX_PAYMENT" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="TRN_REGISTRATION" EntityType="Self.TRN_REGISTRATION" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="TRN_REGISTRATION_LOG" EntityType="Self.TRN_REGISTRATION_LOG" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="TRN_THEATRE_DOCS" EntityType="Self.TRN_THEATRE_DOCS" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="TRN_THEATRE_DOCS_LOG" EntityType="Self.TRN_THEATRE_DOCS_LOG" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="USER_LOGIN" EntityType="Self.USER_LOGIN" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DEPT_LOGIN_DETAILS" EntityType="Self.DEPT_LOGIN_DETAILS" store:Type="Tables" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [DEPT_LOGIN_DETAILS].[DEPT_ID] AS [DEPT_ID], 
+    [DEPT_LOGIN_DETAILS].[DEPT_USERNAME] AS [DEPT_USERNAME], 
+    [DEPT_LOGIN_DETAILS].[DEPT_PASS] AS [DEPT_PASS]
+    FROM [dbo].[DEPT_LOGIN_DETAILS] AS [DEPT_LOGIN_DETAILS]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="LOGIN_DETAILS" EntityType="Self.LOGIN_DETAILS" store:Type="Tables" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [LOGIN_DETAILS].[LOG_ID] AS [LOG_ID], 
+    [LOGIN_DETAILS].[PHONE_NUMBER] AS [PHONE_NUMBER]
+    FROM [dbo].[LOGIN_DETAILS] AS [LOGIN_DETAILS]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="MST_STATUS" EntityType="Self.MST_STATUS" store:Type="Tables" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [MST_STATUS].[STATUS_ID] AS [STATUS_ID], 
+    [MST_STATUS].[STATUS_TYPE] AS [STATUS_TYPE], 
+    [MST_STATUS].[T_ID] AS [T_ID]
+    FROM [dbo].[MST_STATUS] AS [MST_STATUS]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="PENDING_DUES" EntityType="Self.PENDING_DUES" store:Type="Tables" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [PENDING_DUES].[DUE_ID] AS [DUE_ID], 
+    [PENDING_DUES].[D_MON] AS [D_MON], 
+    [PENDING_DUES].[D_YEAR] AS [D_YEAR], 
+    [PENDING_DUES].[D_STATUS] AS [D_STATUS], 
+    [PENDING_DUES].[D_ACTIVE] AS [D_ACTIVE]
+    FROM [dbo].[PENDING_DUES] AS [PENDING_DUES]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="TRN_SCREEN_TAX_PRICE" EntityType="Self.TRN_SCREEN_TAX_PRICE" store:Type="Tables" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [TRN_SCREEN_TAX_PRICE].[PRICE_ID] AS [PRICE_ID], 
+    [TRN_SCREEN_TAX_PRICE].[SCREEN_TYPE] AS [SCREEN_TYPE], 
+    [TRN_SCREEN_TAX_PRICE].[SCREEN_PRICE] AS [SCREEN_PRICE]
+    FROM [dbo].[TRN_SCREEN_TAX_PRICE] AS [TRN_SCREEN_TAX_PRICE]</DefiningQuery>
+          </EntitySet>
+          <AssociationSet Name="FK__NO_OF_SCRE__T_ID__145C0A3F" Association="Self.FK__NO_OF_SCRE__T_ID__145C0A3F">
+            <End Role="TRN_REGISTRATION" EntitySet="TRN_REGISTRATION" />
+            <End Role="NO_OF_SCREENS" EntitySet="NO_OF_SCREENS" />
+          </AssociationSet>
+          <AssociationSet Name="FK__PAYMENT_HI__T_ID__75A278F5" Association="Self.FK__PAYMENT_HI__T_ID__75A278F5">
+            <End Role="TRN_REGISTRATION" EntitySet="TRN_REGISTRATION" />
+            <End Role="PAYMENT_HISTORY" EntitySet="PAYMENT_HISTORY" />
+          </AssociationSet>
+          <AssociationSet Name="FK_DOC_ID" Association="Self.FK_DOC_ID">
+            <End Role="MST_DOCS" EntitySet="MST_DOCS" />
+            <End Role="MST_DOC_SERVICE_MPG" EntitySet="MST_DOC_SERVICE_MPG" />
+          </AssociationSet>
+          <AssociationSet Name="FK_NO_OF_SCREENS_LOG_SCREEN_ID" Association="Self.FK_NO_OF_SCREENS_LOG_SCREEN_ID">
+            <End Role="NO_OF_SCREENS" EntitySet="NO_OF_SCREENS" />
+            <End Role="NO_OF_SCREENS_LOG" EntitySet="NO_OF_SCREENS_LOG" />
+          </AssociationSet>
+          <AssociationSet Name="FK_NO_OF_SCREENS_LOG_T_ID" Association="Self.FK_NO_OF_SCREENS_LOG_T_ID">
+            <End Role="TRN_REGISTRATION" EntitySet="TRN_REGISTRATION" />
+            <End Role="NO_OF_SCREENS_LOG" EntitySet="NO_OF_SCREENS_LOG" />
+          </AssociationSet>
+          <AssociationSet Name="FK_NO_OF_SCREENS_TAX_TAXID" Association="Self.FK_NO_OF_SCREENS_TAX_TAXID">
+            <End Role="THEATER_TAX_PAYMENT" EntitySet="THEATER_TAX_PAYMENT" />
+            <End Role="NO_OF_SCREENS_TAX" EntitySet="NO_OF_SCREENS_TAX" />
+          </AssociationSet>
+          <AssociationSet Name="FK_NO_OF_SCREENS_TAX_TID" Association="Self.FK_NO_OF_SCREENS_TAX_TID">
+            <End Role="TRN_REGISTRATION" EntitySet="TRN_REGISTRATION" />
+            <End Role="NO_OF_SCREENS_TAX" EntitySet="NO_OF_SCREENS_TAX" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PAY_T_ID" Association="Self.FK_PAY_T_ID">
+            <End Role="TRN_REGISTRATION" EntitySet="TRN_REGISTRATION" />
+            <End Role="PAYMENTLIST" EntitySet="PAYMENTLIST" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PENDINGDUEADMIN_TRN_REGISTRATION" Association="Self.FK_PENDINGDUEADMIN_TRN_REGISTRATION">
+            <End Role="TRN_REGISTRATION" EntitySet="TRN_REGISTRATION" />
+            <End Role="PENDINGDUEADMIN" EntitySet="PENDINGDUEADMIN" />
+          </AssociationSet>
+          <AssociationSet Name="FK_S_SERVICE_ID" Association="Self.FK_S_SERVICE_ID">
+            <End Role="MST_SERVICE" EntitySet="MST_SERVICE" />
+            <End Role="MST_DOC_SERVICE_MPG" EntitySet="MST_DOC_SERVICE_MPG" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Status_TRN_Registration" Association="Self.FK_Status_TRN_Registration">
+            <End Role="TRN_REGISTRATION" EntitySet="TRN_REGISTRATION" />
+            <End Role="MST_STATUS" EntitySet="MST_STATUS" />
+          </AssociationSet>
+          <AssociationSet Name="FK_T_ID" Association="Self.FK_T_ID">
+            <End Role="TRN_REGISTRATION" EntitySet="TRN_REGISTRATION" />
+            <End Role="RECEIPT_FILTER" EntitySet="RECEIPT_FILTER" />
+          </AssociationSet>
+          <AssociationSet Name="FK_T_ID_REG" Association="Self.FK_T_ID_REG">
+            <End Role="TRN_REGISTRATION" EntitySet="TRN_REGISTRATION" />
+            <End Role="TRN_THEATRE_DOCS" EntitySet="TRN_THEATRE_DOCS" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TAX_TID" Association="Self.FK_TAX_TID">
+            <End Role="TRN_REGISTRATION" EntitySet="TRN_REGISTRATION" />
+            <End Role="THEATER_TAX_PAYMENT" EntitySet="THEATER_TAX_PAYMENT" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TReceipt_TRNRegistration" Association="Self.FK_TReceipt_TRNRegistration">
+            <End Role="TRN_REGISTRATION" EntitySet="TRN_REGISTRATION" />
+            <End Role="T_RECEIPT" EntitySet="T_RECEIPT" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TRN_REGISTRATION_LOG_T_ID" Association="Self.FK_TRN_REGISTRATION_LOG_T_ID">
+            <End Role="TRN_REGISTRATION" EntitySet="TRN_REGISTRATION" />
+            <End Role="TRN_REGISTRATION_LOG" EntitySet="TRN_REGISTRATION_LOG" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TRN_THEATRE_DOCS_LOG_T_ID" Association="Self.FK_TRN_THEATRE_DOCS_LOG_T_ID">
+            <End Role="TRN_REGISTRATION" EntitySet="TRN_REGISTRATION" />
+            <End Role="TRN_THEATRE_DOCS_LOG" EntitySet="TRN_THEATRE_DOCS_LOG" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TRN_THEATRE_DOCS_LOG_TH_DOC_ID" Association="Self.FK_TRN_THEATRE_DOCS_LOG_TH_DOC_ID">
+            <End Role="TRN_THEATRE_DOCS" EntitySet="TRN_THEATRE_DOCS" />
+            <End Role="TRN_THEATRE_DOCS_LOG" EntitySet="TRN_THEATRE_DOCS_LOG" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TRN_THEATRE_DOCS_MST_DOCS" Association="Self.FK_TRN_THEATRE_DOCS_MST_DOCS">
+            <End Role="MST_DOCS" EntitySet="MST_DOCS" />
+            <End Role="TRN_THEATRE_DOCS" EntitySet="TRN_THEATRE_DOCS" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="THEATER_MODULEModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="ActionRequest">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="T_NAME" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="T_OWNER_NAME" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Status" Type="Int32" />
+        </EntityType>
+        <EntityType Name="DEPARTMENT_LOGIN">
+          <Key>
+            <PropertyRef Name="D_ID" />
+          </Key>
+          <Property Name="D_ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="USERNAME" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="PASSWORD" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
+        </EntityType>
+        <EntityType Name="MST_DOC_SERVICE_MPG">
+          <Key>
+            <PropertyRef Name="MPG_ID" />
+          </Key>
+          <Property Name="MPG_ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="MPG_ACTIVE" Type="Boolean" />
+          <Property Name="S_SERVICE_ID" Type="Int32" />
+          <Property Name="DOC_ID" Type="Int32" />
+          <NavigationProperty Name="MST_DOCS" Relationship="Self.FK_DOC_ID" FromRole="MST_DOC_SERVICE_MPG" ToRole="MST_DOCS" />
+          <NavigationProperty Name="MST_SERVICE" Relationship="Self.FK_S_SERVICE_ID" FromRole="MST_DOC_SERVICE_MPG" ToRole="MST_SERVICE" />
+        </EntityType>
+        <EntityType Name="MST_DOCS">
+          <Key>
+            <PropertyRef Name="DOC_ID" />
+          </Key>
+          <Property Name="DOC_ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="DOC_NAME" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="DOC_ACTIVE" Type="Boolean" />
+          <Property Name="FILE_SIZE_MB" Type="Int32" />
+          <Property Name="FILE_TYPE" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="MANDATORY_FLAG" Type="Boolean" />
+          <NavigationProperty Name="MST_DOC_SERVICE_MPG" Relationship="Self.FK_DOC_ID" FromRole="MST_DOCS" ToRole="MST_DOC_SERVICE_MPG" />
+          <NavigationProperty Name="TRN_THEATRE_DOCS" Relationship="Self.FK_TRN_THEATRE_DOCS_MST_DOCS" FromRole="MST_DOCS" ToRole="TRN_THEATRE_DOCS" />
+        </EntityType>
+        <EntityType Name="MST_SERVICE">
+          <Key>
+            <PropertyRef Name="S_SERVICE_ID" />
+          </Key>
+          <Property Name="S_SERVICE_ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="S_SERVICE_NAME" Type="String" MaxLength="255" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="S_ACTIVE" Type="Boolean" />
+          <NavigationProperty Name="MST_DOC_SERVICE_MPG" Relationship="Self.FK_S_SERVICE_ID" FromRole="MST_SERVICE" ToRole="MST_DOC_SERVICE_MPG" />
+        </EntityType>
+        <EntityType Name="NO_OF_SCREENS">
+          <Key>
+            <PropertyRef Name="SCREEN_ID" />
+          </Key>
+          <Property Name="SCREEN_ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="T_ID" Type="Int32" Nullable="false" />
+          <Property Name="AUDIENCE_CAPACITY" Type="Int32" />
+          <Property Name="SCREEN_TYPE" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="TRN_REGISTRATION" Relationship="Self.FK__NO_OF_SCRE__T_ID__145C0A3F" FromRole="NO_OF_SCREENS" ToRole="TRN_REGISTRATION" />
+          <NavigationProperty Name="NO_OF_SCREENS_LOG" Relationship="Self.FK_NO_OF_SCREENS_LOG_SCREEN_ID" FromRole="NO_OF_SCREENS" ToRole="NO_OF_SCREENS_LOG" />
+          <NavigationProperty Name="NO_OF_SCREENS_TAX" Relationship="Self.FK_SCREEN_ID" FromRole="NO_OF_SCREENS" ToRole="NO_OF_SCREENS_TAX" />
+        </EntityType>
+        <EntityType Name="NO_OF_SCREENS_LOG">
+          <Key>
+            <PropertyRef Name="NO_OF_SCREENS_LOG_ID" />
+          </Key>
+          <Property Name="NO_OF_SCREENS_LOG_ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="SCREEN_ID" Type="Int32" Nullable="false" />
+          <Property Name="T_ID" Type="Int32" Nullable="false" />
+          <Property Name="AUDIENCE_CAPACITY" Type="Int32" />
+          <Property Name="SCREEN_TYPE" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="ACTION_TYPE" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="CHANGED_BY" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="CHANGED_ON" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="NO_OF_SCREENS" Relationship="Self.FK_NO_OF_SCREENS_LOG_SCREEN_ID" FromRole="NO_OF_SCREENS_LOG" ToRole="NO_OF_SCREENS" />
+          <NavigationProperty Name="TRN_REGISTRATION" Relationship="Self.FK_NO_OF_SCREENS_LOG_T_ID" FromRole="NO_OF_SCREENS_LOG" ToRole="TRN_REGISTRATION" />
+        </EntityType>
+        <EntityType Name="NO_OF_SCREENS_TAX">
+          <Key>
+            <PropertyRef Name="S_TAX_ID" />
+          </Key>
+          <Property Name="S_TAX_ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="T_ID" Type="Int32" Nullable="false" />
+          <Property Name="TAX_ID" Type="Int32" Nullable="false" />
+          <Property Name="SCREEN_TYPE" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="AMT_PER_SCREEN" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="CANCEL_SHOW" Type="Int32" Nullable="false" />
+          <Property Name="TOTAL_SHOW" Type="Int32" />
+          <NavigationProperty Name="NO_OF_SCREENS" Relationship="Self.FK_SCREEN_ID" FromRole="NO_OF_SCREENS_TAX" ToRole="NO_OF_SCREENS" />
+          <NavigationProperty Name="THEATER_TAX_PAYMENT" Relationship="Self.FK_NO_OF_SCREENS_TAX_TAXID" FromRole="NO_OF_SCREENS_TAX" ToRole="THEATER_TAX_PAYMENT" />
+          <NavigationProperty Name="TRN_REGISTRATION" Relationship="Self.FK_NO_OF_SCREENS_TAX_TID" FromRole="NO_OF_SCREENS_TAX" ToRole="TRN_REGISTRATION" />
+          <Property Name="RATE_PER_SCREEN" Type="Int32" Nullable="false" />
+          <Property Name="ACTUAL_SHOW" Type="Int32" />
+        </EntityType>
+        <EntityType Name="PAYMENT_HISTORY">
+          <Key>
+            <PropertyRef Name="PAYMENT_ID" />
+          </Key>
+          <Property Name="PAYMENT_ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="T_ID" Type="Int32" />
+          <Property Name="STATUS" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="AMOUNT" Type="Decimal" Precision="10" Scale="2" Nullable="false" />
+          <Property Name="PAYMENT_DATE" Type="DateTime" Nullable="false" Precision="0" />
+          <NavigationProperty Name="TRN_REGISTRATION" Relationship="Self.FK__PAYMENT_HI__T_ID__75A278F5" FromRole="PAYMENT_HISTORY" ToRole="TRN_REGISTRATION" />
+        </EntityType>
+        <EntityType Name="PAYMENTLIST">
+          <Key>
+            <PropertyRef Name="P_ID" />
+          </Key>
+          <Property Name="P_ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="T_ID" Type="Int32" Nullable="false" />
+          <Property Name="T_NAME" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="OWNER_NAME" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="STARTDATE" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="ENDDATE" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="STATUS_PAYMENT" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="AMOUNT" Type="Decimal" Precision="10" Scale="2" Nullable="false" />
+          <NavigationProperty Name="TRN_REGISTRATION" Relationship="Self.FK_PAY_T_ID" FromRole="PAYMENTLIST" ToRole="TRN_REGISTRATION" />
+        </EntityType>
+        <EntityType Name="PENDINGDUEADMIN">
+          <Key>
+            <PropertyRef Name="PD_ID" />
+          </Key>
+          <Property Name="PD_ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="T_ID" Type="Int32" Nullable="false" />
+          <Property Name="P_STATUS" Type="String" MaxLength="10" FixedLength="false" Unicode="false" Nullable="false" />
+          <NavigationProperty Name="TRN_REGISTRATION" Relationship="Self.FK_PENDINGDUEADMIN_TRN_REGISTRATION" FromRole="PENDINGDUEADMIN" ToRole="TRN_REGISTRATION" />
+        </EntityType>
+        <EntityType Name="RECEIPT_FILTER">
+          <Key>
+            <PropertyRef Name="RCPT_NO" />
+          </Key>
+          <Property Name="RCPT_NO" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="RCPT_GEN_DATE" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="T_ID" Type="Int32" />
+          <Property Name="PAY_MODE" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="STATUS" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <NavigationProperty Name="TRN_REGISTRATION" Relationship="Self.FK_T_ID" FromRole="RECEIPT_FILTER" ToRole="TRN_REGISTRATION" />
+        </EntityType>
+        <EntityType Name="T_RECEIPT">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="TheaterName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="CustomerName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Email" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Address" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="ReceiptNo" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Date" Type="DateTime" Precision="3" />
+          <Property Name="Description" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="Amount" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="PaymentMode" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="T_ID" Type="Int32" />
+          <NavigationProperty Name="TRN_REGISTRATION" Relationship="Self.FK_TReceipt_TRNRegistration" FromRole="T_RECEIPT" ToRole="TRN_REGISTRATION" />
+        </EntityType>
+        <EntityType Name="THEATER_TAX_PAYMENT">
+          <Key>
+            <PropertyRef Name="TAX_ID" />
+          </Key>
+          <Property Name="TAX_ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="T_ID" Type="Int32" Nullable="false" />
+          <Property Name="PAYMENT_MONTH" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="PAYMENT_YEAR" Type="Int32" Nullable="false" />
+          <Property Name="TAX_AMOUNT" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="SHOW_STATEMENT" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="CREATE_USER" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="CREATE_DATE" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="NO_OF_SCREENS_TAX" Relationship="Self.FK_NO_OF_SCREENS_TAX_TAXID" FromRole="THEATER_TAX_PAYMENT" ToRole="NO_OF_SCREENS_TAX" />
+          <NavigationProperty Name="TRN_REGISTRATION" Relationship="Self.FK_TAX_TID" FromRole="THEATER_TAX_PAYMENT" ToRole="TRN_REGISTRATION" />
+        </EntityType>
+        <EntityType Name="TRN_REGISTRATION">
+          <Key>
+            <PropertyRef Name="T_ID" />
+          </Key>
+          <Property Name="T_ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="T_NAME" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="T_ADDRESS" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="T_ACTIVE" Type="Boolean" />
+          <Property Name="T_OWNER_NAME" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="T_OWNER_NUMBER" Type="Int64" />
+          <Property Name="T_OWNER_EMAIL" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="T_COMMENCEMENT_DATE" Type="DateTime" Precision="0" />
+          <Property Name="T_CITY" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="T_ZONE" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="T_WARD" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="T_TENAMENT_NO" Type="String" MaxLength="15" FixedLength="false" Unicode="false" />
+          <Property Name="T_PEC_NO" Type="String" MaxLength="18" FixedLength="false" Unicode="false" />
+          <Property Name="T_PRC_NO" Type="String" MaxLength="18" FixedLength="false" Unicode="false" />
+          <Property Name="T_TAX_PAYING_OFFLINE" Type="Boolean" />
+          <Property Name="OFFLINE_TAX_PAYMENT" Type="Int32" />
+          <Property Name="OFFLINE_TAX_PAID_DATE" Type="DateTime" Precision="0" />
+          <Property Name="OFFLINE_DUE_DATE" Type="DateTime" Precision="0" />
+          <Property Name="CREATE_USER" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="CREATE_DATE" Type="DateTime" Precision="0" />
+          <Property Name="UPDATE_USER" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="UPDATE_DATE" Type="DateTime" Precision="0" />
+          <Property Name="DELETE_USER" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="DELETE_DATE" Type="DateTime" Precision="0" />
+          <Property Name="STATUS" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="REJECT_REASON" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="NO_OF_SCREENS" Relationship="Self.FK__NO_OF_SCRE__T_ID__145C0A3F" FromRole="TRN_REGISTRATION" ToRole="NO_OF_SCREENS" />
+          <NavigationProperty Name="NO_OF_SCREENS_LOG" Relationship="Self.FK_NO_OF_SCREENS_LOG_T_ID" FromRole="TRN_REGISTRATION" ToRole="NO_OF_SCREENS_LOG" />
+          <NavigationProperty Name="NO_OF_SCREENS_TAX" Relationship="Self.FK_NO_OF_SCREENS_TAX_TID" FromRole="TRN_REGISTRATION" ToRole="NO_OF_SCREENS_TAX" />
+          <NavigationProperty Name="PAYMENT_HISTORY" Relationship="Self.FK__PAYMENT_HI__T_ID__75A278F5" FromRole="TRN_REGISTRATION" ToRole="PAYMENT_HISTORY" />
+          <NavigationProperty Name="PAYMENTLISTs" Relationship="Self.FK_PAY_T_ID" FromRole="TRN_REGISTRATION" ToRole="PAYMENTLIST" />
+          <NavigationProperty Name="PENDINGDUEADMINs" Relationship="Self.FK_PENDINGDUEADMIN_TRN_REGISTRATION" FromRole="TRN_REGISTRATION" ToRole="PENDINGDUEADMIN" />
+          <NavigationProperty Name="RECEIPT_FILTER" Relationship="Self.FK_T_ID" FromRole="TRN_REGISTRATION" ToRole="RECEIPT_FILTER" />
+          <NavigationProperty Name="T_RECEIPT" Relationship="Self.FK_TReceipt_TRNRegistration" FromRole="TRN_REGISTRATION" ToRole="T_RECEIPT" />
+          <NavigationProperty Name="THEATER_TAX_PAYMENT" Relationship="Self.FK_TAX_TID" FromRole="TRN_REGISTRATION" ToRole="THEATER_TAX_PAYMENT" />
+          <NavigationProperty Name="MST_STATUS" Relationship="Self.FK_Status_TRN_Registration" FromRole="TRN_REGISTRATION" ToRole="MST_STATUS" />
+          <NavigationProperty Name="TRN_THEATRE_DOCS" Relationship="Self.FK_T_ID_REG" FromRole="TRN_REGISTRATION" ToRole="TRN_THEATRE_DOCS" />
+          <NavigationProperty Name="TRN_REGISTRATION_LOG" Relationship="Self.FK_TRN_REGISTRATION_LOG_T_ID" FromRole="TRN_REGISTRATION" ToRole="TRN_REGISTRATION_LOG" />
+          <NavigationProperty Name="TRN_THEATRE_DOCS_LOG" Relationship="Self.FK_TRN_THEATRE_DOCS_LOG_T_ID" FromRole="TRN_REGISTRATION" ToRole="TRN_THEATRE_DOCS_LOG" />
+          <Property Name="REG_ID" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="TRN_REGISTRATION_LOG">
+          <Key>
+            <PropertyRef Name="TRN_REGISTRATION_LOG_ID" />
+          </Key>
+          <Property Name="TRN_REGISTRATION_LOG_ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="T_ID" Type="Int32" Nullable="false" />
+          <Property Name="ACTION_TYPE" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="T_NAME" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="T_ADDRESS" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="T_ACTIVE" Type="Boolean" />
+          <Property Name="T_OWNER_NAME" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="T_OWNER_NUMBER" Type="Int64" />
+          <Property Name="T_OWNER_EMAIL" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="T_COMMENCEMENT_DATE" Type="DateTime" Precision="3" />
+          <Property Name="T_CITY" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="T_ZONE" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="T_WARD" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="T_TENAMENT_NO" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="T_PEC_NO" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="T_PRC_NO" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="T_TAX_PAYING_OFFLINE" Type="Boolean" />
+          <Property Name="OFFLINE_TAX_PAYMENT" Type="Int32" />
+          <Property Name="OFFLINE_TAX_PAID_DATE" Type="DateTime" Precision="3" />
+          <Property Name="OFFLINE_DUE_DATE" Type="DateTime" Precision="3" />
+          <Property Name="CREATE_USER" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="CREATE_DATE" Type="DateTime" Precision="3" />
+          <Property Name="UPDATE_USER" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="UPDATE_DATE" Type="DateTime" Precision="3" />
+          <Property Name="DELETE_USER" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="DELETE_DATE" Type="DateTime" Precision="3" />
+          <Property Name="STATUS" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="REJECT_REASON" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="LOG_TIMESTAMP" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="TRN_REGISTRATION" Relationship="Self.FK_TRN_REGISTRATION_LOG_T_ID" FromRole="TRN_REGISTRATION_LOG" ToRole="TRN_REGISTRATION" />
+        </EntityType>
+        <EntityType Name="TRN_THEATRE_DOCS">
+          <Key>
+            <PropertyRef Name="TH_DOC_ID" />
+          </Key>
+          <Property Name="TH_DOC_ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="DOC_FILEPATH" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="T_ID" Type="Int32" />
+          <Property Name="CREATE_DATE" Type="DateTime" Precision="0" />
+          <Property Name="CREATE_USER" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="UPDATE_DATE" Type="DateTime" Precision="0" />
+          <Property Name="UPDATE_USER" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="DELETE_DATE" Type="DateTime" Precision="0" />
+          <Property Name="DELETE_USER" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ACTIVE" Type="Boolean" Nullable="false" />
+          <Property Name="DOC_ID" Type="Int32" />
+          <NavigationProperty Name="MST_DOCS" Relationship="Self.FK_TRN_THEATRE_DOCS_MST_DOCS" FromRole="TRN_THEATRE_DOCS" ToRole="MST_DOCS" />
+          <NavigationProperty Name="TRN_REGISTRATION" Relationship="Self.FK_T_ID_REG" FromRole="TRN_THEATRE_DOCS" ToRole="TRN_REGISTRATION" />
+          <NavigationProperty Name="TRN_THEATRE_DOCS_LOG" Relationship="Self.FK_TRN_THEATRE_DOCS_LOG_TH_DOC_ID" FromRole="TRN_THEATRE_DOCS" ToRole="TRN_THEATRE_DOCS_LOG" />
+        </EntityType>
+        <EntityType Name="TRN_THEATRE_DOCS_LOG">
+          <Key>
+            <PropertyRef Name="TRN_THEATRE_DOCS_LOG_ID" />
+          </Key>
+          <Property Name="TRN_THEATRE_DOCS_LOG_ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="TH_DOC_ID" Type="Int32" Nullable="false" />
+          <Property Name="DOC_FILEPATH" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="T_ID" Type="Int32" Nullable="false" />
+          <Property Name="CREATE_DATE" Type="DateTime" Precision="3" />
+          <Property Name="CREATE_USER" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="UPDATE_DATE" Type="DateTime" Precision="3" />
+          <Property Name="UPDATE_USER" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="DELETE_DATE" Type="DateTime" Precision="3" />
+          <Property Name="DELETE_USER" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="ACTIVE" Type="Boolean" Nullable="false" />
+          <Property Name="DOC_ID" Type="Int32" />
+          <Property Name="ACTION_TYPE" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="CHANGED_BY" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="CHANGED_ON" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="TRN_REGISTRATION" Relationship="Self.FK_TRN_THEATRE_DOCS_LOG_T_ID" FromRole="TRN_THEATRE_DOCS_LOG" ToRole="TRN_REGISTRATION" />
+          <NavigationProperty Name="TRN_THEATRE_DOCS" Relationship="Self.FK_TRN_THEATRE_DOCS_LOG_TH_DOC_ID" FromRole="TRN_THEATRE_DOCS_LOG" ToRole="TRN_THEATRE_DOCS" />
+        </EntityType>
+        <EntityType Name="USER_LOGIN">
+          <Key>
+            <PropertyRef Name="U_ID" />
+          </Key>
+          <Property Name="U_ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="PHONE_NUMBER" Type="String" MaxLength="15" FixedLength="false" Unicode="false" Nullable="false" />
+        </EntityType>
+        <EntityType Name="DEPT_LOGIN_DETAILS">
+          <Key>
+            <PropertyRef Name="DEPT_ID" />
+          </Key>
+          <Property Name="DEPT_ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="DEPT_USERNAME" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="DEPT_PASS" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="LOGIN_DETAILS">
+          <Key>
+            <PropertyRef Name="LOG_ID" />
+          </Key>
+          <Property Name="LOG_ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="PHONE_NUMBER" Type="Int32" />
+        </EntityType>
+        <EntityType Name="MST_STATUS">
+          <Key>
+            <PropertyRef Name="STATUS_ID" />
+          </Key>
+          <Property Name="STATUS_ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="STATUS_TYPE" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="T_ID" Type="Int32" />
+          <NavigationProperty Name="TRN_REGISTRATION" Relationship="Self.FK_Status_TRN_Registration" FromRole="MST_STATUS" ToRole="TRN_REGISTRATION" />
+        </EntityType>
+        <EntityType Name="PENDING_DUES">
+          <Key>
+            <PropertyRef Name="DUE_ID" />
+          </Key>
+          <Property Name="DUE_ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="D_MON" Type="String" MaxLength="15" FixedLength="false" Unicode="false" />
+          <Property Name="D_YEAR" Type="String" MaxLength="15" FixedLength="false" Unicode="false" />
+          <Property Name="D_STATUS" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="D_ACTIVE" Type="Boolean" />
+        </EntityType>
+        <EntityType Name="TRN_SCREEN_TAX_PRICE">
+          <Key>
+            <PropertyRef Name="PRICE_ID" />
+          </Key>
+          <Property Name="PRICE_ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="SCREEN_TYPE" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="SCREEN_PRICE" Type="Int32" />
+        </EntityType>
+        <Association Name="FK_DOC_ID">
+          <End Role="MST_DOCS" Type="Self.MST_DOCS" Multiplicity="0..1" />
+          <End Role="MST_DOC_SERVICE_MPG" Type="Self.MST_DOC_SERVICE_MPG" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MST_DOCS">
+              <PropertyRef Name="DOC_ID" />
+            </Principal>
+            <Dependent Role="MST_DOC_SERVICE_MPG">
+              <PropertyRef Name="DOC_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_S_SERVICE_ID">
+          <End Role="MST_SERVICE" Type="Self.MST_SERVICE" Multiplicity="0..1" />
+          <End Role="MST_DOC_SERVICE_MPG" Type="Self.MST_DOC_SERVICE_MPG" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MST_SERVICE">
+              <PropertyRef Name="S_SERVICE_ID" />
+            </Principal>
+            <Dependent Role="MST_DOC_SERVICE_MPG">
+              <PropertyRef Name="S_SERVICE_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_TRN_THEATRE_DOCS_MST_DOCS">
+          <End Role="MST_DOCS" Type="Self.MST_DOCS" Multiplicity="0..1" />
+          <End Role="TRN_THEATRE_DOCS" Type="Self.TRN_THEATRE_DOCS" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MST_DOCS">
+              <PropertyRef Name="DOC_ID" />
+            </Principal>
+            <Dependent Role="TRN_THEATRE_DOCS">
+              <PropertyRef Name="DOC_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__NO_OF_SCRE__T_ID__145C0A3F">
+          <End Role="TRN_REGISTRATION" Type="Self.TRN_REGISTRATION" Multiplicity="1" />
+          <End Role="NO_OF_SCREENS" Type="Self.NO_OF_SCREENS" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TRN_REGISTRATION">
+              <PropertyRef Name="T_ID" />
+            </Principal>
+            <Dependent Role="NO_OF_SCREENS">
+              <PropertyRef Name="T_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_NO_OF_SCREENS_LOG_SCREEN_ID">
+          <End Role="NO_OF_SCREENS" Type="Self.NO_OF_SCREENS" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="NO_OF_SCREENS_LOG" Type="Self.NO_OF_SCREENS_LOG" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="NO_OF_SCREENS">
+              <PropertyRef Name="SCREEN_ID" />
+            </Principal>
+            <Dependent Role="NO_OF_SCREENS_LOG">
+              <PropertyRef Name="SCREEN_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SCREEN_ID">
+          <End Role="NO_OF_SCREENS" Type="Self.NO_OF_SCREENS" Multiplicity="1" />
+          <End Role="NO_OF_SCREENS_TAX" Type="Self.NO_OF_SCREENS_TAX" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="NO_OF_SCREENS">
+              <PropertyRef Name="SCREEN_ID" />
+            </Principal>
+            <Dependent Role="NO_OF_SCREENS_TAX">
+              <PropertyRef Name="T_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_NO_OF_SCREENS_LOG_T_ID">
+          <End Role="TRN_REGISTRATION" Type="Self.TRN_REGISTRATION" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="NO_OF_SCREENS_LOG" Type="Self.NO_OF_SCREENS_LOG" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TRN_REGISTRATION">
+              <PropertyRef Name="T_ID" />
+            </Principal>
+            <Dependent Role="NO_OF_SCREENS_LOG">
+              <PropertyRef Name="T_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_NO_OF_SCREENS_TAX_TAXID">
+          <End Role="THEATER_TAX_PAYMENT" Type="Self.THEATER_TAX_PAYMENT" Multiplicity="1" />
+          <End Role="NO_OF_SCREENS_TAX" Type="Self.NO_OF_SCREENS_TAX" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="THEATER_TAX_PAYMENT">
+              <PropertyRef Name="TAX_ID" />
+            </Principal>
+            <Dependent Role="NO_OF_SCREENS_TAX">
+              <PropertyRef Name="TAX_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_NO_OF_SCREENS_TAX_TID">
+          <End Role="TRN_REGISTRATION" Type="Self.TRN_REGISTRATION" Multiplicity="1" />
+          <End Role="NO_OF_SCREENS_TAX" Type="Self.NO_OF_SCREENS_TAX" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TRN_REGISTRATION">
+              <PropertyRef Name="T_ID" />
+            </Principal>
+            <Dependent Role="NO_OF_SCREENS_TAX">
+              <PropertyRef Name="T_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__PAYMENT_HI__T_ID__75A278F5">
+          <End Role="TRN_REGISTRATION" Type="Self.TRN_REGISTRATION" Multiplicity="0..1" />
+          <End Role="PAYMENT_HISTORY" Type="Self.PAYMENT_HISTORY" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TRN_REGISTRATION">
+              <PropertyRef Name="T_ID" />
+            </Principal>
+            <Dependent Role="PAYMENT_HISTORY">
+              <PropertyRef Name="T_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PAY_T_ID">
+          <End Role="TRN_REGISTRATION" Type="Self.TRN_REGISTRATION" Multiplicity="1" />
+          <End Role="PAYMENTLIST" Type="Self.PAYMENTLIST" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TRN_REGISTRATION">
+              <PropertyRef Name="T_ID" />
+            </Principal>
+            <Dependent Role="PAYMENTLIST">
+              <PropertyRef Name="T_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PENDINGDUEADMIN_TRN_REGISTRATION">
+          <End Role="TRN_REGISTRATION" Type="Self.TRN_REGISTRATION" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="PENDINGDUEADMIN" Type="Self.PENDINGDUEADMIN" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TRN_REGISTRATION">
+              <PropertyRef Name="T_ID" />
+            </Principal>
+            <Dependent Role="PENDINGDUEADMIN">
+              <PropertyRef Name="T_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_T_ID">
+          <End Role="TRN_REGISTRATION" Type="Self.TRN_REGISTRATION" Multiplicity="0..1" />
+          <End Role="RECEIPT_FILTER" Type="Self.RECEIPT_FILTER" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TRN_REGISTRATION">
+              <PropertyRef Name="T_ID" />
+            </Principal>
+            <Dependent Role="RECEIPT_FILTER">
+              <PropertyRef Name="T_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_TReceipt_TRNRegistration">
+          <End Role="TRN_REGISTRATION" Type="Self.TRN_REGISTRATION" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="T_RECEIPT" Type="Self.T_RECEIPT" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TRN_REGISTRATION">
+              <PropertyRef Name="T_ID" />
+            </Principal>
+            <Dependent Role="T_RECEIPT">
+              <PropertyRef Name="T_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_TAX_TID">
+          <End Role="TRN_REGISTRATION" Type="Self.TRN_REGISTRATION" Multiplicity="1" />
+          <End Role="THEATER_TAX_PAYMENT" Type="Self.THEATER_TAX_PAYMENT" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TRN_REGISTRATION">
+              <PropertyRef Name="T_ID" />
+            </Principal>
+            <Dependent Role="THEATER_TAX_PAYMENT">
+              <PropertyRef Name="T_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Status_TRN_Registration">
+          <End Role="TRN_REGISTRATION" Type="Self.TRN_REGISTRATION" Multiplicity="0..1" />
+          <End Role="MST_STATUS" Type="Self.MST_STATUS" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TRN_REGISTRATION">
+              <PropertyRef Name="T_ID" />
+            </Principal>
+            <Dependent Role="MST_STATUS">
+              <PropertyRef Name="T_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_T_ID_REG">
+          <End Role="TRN_REGISTRATION" Type="Self.TRN_REGISTRATION" Multiplicity="0..1" />
+          <End Role="TRN_THEATRE_DOCS" Type="Self.TRN_THEATRE_DOCS" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TRN_REGISTRATION">
+              <PropertyRef Name="T_ID" />
+            </Principal>
+            <Dependent Role="TRN_THEATRE_DOCS">
+              <PropertyRef Name="T_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_TRN_REGISTRATION_LOG_T_ID">
+          <End Role="TRN_REGISTRATION" Type="Self.TRN_REGISTRATION" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="TRN_REGISTRATION_LOG" Type="Self.TRN_REGISTRATION_LOG" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TRN_REGISTRATION">
+              <PropertyRef Name="T_ID" />
+            </Principal>
+            <Dependent Role="TRN_REGISTRATION_LOG">
+              <PropertyRef Name="T_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_TRN_THEATRE_DOCS_LOG_T_ID">
+          <End Role="TRN_REGISTRATION" Type="Self.TRN_REGISTRATION" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="TRN_THEATRE_DOCS_LOG" Type="Self.TRN_THEATRE_DOCS_LOG" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TRN_REGISTRATION">
+              <PropertyRef Name="T_ID" />
+            </Principal>
+            <Dependent Role="TRN_THEATRE_DOCS_LOG">
+              <PropertyRef Name="T_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_TRN_THEATRE_DOCS_LOG_TH_DOC_ID">
+          <End Role="TRN_THEATRE_DOCS" Type="Self.TRN_THEATRE_DOCS" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="TRN_THEATRE_DOCS_LOG" Type="Self.TRN_THEATRE_DOCS_LOG" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TRN_THEATRE_DOCS">
+              <PropertyRef Name="TH_DOC_ID" />
+            </Principal>
+            <Dependent Role="TRN_THEATRE_DOCS_LOG">
+              <PropertyRef Name="TH_DOC_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="THEATER_MODULEEntities2" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="ActionRequests" EntityType="Self.ActionRequest" />
+          <EntitySet Name="DEPARTMENT_LOGIN" EntityType="Self.DEPARTMENT_LOGIN" />
+          <EntitySet Name="MST_DOC_SERVICE_MPG" EntityType="Self.MST_DOC_SERVICE_MPG" />
+          <EntitySet Name="MST_DOCS" EntityType="Self.MST_DOCS" />
+          <EntitySet Name="MST_SERVICE" EntityType="Self.MST_SERVICE" />
+          <EntitySet Name="NO_OF_SCREENS" EntityType="Self.NO_OF_SCREENS" />
+          <EntitySet Name="NO_OF_SCREENS_LOG" EntityType="Self.NO_OF_SCREENS_LOG" />
+          <EntitySet Name="NO_OF_SCREENS_TAX" EntityType="Self.NO_OF_SCREENS_TAX" />
+          <EntitySet Name="PAYMENT_HISTORY" EntityType="Self.PAYMENT_HISTORY" />
+          <EntitySet Name="PAYMENTLISTs" EntityType="Self.PAYMENTLIST" />
+          <EntitySet Name="PENDINGDUEADMINs" EntityType="Self.PENDINGDUEADMIN" />
+          <EntitySet Name="RECEIPT_FILTER" EntityType="Self.RECEIPT_FILTER" />
+          <EntitySet Name="T_RECEIPT" EntityType="Self.T_RECEIPT" />
+          <EntitySet Name="THEATER_TAX_PAYMENT" EntityType="Self.THEATER_TAX_PAYMENT" />
+          <EntitySet Name="TRN_REGISTRATION" EntityType="Self.TRN_REGISTRATION" />
+          <EntitySet Name="TRN_REGISTRATION_LOG" EntityType="Self.TRN_REGISTRATION_LOG" />
+          <EntitySet Name="TRN_THEATRE_DOCS" EntityType="Self.TRN_THEATRE_DOCS" />
+          <EntitySet Name="TRN_THEATRE_DOCS_LOG" EntityType="Self.TRN_THEATRE_DOCS_LOG" />
+          <EntitySet Name="USER_LOGIN" EntityType="Self.USER_LOGIN" />
+          <EntitySet Name="DEPT_LOGIN_DETAILS" EntityType="Self.DEPT_LOGIN_DETAILS" />
+          <EntitySet Name="LOGIN_DETAILS" EntityType="Self.LOGIN_DETAILS" />
+          <EntitySet Name="MST_STATUS" EntityType="Self.MST_STATUS" />
+          <EntitySet Name="PENDING_DUES" EntityType="Self.PENDING_DUES" />
+          <EntitySet Name="TRN_SCREEN_TAX_PRICE" EntityType="Self.TRN_SCREEN_TAX_PRICE" />
+          <AssociationSet Name="FK_DOC_ID" Association="Self.FK_DOC_ID">
+            <End Role="MST_DOCS" EntitySet="MST_DOCS" />
+            <End Role="MST_DOC_SERVICE_MPG" EntitySet="MST_DOC_SERVICE_MPG" />
+          </AssociationSet>
+          <AssociationSet Name="FK_S_SERVICE_ID" Association="Self.FK_S_SERVICE_ID">
+            <End Role="MST_SERVICE" EntitySet="MST_SERVICE" />
+            <End Role="MST_DOC_SERVICE_MPG" EntitySet="MST_DOC_SERVICE_MPG" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TRN_THEATRE_DOCS_MST_DOCS" Association="Self.FK_TRN_THEATRE_DOCS_MST_DOCS">
+            <End Role="MST_DOCS" EntitySet="MST_DOCS" />
+            <End Role="TRN_THEATRE_DOCS" EntitySet="TRN_THEATRE_DOCS" />
+          </AssociationSet>
+          <AssociationSet Name="FK__NO_OF_SCRE__T_ID__145C0A3F" Association="Self.FK__NO_OF_SCRE__T_ID__145C0A3F">
+            <End Role="TRN_REGISTRATION" EntitySet="TRN_REGISTRATION" />
+            <End Role="NO_OF_SCREENS" EntitySet="NO_OF_SCREENS" />
+          </AssociationSet>
+          <AssociationSet Name="FK_NO_OF_SCREENS_LOG_SCREEN_ID" Association="Self.FK_NO_OF_SCREENS_LOG_SCREEN_ID">
+            <End Role="NO_OF_SCREENS" EntitySet="NO_OF_SCREENS" />
+            <End Role="NO_OF_SCREENS_LOG" EntitySet="NO_OF_SCREENS_LOG" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SCREEN_ID" Association="Self.FK_SCREEN_ID">
+            <End Role="NO_OF_SCREENS" EntitySet="NO_OF_SCREENS" />
+            <End Role="NO_OF_SCREENS_TAX" EntitySet="NO_OF_SCREENS_TAX" />
+          </AssociationSet>
+          <AssociationSet Name="FK_NO_OF_SCREENS_LOG_T_ID" Association="Self.FK_NO_OF_SCREENS_LOG_T_ID">
+            <End Role="TRN_REGISTRATION" EntitySet="TRN_REGISTRATION" />
+            <End Role="NO_OF_SCREENS_LOG" EntitySet="NO_OF_SCREENS_LOG" />
+          </AssociationSet>
+          <AssociationSet Name="FK_NO_OF_SCREENS_TAX_TAXID" Association="Self.FK_NO_OF_SCREENS_TAX_TAXID">
+            <End Role="THEATER_TAX_PAYMENT" EntitySet="THEATER_TAX_PAYMENT" />
+            <End Role="NO_OF_SCREENS_TAX" EntitySet="NO_OF_SCREENS_TAX" />
+          </AssociationSet>
+          <AssociationSet Name="FK_NO_OF_SCREENS_TAX_TID" Association="Self.FK_NO_OF_SCREENS_TAX_TID">
+            <End Role="TRN_REGISTRATION" EntitySet="TRN_REGISTRATION" />
+            <End Role="NO_OF_SCREENS_TAX" EntitySet="NO_OF_SCREENS_TAX" />
+          </AssociationSet>
+          <AssociationSet Name="FK__PAYMENT_HI__T_ID__75A278F5" Association="Self.FK__PAYMENT_HI__T_ID__75A278F5">
+            <End Role="TRN_REGISTRATION" EntitySet="TRN_REGISTRATION" />
+            <End Role="PAYMENT_HISTORY" EntitySet="PAYMENT_HISTORY" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PAY_T_ID" Association="Self.FK_PAY_T_ID">
+            <End Role="TRN_REGISTRATION" EntitySet="TRN_REGISTRATION" />
+            <End Role="PAYMENTLIST" EntitySet="PAYMENTLISTs" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PENDINGDUEADMIN_TRN_REGISTRATION" Association="Self.FK_PENDINGDUEADMIN_TRN_REGISTRATION">
+            <End Role="TRN_REGISTRATION" EntitySet="TRN_REGISTRATION" />
+            <End Role="PENDINGDUEADMIN" EntitySet="PENDINGDUEADMINs" />
+          </AssociationSet>
+          <AssociationSet Name="FK_T_ID" Association="Self.FK_T_ID">
+            <End Role="TRN_REGISTRATION" EntitySet="TRN_REGISTRATION" />
+            <End Role="RECEIPT_FILTER" EntitySet="RECEIPT_FILTER" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TReceipt_TRNRegistration" Association="Self.FK_TReceipt_TRNRegistration">
+            <End Role="TRN_REGISTRATION" EntitySet="TRN_REGISTRATION" />
+            <End Role="T_RECEIPT" EntitySet="T_RECEIPT" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TAX_TID" Association="Self.FK_TAX_TID">
+            <End Role="TRN_REGISTRATION" EntitySet="TRN_REGISTRATION" />
+            <End Role="THEATER_TAX_PAYMENT" EntitySet="THEATER_TAX_PAYMENT" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Status_TRN_Registration" Association="Self.FK_Status_TRN_Registration">
+            <End Role="TRN_REGISTRATION" EntitySet="TRN_REGISTRATION" />
+            <End Role="MST_STATUS" EntitySet="MST_STATUS" />
+          </AssociationSet>
+          <AssociationSet Name="FK_T_ID_REG" Association="Self.FK_T_ID_REG">
+            <End Role="TRN_REGISTRATION" EntitySet="TRN_REGISTRATION" />
+            <End Role="TRN_THEATRE_DOCS" EntitySet="TRN_THEATRE_DOCS" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TRN_REGISTRATION_LOG_T_ID" Association="Self.FK_TRN_REGISTRATION_LOG_T_ID">
+            <End Role="TRN_REGISTRATION" EntitySet="TRN_REGISTRATION" />
+            <End Role="TRN_REGISTRATION_LOG" EntitySet="TRN_REGISTRATION_LOG" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TRN_THEATRE_DOCS_LOG_T_ID" Association="Self.FK_TRN_THEATRE_DOCS_LOG_T_ID">
+            <End Role="TRN_REGISTRATION" EntitySet="TRN_REGISTRATION" />
+            <End Role="TRN_THEATRE_DOCS_LOG" EntitySet="TRN_THEATRE_DOCS_LOG" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TRN_THEATRE_DOCS_LOG_TH_DOC_ID" Association="Self.FK_TRN_THEATRE_DOCS_LOG_TH_DOC_ID">
+            <End Role="TRN_THEATRE_DOCS" EntitySet="TRN_THEATRE_DOCS" />
+            <End Role="TRN_THEATRE_DOCS_LOG" EntitySet="TRN_THEATRE_DOCS_LOG" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="THEATER_MODULEModelStoreContainer" CdmEntityContainer="THEATER_MODULEEntities2">
+          <EntitySetMapping Name="ActionRequests">
+            <EntityTypeMapping TypeName="THEATER_MODULEModel.ActionRequest">
+              <MappingFragment StoreEntitySet="ActionRequests">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="T_NAME" ColumnName="T_NAME" />
+                <ScalarProperty Name="T_OWNER_NAME" ColumnName="T_OWNER_NAME" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DEPARTMENT_LOGIN">
+            <EntityTypeMapping TypeName="THEATER_MODULEModel.DEPARTMENT_LOGIN">
+              <MappingFragment StoreEntitySet="DEPARTMENT_LOGIN">
+                <ScalarProperty Name="D_ID" ColumnName="D_ID" />
+                <ScalarProperty Name="USERNAME" ColumnName="USERNAME" />
+                <ScalarProperty Name="PASSWORD" ColumnName="PASSWORD" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="MST_DOC_SERVICE_MPG">
+            <EntityTypeMapping TypeName="THEATER_MODULEModel.MST_DOC_SERVICE_MPG">
+              <MappingFragment StoreEntitySet="MST_DOC_SERVICE_MPG">
+                <ScalarProperty Name="MPG_ID" ColumnName="MPG_ID" />
+                <ScalarProperty Name="MPG_ACTIVE" ColumnName="MPG_ACTIVE" />
+                <ScalarProperty Name="S_SERVICE_ID" ColumnName="S_SERVICE_ID" />
+                <ScalarProperty Name="DOC_ID" ColumnName="DOC_ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="MST_DOCS">
+            <EntityTypeMapping TypeName="THEATER_MODULEModel.MST_DOCS">
+              <MappingFragment StoreEntitySet="MST_DOCS">
+                <ScalarProperty Name="DOC_ID" ColumnName="DOC_ID" />
+                <ScalarProperty Name="DOC_NAME" ColumnName="DOC_NAME" />
+                <ScalarProperty Name="DOC_ACTIVE" ColumnName="DOC_ACTIVE" />
+                <ScalarProperty Name="FILE_SIZE_MB" ColumnName="FILE_SIZE_MB" />
+                <ScalarProperty Name="FILE_TYPE" ColumnName="FILE_TYPE" />
+                <ScalarProperty Name="MANDATORY_FLAG" ColumnName="MANDATORY_FLAG" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="MST_SERVICE">
+            <EntityTypeMapping TypeName="THEATER_MODULEModel.MST_SERVICE">
+              <MappingFragment StoreEntitySet="MST_SERVICE">
+                <ScalarProperty Name="S_SERVICE_ID" ColumnName="S_SERVICE_ID" />
+                <ScalarProperty Name="S_SERVICE_NAME" ColumnName="S_SERVICE_NAME" />
+                <ScalarProperty Name="S_ACTIVE" ColumnName="S_ACTIVE" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="NO_OF_SCREENS">
+            <EntityTypeMapping TypeName="THEATER_MODULEModel.NO_OF_SCREENS">
+              <MappingFragment StoreEntitySet="NO_OF_SCREENS">
+                <ScalarProperty Name="SCREEN_ID" ColumnName="SCREEN_ID" />
+                <ScalarProperty Name="T_ID" ColumnName="T_ID" />
+                <ScalarProperty Name="AUDIENCE_CAPACITY" ColumnName="AUDIENCE_CAPACITY" />
+                <ScalarProperty Name="SCREEN_TYPE" ColumnName="SCREEN_TYPE" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="NO_OF_SCREENS_LOG">
+            <EntityTypeMapping TypeName="THEATER_MODULEModel.NO_OF_SCREENS_LOG">
+              <MappingFragment StoreEntitySet="NO_OF_SCREENS_LOG">
+                <ScalarProperty Name="NO_OF_SCREENS_LOG_ID" ColumnName="NO_OF_SCREENS_LOG_ID" />
+                <ScalarProperty Name="SCREEN_ID" ColumnName="SCREEN_ID" />
+                <ScalarProperty Name="T_ID" ColumnName="T_ID" />
+                <ScalarProperty Name="AUDIENCE_CAPACITY" ColumnName="AUDIENCE_CAPACITY" />
+                <ScalarProperty Name="SCREEN_TYPE" ColumnName="SCREEN_TYPE" />
+                <ScalarProperty Name="ACTION_TYPE" ColumnName="ACTION_TYPE" />
+                <ScalarProperty Name="CHANGED_BY" ColumnName="CHANGED_BY" />
+                <ScalarProperty Name="CHANGED_ON" ColumnName="CHANGED_ON" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="NO_OF_SCREENS_TAX">
+            <EntityTypeMapping TypeName="THEATER_MODULEModel.NO_OF_SCREENS_TAX">
+              <MappingFragment StoreEntitySet="NO_OF_SCREENS_TAX">
+                <ScalarProperty Name="ACTUAL_SHOW" ColumnName="ACTUAL_SHOW" />
+                <ScalarProperty Name="RATE_PER_SCREEN" ColumnName="RATE_PER_SCREEN" />
+                <ScalarProperty Name="S_TAX_ID" ColumnName="S_TAX_ID" />
+                <ScalarProperty Name="T_ID" ColumnName="T_ID" />
+                <ScalarProperty Name="TAX_ID" ColumnName="TAX_ID" />
+                <ScalarProperty Name="SCREEN_TYPE" ColumnName="SCREEN_TYPE" />
+                <ScalarProperty Name="AMT_PER_SCREEN" ColumnName="AMT_PER_SCREEN" />
+                <ScalarProperty Name="CANCEL_SHOW" ColumnName="CANCEL_SHOW" />
+                <ScalarProperty Name="TOTAL_SHOW" ColumnName="TOTAL_SHOW" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PAYMENT_HISTORY">
+            <EntityTypeMapping TypeName="THEATER_MODULEModel.PAYMENT_HISTORY">
+              <MappingFragment StoreEntitySet="PAYMENT_HISTORY">
+                <ScalarProperty Name="PAYMENT_ID" ColumnName="PAYMENT_ID" />
+                <ScalarProperty Name="T_ID" ColumnName="T_ID" />
+                <ScalarProperty Name="STATUS" ColumnName="STATUS" />
+                <ScalarProperty Name="AMOUNT" ColumnName="AMOUNT" />
+                <ScalarProperty Name="PAYMENT_DATE" ColumnName="PAYMENT_DATE" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PAYMENTLISTs">
+            <EntityTypeMapping TypeName="THEATER_MODULEModel.PAYMENTLIST">
+              <MappingFragment StoreEntitySet="PAYMENTLIST">
+                <ScalarProperty Name="P_ID" ColumnName="P_ID" />
+                <ScalarProperty Name="T_ID" ColumnName="T_ID" />
+                <ScalarProperty Name="T_NAME" ColumnName="T_NAME" />
+                <ScalarProperty Name="OWNER_NAME" ColumnName="OWNER_NAME" />
+                <ScalarProperty Name="STARTDATE" ColumnName="STARTDATE" />
+                <ScalarProperty Name="ENDDATE" ColumnName="ENDDATE" />
+                <ScalarProperty Name="STATUS_PAYMENT" ColumnName="STATUS_PAYMENT" />
+                <ScalarProperty Name="AMOUNT" ColumnName="AMOUNT" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PENDINGDUEADMINs">
+            <EntityTypeMapping TypeName="THEATER_MODULEModel.PENDINGDUEADMIN">
+              <MappingFragment StoreEntitySet="PENDINGDUEADMIN">
+                <ScalarProperty Name="PD_ID" ColumnName="PD_ID" />
+                <ScalarProperty Name="T_ID" ColumnName="T_ID" />
+                <ScalarProperty Name="P_STATUS" ColumnName="P_STATUS" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="RECEIPT_FILTER">
+            <EntityTypeMapping TypeName="THEATER_MODULEModel.RECEIPT_FILTER">
+              <MappingFragment StoreEntitySet="RECEIPT_FILTER">
+                <ScalarProperty Name="RCPT_NO" ColumnName="RCPT_NO" />
+                <ScalarProperty Name="RCPT_GEN_DATE" ColumnName="RCPT_GEN_DATE" />
+                <ScalarProperty Name="T_ID" ColumnName="T_ID" />
+                <ScalarProperty Name="PAY_MODE" ColumnName="PAY_MODE" />
+                <ScalarProperty Name="STATUS" ColumnName="STATUS" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="T_RECEIPT">
+            <EntityTypeMapping TypeName="THEATER_MODULEModel.T_RECEIPT">
+              <MappingFragment StoreEntitySet="T_RECEIPT">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="TheaterName" ColumnName="TheaterName" />
+                <ScalarProperty Name="CustomerName" ColumnName="CustomerName" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="Address" ColumnName="Address" />
+                <ScalarProperty Name="ReceiptNo" ColumnName="ReceiptNo" />
+                <ScalarProperty Name="Date" ColumnName="Date" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Amount" ColumnName="Amount" />
+                <ScalarProperty Name="PaymentMode" ColumnName="PaymentMode" />
+                <ScalarProperty Name="T_ID" ColumnName="T_ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="THEATER_TAX_PAYMENT">
+            <EntityTypeMapping TypeName="THEATER_MODULEModel.THEATER_TAX_PAYMENT">
+              <MappingFragment StoreEntitySet="THEATER_TAX_PAYMENT">
+                <ScalarProperty Name="TAX_ID" ColumnName="TAX_ID" />
+                <ScalarProperty Name="T_ID" ColumnName="T_ID" />
+                <ScalarProperty Name="PAYMENT_MONTH" ColumnName="PAYMENT_MONTH" />
+                <ScalarProperty Name="PAYMENT_YEAR" ColumnName="PAYMENT_YEAR" />
+                <ScalarProperty Name="TAX_AMOUNT" ColumnName="TAX_AMOUNT" />
+                <ScalarProperty Name="SHOW_STATEMENT" ColumnName="SHOW_STATEMENT" />
+                <ScalarProperty Name="CREATE_USER" ColumnName="CREATE_USER" />
+                <ScalarProperty Name="CREATE_DATE" ColumnName="CREATE_DATE" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TRN_REGISTRATION">
+            <EntityTypeMapping TypeName="THEATER_MODULEModel.TRN_REGISTRATION">
+              <MappingFragment StoreEntitySet="TRN_REGISTRATION">
+                <ScalarProperty Name="REG_ID" ColumnName="REG_ID" />
+                <ScalarProperty Name="T_ID" ColumnName="T_ID" />
+                <ScalarProperty Name="T_NAME" ColumnName="T_NAME" />
+                <ScalarProperty Name="T_ADDRESS" ColumnName="T_ADDRESS" />
+                <ScalarProperty Name="T_ACTIVE" ColumnName="T_ACTIVE" />
+                <ScalarProperty Name="T_OWNER_NAME" ColumnName="T_OWNER_NAME" />
+                <ScalarProperty Name="T_OWNER_NUMBER" ColumnName="T_OWNER_NUMBER" />
+                <ScalarProperty Name="T_OWNER_EMAIL" ColumnName="T_OWNER_EMAIL" />
+                <ScalarProperty Name="T_COMMENCEMENT_DATE" ColumnName="T_COMMENCEMENT_DATE" />
+                <ScalarProperty Name="T_CITY" ColumnName="T_CITY" />
+                <ScalarProperty Name="T_ZONE" ColumnName="T_ZONE" />
+                <ScalarProperty Name="T_WARD" ColumnName="T_WARD" />
+                <ScalarProperty Name="T_TENAMENT_NO" ColumnName="T_TENAMENT_NO" />
+                <ScalarProperty Name="T_PEC_NO" ColumnName="T_PEC_NO" />
+                <ScalarProperty Name="T_PRC_NO" ColumnName="T_PRC_NO" />
+                <ScalarProperty Name="T_TAX_PAYING_OFFLINE" ColumnName="T_TAX_PAYING_OFFLINE" />
+                <ScalarProperty Name="OFFLINE_TAX_PAYMENT" ColumnName="OFFLINE_TAX_PAYMENT" />
+                <ScalarProperty Name="OFFLINE_TAX_PAID_DATE" ColumnName="OFFLINE_TAX_PAID_DATE" />
+                <ScalarProperty Name="OFFLINE_DUE_DATE" ColumnName="OFFLINE_DUE_DATE" />
+                <ScalarProperty Name="CREATE_USER" ColumnName="CREATE_USER" />
+                <ScalarProperty Name="CREATE_DATE" ColumnName="CREATE_DATE" />
+                <ScalarProperty Name="UPDATE_USER" ColumnName="UPDATE_USER" />
+                <ScalarProperty Name="UPDATE_DATE" ColumnName="UPDATE_DATE" />
+                <ScalarProperty Name="DELETE_USER" ColumnName="DELETE_USER" />
+                <ScalarProperty Name="DELETE_DATE" ColumnName="DELETE_DATE" />
+                <ScalarProperty Name="STATUS" ColumnName="STATUS" />
+                <ScalarProperty Name="REJECT_REASON" ColumnName="REJECT_REASON" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TRN_REGISTRATION_LOG">
+            <EntityTypeMapping TypeName="THEATER_MODULEModel.TRN_REGISTRATION_LOG">
+              <MappingFragment StoreEntitySet="TRN_REGISTRATION_LOG">
+                <ScalarProperty Name="TRN_REGISTRATION_LOG_ID" ColumnName="TRN_REGISTRATION_LOG_ID" />
+                <ScalarProperty Name="T_ID" ColumnName="T_ID" />
+                <ScalarProperty Name="ACTION_TYPE" ColumnName="ACTION_TYPE" />
+                <ScalarProperty Name="T_NAME" ColumnName="T_NAME" />
+                <ScalarProperty Name="T_ADDRESS" ColumnName="T_ADDRESS" />
+                <ScalarProperty Name="T_ACTIVE" ColumnName="T_ACTIVE" />
+                <ScalarProperty Name="T_OWNER_NAME" ColumnName="T_OWNER_NAME" />
+                <ScalarProperty Name="T_OWNER_NUMBER" ColumnName="T_OWNER_NUMBER" />
+                <ScalarProperty Name="T_OWNER_EMAIL" ColumnName="T_OWNER_EMAIL" />
+                <ScalarProperty Name="T_COMMENCEMENT_DATE" ColumnName="T_COMMENCEMENT_DATE" />
+                <ScalarProperty Name="T_CITY" ColumnName="T_CITY" />
+                <ScalarProperty Name="T_ZONE" ColumnName="T_ZONE" />
+                <ScalarProperty Name="T_WARD" ColumnName="T_WARD" />
+                <ScalarProperty Name="T_TENAMENT_NO" ColumnName="T_TENAMENT_NO" />
+                <ScalarProperty Name="T_PEC_NO" ColumnName="T_PEC_NO" />
+                <ScalarProperty Name="T_PRC_NO" ColumnName="T_PRC_NO" />
+                <ScalarProperty Name="T_TAX_PAYING_OFFLINE" ColumnName="T_TAX_PAYING_OFFLINE" />
+                <ScalarProperty Name="OFFLINE_TAX_PAYMENT" ColumnName="OFFLINE_TAX_PAYMENT" />
+                <ScalarProperty Name="OFFLINE_TAX_PAID_DATE" ColumnName="OFFLINE_TAX_PAID_DATE" />
+                <ScalarProperty Name="OFFLINE_DUE_DATE" ColumnName="OFFLINE_DUE_DATE" />
+                <ScalarProperty Name="CREATE_USER" ColumnName="CREATE_USER" />
+                <ScalarProperty Name="CREATE_DATE" ColumnName="CREATE_DATE" />
+                <ScalarProperty Name="UPDATE_USER" ColumnName="UPDATE_USER" />
+                <ScalarProperty Name="UPDATE_DATE" ColumnName="UPDATE_DATE" />
+                <ScalarProperty Name="DELETE_USER" ColumnName="DELETE_USER" />
+                <ScalarProperty Name="DELETE_DATE" ColumnName="DELETE_DATE" />
+                <ScalarProperty Name="STATUS" ColumnName="STATUS" />
+                <ScalarProperty Name="REJECT_REASON" ColumnName="REJECT_REASON" />
+                <ScalarProperty Name="LOG_TIMESTAMP" ColumnName="LOG_TIMESTAMP" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TRN_THEATRE_DOCS">
+            <EntityTypeMapping TypeName="THEATER_MODULEModel.TRN_THEATRE_DOCS">
+              <MappingFragment StoreEntitySet="TRN_THEATRE_DOCS">
+                <ScalarProperty Name="TH_DOC_ID" ColumnName="TH_DOC_ID" />
+                <ScalarProperty Name="DOC_FILEPATH" ColumnName="DOC_FILEPATH" />
+                <ScalarProperty Name="T_ID" ColumnName="T_ID" />
+                <ScalarProperty Name="CREATE_DATE" ColumnName="CREATE_DATE" />
+                <ScalarProperty Name="CREATE_USER" ColumnName="CREATE_USER" />
+                <ScalarProperty Name="UPDATE_DATE" ColumnName="UPDATE_DATE" />
+                <ScalarProperty Name="UPDATE_USER" ColumnName="UPDATE_USER" />
+                <ScalarProperty Name="DELETE_DATE" ColumnName="DELETE_DATE" />
+                <ScalarProperty Name="DELETE_USER" ColumnName="DELETE_USER" />
+                <ScalarProperty Name="ACTIVE" ColumnName="ACTIVE" />
+                <ScalarProperty Name="DOC_ID" ColumnName="DOC_ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TRN_THEATRE_DOCS_LOG">
+            <EntityTypeMapping TypeName="THEATER_MODULEModel.TRN_THEATRE_DOCS_LOG">
+              <MappingFragment StoreEntitySet="TRN_THEATRE_DOCS_LOG">
+                <ScalarProperty Name="TRN_THEATRE_DOCS_LOG_ID" ColumnName="TRN_THEATRE_DOCS_LOG_ID" />
+                <ScalarProperty Name="TH_DOC_ID" ColumnName="TH_DOC_ID" />
+                <ScalarProperty Name="DOC_FILEPATH" ColumnName="DOC_FILEPATH" />
+                <ScalarProperty Name="T_ID" ColumnName="T_ID" />
+                <ScalarProperty Name="CREATE_DATE" ColumnName="CREATE_DATE" />
+                <ScalarProperty Name="CREATE_USER" ColumnName="CREATE_USER" />
+                <ScalarProperty Name="UPDATE_DATE" ColumnName="UPDATE_DATE" />
+                <ScalarProperty Name="UPDATE_USER" ColumnName="UPDATE_USER" />
+                <ScalarProperty Name="DELETE_DATE" ColumnName="DELETE_DATE" />
+                <ScalarProperty Name="DELETE_USER" ColumnName="DELETE_USER" />
+                <ScalarProperty Name="ACTIVE" ColumnName="ACTIVE" />
+                <ScalarProperty Name="DOC_ID" ColumnName="DOC_ID" />
+                <ScalarProperty Name="ACTION_TYPE" ColumnName="ACTION_TYPE" />
+                <ScalarProperty Name="CHANGED_BY" ColumnName="CHANGED_BY" />
+                <ScalarProperty Name="CHANGED_ON" ColumnName="CHANGED_ON" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="USER_LOGIN">
+            <EntityTypeMapping TypeName="THEATER_MODULEModel.USER_LOGIN">
+              <MappingFragment StoreEntitySet="USER_LOGIN">
+                <ScalarProperty Name="U_ID" ColumnName="U_ID" />
+                <ScalarProperty Name="PHONE_NUMBER" ColumnName="PHONE_NUMBER" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DEPT_LOGIN_DETAILS">
+            <EntityTypeMapping TypeName="THEATER_MODULEModel.DEPT_LOGIN_DETAILS">
+              <MappingFragment StoreEntitySet="DEPT_LOGIN_DETAILS">
+                <ScalarProperty Name="DEPT_ID" ColumnName="DEPT_ID" />
+                <ScalarProperty Name="DEPT_USERNAME" ColumnName="DEPT_USERNAME" />
+                <ScalarProperty Name="DEPT_PASS" ColumnName="DEPT_PASS" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="LOGIN_DETAILS">
+            <EntityTypeMapping TypeName="THEATER_MODULEModel.LOGIN_DETAILS">
+              <MappingFragment StoreEntitySet="LOGIN_DETAILS">
+                <ScalarProperty Name="LOG_ID" ColumnName="LOG_ID" />
+                <ScalarProperty Name="PHONE_NUMBER" ColumnName="PHONE_NUMBER" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="MST_STATUS">
+            <EntityTypeMapping TypeName="THEATER_MODULEModel.MST_STATUS">
+              <MappingFragment StoreEntitySet="MST_STATUS">
+                <ScalarProperty Name="STATUS_ID" ColumnName="STATUS_ID" />
+                <ScalarProperty Name="STATUS_TYPE" ColumnName="STATUS_TYPE" />
+                <ScalarProperty Name="T_ID" ColumnName="T_ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PENDING_DUES">
+            <EntityTypeMapping TypeName="THEATER_MODULEModel.PENDING_DUES">
+              <MappingFragment StoreEntitySet="PENDING_DUES">
+                <ScalarProperty Name="DUE_ID" ColumnName="DUE_ID" />
+                <ScalarProperty Name="D_MON" ColumnName="D_MON" />
+                <ScalarProperty Name="D_YEAR" ColumnName="D_YEAR" />
+                <ScalarProperty Name="D_STATUS" ColumnName="D_STATUS" />
+                <ScalarProperty Name="D_ACTIVE" ColumnName="D_ACTIVE" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TRN_SCREEN_TAX_PRICE">
+            <EntityTypeMapping TypeName="THEATER_MODULEModel.TRN_SCREEN_TAX_PRICE">
+              <MappingFragment StoreEntitySet="TRN_SCREEN_TAX_PRICE">
+                <ScalarProperty Name="PRICE_ID" ColumnName="PRICE_ID" />
+                <ScalarProperty Name="SCREEN_TYPE" ColumnName="SCREEN_TYPE" />
+                <ScalarProperty Name="SCREEN_PRICE" ColumnName="SCREEN_PRICE" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

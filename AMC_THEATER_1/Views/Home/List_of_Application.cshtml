@@ -1,0 +1,18 @@
+﻿@model IEnumerable<AMC_THEATER_1.Models.TheaterViewModel>
+@{
+    ViewBag.CurrentAction = "List of Application";
+    ViewBag.ShowBasicNavbar = false;
+    ViewBag.ShowHomeIcon = true;
+
+    ViewBag.ShowNavbar = true;
+    ViewBag.ShowSideBar = true;
+}
+
+
+@if (ViewBag.Message != null)
+{
+    <div class="alert alert-warning">@ViewBag.Message</div>
+}
+
+<!-- Use the Common Table View -->
+@Html.Partial("CommonTableView", Model)

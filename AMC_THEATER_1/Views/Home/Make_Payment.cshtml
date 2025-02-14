@@ -1,0 +1,157 @@
+﻿@{
+    ViewBag.Title = "Make_Payment";
+    ViewBag.ShowBasicNavbar = true; // Show only the basic navbar
+    ViewBag.ShowHomeIcon = true;
+    ViewBag.ShowNavbar = true;
+
+
+    ViewBag.ShowSideBar = true;
+}
+
+<style>
+    .custom-navbar-brand span .text-muted {
+        font-size: 14px; /* Make the small text visually distinct */
+        color: gray !important; /* Ensure muted text remains gray */
+        margin-top: 2px; /* Add slight spacing between the main text and subtitle */
+        line-height: 1.1; /* Tighten line height for subtitle */
+    }
+</style>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Payment-Page</title>
+    <!-- Include Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body class="ms-5">
+    <div class="row setup-content mt-5 ms-5" id="step-3">
+        <div class="col-xs-12 ms-5 mt-5">
+            <div class="col-md-12 ms-2">
+                <div class="container d-flex justify-content-center align-items-center">
+
+                    <form class="row shadow p-4 bg-white rounded w-100" style="max-width: 700px;">
+                        <!-- Billing Address Section -->
+                        <div class="col-md-6">
+                            <h3 class="text-danger">Billing Address</h3>
+
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Full Name:</label>
+                                <input type="text" id="name" class="form-control" placeholder="Enter your full name" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email:</label>
+                                <input type="text" id="email" class="form-control" placeholder="Enter email address" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="address" class="form-label">Address:</label>
+                                <input type="text" id="address" class="form-control" placeholder="Enter address" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="city" class="form-label">City:</label>
+                                <input type="text" id="city" class="form-control" placeholder="Enter city" required>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="state" class="form-label">State:</label>
+                                    <input type="text" id="state" class="form-control" placeholder="Enter state" required>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="zip" class="form-label">Zip Code:</label>
+                                    <input type="number" id="zip" class="form-control" placeholder="123 456" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Payment Section -->
+                        <div class="col-md-6">
+                            <h3 class="text-danger">Payment</h3>
+
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Card Accepted:</label>
+                                <img src="https://media.geeksforgeeks.org/wp-content/uploads/20240715140014/Online-Payment-Project.webp" alt="credit/debit card image" class="img-fluid">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="cardName" class="form-label">Name On Card:</label>
+                                <input type="text" id="cardName" class="form-control" placeholder="Enter card name" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="cardNum" class="form-label">Credit Card Number:</label>
+                                <input type="text" id="cardNum" class="form-control" placeholder="1111-2222-3333-4444" maxlength="19" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="expMonth" class="form-label">Exp Month:</label>
+                                <select id="expMonth" class="form-select" required>
+                                    <option value="">Choose month</option>
+                                    <option value="January">January</option>
+                                    <option value="February">February</option>
+                                    <option value="March">March</option>
+                                    <option value="April">April</option>
+                                    <option value="May">May</option>
+                                    <option value="June">June</option>
+                                    <option value="July">July</option>
+                                    <option value="August">August</option>
+                                    <option value="September">September</option>
+                                    <option value="October">October</option>
+                                    <option value="November">November</option>
+                                    <option value="December">December</option>
+                                </select>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="expYear" class="form-label">Exp Year:</label>
+                                    <select id="expYear" class="form-select" required>
+                                        <option value="">Choose Year</option>
+                                        <option value="2023">2023</option>
+                                        <option value="2024">2024</option>
+                                        <option value="2025">2025</option>
+                                        <option value="2026">2026</option>
+                                        <option value="2027">2027</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="cvv" class="form-label">CVV:</label>
+                                    <input type="number" id="cvv" class="form-control" placeholder="1234" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 text-center">
+                            <a href="@Url.Action("Payment_Receipt","Home")" class="btn btn-primary w-100">Pay</a>
+                        </div>
+
+                    </form>
+                </div>
+
+                <!-- Include Bootstrap 5 JS -->
+                <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+                <script>
+                    let cardNumInput = document.querySelector('#cardNum');
+                    cardNumInput.addEventListener('keyup', () => {
+                        let cNumber = cardNumInput.value;
+                        cNumber = cNumber.replace(/\s/g, "");
+
+                        if (Number(cNumber)) {
+                            cNumber = cNumber.match(/.{1,4}/g);
+                            cNumber = cNumber.join(" ");
+                            cardNumInput.value = cNumber;
+                        }
+                    });
+                </script>
+</body>
+
+</html>

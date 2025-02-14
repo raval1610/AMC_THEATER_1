@@ -1,0 +1,138 @@
+﻿@model IEnumerable<AMC_THEATER_1.Models.PaymentHistoryViewModel>
+
+@{
+    ViewBag.ShowBasicNavbar = false;
+    ViewBag.ShowNavbar = true;
+    ViewBag.ShowSideBar = true;
+    ViewBag.ShowHomeIcon = true;
+    ViewBag.Module = true;
+    ViewBag.Login = false;
+    ViewBag.Title = "Payment History Filter";
+}
+
+<style>
+    .container {
+        margin-left: 160px; /* Set this to match the sidebar width */
+        transition: margin-left 0.3s;
+        padding: 15px;
+    }
+</style>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title</title>
+</head>
+<body>
+
+    <div class="container me-5 pe-5 justify-content-center">
+        <div class="w-100 pe-5">
+            <div class="me-5">
+                <h2 class="mb-1 text-center bg-light p-3 pe-5">Payment History</h2>
+            </div>
+            <div class="me-5">
+                <form id="filterForm" class="p-3 border border-dark bg-light" method="post" action="@Url.Action("PaymentHistoryFilter", "Home")">
+                    <div class="row g-3">
+                        <!-- Theater ID Column -->
+                        <div class="col-md-3 d-inline-block">
+                            <label for="theaterId" class="fw-bold text-dark" style="font-size: 14px;">Theater ID:</label>
+                            <input type="text" id="theaterId" name="theaterId" class="form-control form-control-sm" />
+                        </div>
+
+                        <!-- Start Date Column -->
+                        <div class="col-md-3 d-inline-block">
+                            <label for="fromDate" class="fw-bold text-dark" style="font-size: 14px;">From Date:</label>
+                            <input type="date" id="fromDate" name="fromDate" class="form-control form-control-sm" />
+                        </div>
+
+                        <!-- End Date Column -->
+                        <div class="col-md-3 d-inline-block">
+                            <label for="toDate" class="fw-bold text-dark" style="font-size: 14px;">To Date:</label>
+                            <input type="date" id="toDate" name="toDate" class="form-control form-control-sm" />
+                        </div>
+
+                        <!-- Status Column -->
+                        <div class="col-md-3 d-inline-block">
+                            <label for="statusFilter" class="fw-bold text-dark" style="font-size: 14px;">Status:</label>
+                            <select id="statusFilter" name="statusFilter" class="form-control form-control-sm">
+                                <option value="">All</option>
+                                <option value="Pending">Pending</option>
+                                <option value="Completed">Completed</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="d-flex gap-2 mt-3">
+                        <button type="submit" class="btn btn-primary btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="Apply Filters">
+                            <i class="bi bi-funnel"></i> Submit
+                        </button>
+
+                        <!-- Reset Button -->
+                        <button type="button" id="resetButton" class="btn btn-secondary btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="Reset Filters" onclick="resetForm()">
+                            <i class="fa fa-refresh" aria-hidden="true"></i> Reset
+                        </button>
+                    </div>
+                </form>
+
+                <h3 class="text-center mt-3 p-3 text-bg-light">Filtered Payment History</h3>
+                <table class="table table-light  table-bordered mt-4" id="dataGrid">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>PAYMENT_ID</th>
+                            <th>Theater ID</th>
+                            <th>Status</th>
+                            <th>Amount</th>
+                            <th>Payment Date</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var payment in Model)
+                            {
+                                <tr>
+                                    <td>@payment.PAYMENT_ID</td>
+                                    <td>@payment.T_ID</td>
+                                    <td class="status-cell @(payment.STATUS == "Paid" ? "text-success" : "text-danger")">
+                                        @payment.STATUS
+                                    </td>
+                                    <td>@payment.AMOUNT</td>
+                                    <td>@payment.PAYMENT_DATE</td> @* ✅ Now shows only dd-MM-yyyy *@
+
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="5">No data found</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        function resetForm() {
+            // Reset input fields
+            $('input[type="text"], input[type="password"], input[type="email"], input[type="number"], input[type="tel"], input[type="date"], textarea').val('');
+
+            // Reset select dropdowns
+            $('select').prop('selectedIndex', 0); // Reset to "--select--"
+
+            // Reset date picker values
+            $('input[type="date"]').val('');
+
+            // Optionally, show a message to the user
+            alert('Filters have been reset.');
+        }
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,359 @@
+﻿
+@model IEnumerable<AMC_THEATER_1.Models.TheaterViewModel>
+
+@{
+    ViewBag.Title = "All Theaters";
+    ViewBag.ShowBasicNavbar = false;
+    ViewBag.ShowNavbar = true;
+    ViewBag.ShowSideBar = true;
+    ViewBag.Login = false;
+    ViewBag.ShowHomeIcon = true;
+    ViewBag.Module= true;
+    //ViewBag.FromDate = fromDate?.ToString("yyyy-MM-dd"); // Use this in View
+    //ViewBag.ToDate = toDate?.ToString("yyyy-MM-dd");
+
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ahmedabad Theater List</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .container {
+            margin-left: 185px;
+            transition: margin-left 0.3s;
+            padding: 15px;
+        }
+
+        .text-muted {
+            color: gray !important;
+        }
+
+        .filter-container {
+            display: none;
+        }
+    </style>
+</head>
+<body class="ms-5 container">
+    <div class="fw-bold">
+        <h1 class=" bg-light p-3 pe-5 w-100 text-center fs-2">Theater List</h1>
+    </div>
+    @if (ViewBag.Message != null)
+    {
+        <div class="alert alert-warning">@ViewBag.Message</div>
+    }
+
+    <form id="filterForm" class="p-3 border border-dark bg-light" method="post" action="@Url.Action("Theater_List", "Home")">
+        <!-- Filter Section -->
+        <div class="row g-3">
+            <!-- Theater ID Column -->
+
+            <div class="col-md-3 d-inline-block">
+                <label for="theaterId" class="fw-bold text-dark" style="font-size: 14px;">Theater ID:</label>
+                <input type="text" id="theaterId" name="theaterId" class="form-control form-control-sm" />
+            </div>
+
+            <!-- Start Date Column -->
+            <!--<div class="col-md-3 d-inline-block">
+        <label for="fromDate" class="fw-bold text-dark" style="font-size: 14px;">From Date:</label>
+        <input type="date" id="fromDate" name="fromDate" class="form-control form-control-sm" />
+    </div>-->
+            <!-- End Date Column -->
+            <!--<div class="col-md-3 d-inline-block">
+        <label for="toDate" class="fw-bold text-dark" style="font-size: 14px;">To Date:</label>
+        <input type="date" id="toDate" name="toDate" class="form-control form-control-sm" />
+    </div>-->
+            <!-- From Date -->
+            <div class="col-md-3">
+                <label for="fromDate" class="fw-bold text-dark" style="font-size: 14px;">From Date:</label>
+                <input type="date" id="fromDate" name="fromDate" class="form-control form-control-sm"
+                       value="@ViewBag.FromDate" />
+            </div>
+
+            <div class="col-md-3">
+                <label for="toDate" class="fw-bold text-dark" style="font-size: 14px;">To Date:</label>
+                <input type="date" id="toDate" name="toDate" class="form-control form-control-sm"
+                       value="@ViewBag.ToDate" />
+            </div>
+
+
+            <!-- Filter Toggle Icon and Buttons (Beside) -->
+            <div class="col-md-3 d-flex align-items-center gap-3 justify-content-start">
+                <!-- Submit Button -->
+                <button type="submit" class="btn btn-primary mt-4 btn-sm  " data-bs-toggle="tooltip" data-bs-placement="top" title="Apply Filters">
+                    <i class="bi bi-funnel"></i> Submit
+                </button>
+
+                <!-- Reset Button -->
+                <button type="button" id="resetButton" class="btn btn-secondary mt-4 btn-sm" onclick="resetForm()">
+                    <i class="fa fa-refresh" aria-hidden="true"></i> Reset
+                </button>
+
+                <!-- Advanced Filter Toggle Icon -->
+                <button type="button" id="filterToggle" class="btn btn-info btn-sm mt-4 " data-bs-toggle="tooltip" data-bs-placement="top" title="Toggle Advanced Filters">
+                    <i class="bi bi-funnel"></i> Advanced Filters
+                </button>
+            </div>
+        </div>
+
+
+
+        <!-- Advanced Filters Section -->
+        <div id="advancedFilters" class="filter-container p-3 mt-3 border border-dark bg-light">
+            <div class="row g-3">
+                <!-- City Filter -->
+                <div class="col-md-3 d-inline-block">
+                    <label for="cityFilter" class="fw-bold text-dark" style="font-size: 14px;">City:</label>
+                    <select id="cityFilter" name="cityFilter" class="form-control form-control-sm">
+                        <option value="">All</option>
+                        @if (ViewBag.Cities != null)
+                        {
+                            foreach (var city in ViewBag.Cities as IEnumerable<string>)
+                            {
+                                <option value="@city">@city</option>
+                            }
+                        }
+                    </select>
+                </div>
+
+                <!-- Ward Filter -->
+                <div class="col-md-3 d-inline-block">
+                    <label for="wardFilter" class="fw-bold text-dark" style="font-size: 14px;">Ward:</label>
+                    <select id="wardFilter" name="wardFilter" class="form-control form-control-sm">
+                        <option value="">All</option>
+                        @if (ViewBag.Wards != null)
+                        {
+                            foreach (var ward in ViewBag.Wards as IEnumerable<string>)
+                            {
+                                <option value="@ward">@ward</option>
+                            }
+                        }
+                    </select>
+                </div>
+
+                <!-- Zone Filter -->
+                <div class="col-md-3 d-inline-block">
+                    <label for="zoneFilter" class="fw-bold text-dark" style="font-size: 14px;">Zone:</label>
+                    <select id="zoneFilter" name="zoneFilter" class="form-control form-control-sm">
+                        <option value="">All</option>
+                        @if (ViewBag.Zones != null)
+                        {
+                            foreach (var zone in ViewBag.Zones as IEnumerable<string>)
+                            {
+                                <option value="@zone">@zone</option>
+                            }
+                        }
+                    </select>
+                </div>
+
+                <!-- Status Filter -->
+                <div class="col-md-3 d-inline-block">
+                    <label for="statusFilter" class="fw-bold text-dark" style="font-size: 14px;">Status:</label>
+                    <select id="statusFilter" name="statusFilter" class="form-control form-control-sm">
+                        <option value="">All</option>
+                        @if (ViewBag.Statuses != null)
+                        {
+                            foreach (var status in ViewBag.Statuses as IEnumerable<string>)
+                            {
+                                <option value="@status">@status</option>
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <!-- Theater List Table -->
+    <div class="row">
+        <div class="col-md-12">
+            <table class="table table-bordered mt-5 table-striped">
+                <thead class="text-start">
+                    <tr class="text-center">
+                        <th class="fw-bold">Theater ID</th>
+                        <th class="fw-bold">Theater Name</th>
+                        <th class="fw-bold">City</th>
+                        <th class="fw-bold">Ward</th>
+                        <th class="fw-bold">Zone</th>
+                        <th class="fw-bold">Address</th>
+                        <th class="fw-bold">Tenament Number</th>
+                        <th class="fw-bold">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var theater in Model)
+                        {
+                            <tr id="theater-@theater.T_ID">
+                                <td>@theater.T_ID</td>
+                                <td>@theater.T_NAME</td>
+                                <td>@theater.T_CITY</td>
+                                <td>@theater.T_WARD</td>
+                                <td>@theater.T_ZONE</td>
+                                <td>@theater.T_ADDRESS</td>
+                                <td>@theater.T_TENAMENT_NO</td>
+                                <td class="status-cell @(theater.STATUS == "Approved" ? "text-success" : (theater.STATUS == "Rejected" ? "text-danger" : "text-warning"))">
+                                    @(theater.STATUS == "Approved" ? "Approved" : theater.STATUS == "Rejected" ? "Rejected" : "Pending")
+                                </td>
+
+
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="9" class="text-center">No theater data available.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const filterToggle = document.getElementById('filterToggle');
+            const advancedFilters = document.getElementById('advancedFilters');
+
+            filterToggle.addEventListener('click', function () {
+                advancedFilters.style.display = advancedFilters.style.display === 'none' ? 'block' : 'none';
+            });
+        });
+
+        function resetForm() {
+            // Clear input fields
+            document.getElementById('filterForm').reset();
+
+            // Hide all rows in the table body except the header
+            let tableBody = document.querySelector("tbody");
+            let rows = tableBody.querySelectorAll("tr");
+
+            rows.forEach(row => {
+                row.style.display = "none"; // Hide all rows
+            });
+        }
+
+
+    </script>
+    <script>
+        function confirmSoftDelete(tid) {
+            console.log("Delete button clicked. Theater ID:", tid); // Debugging step
+
+            // Ensure the modal element exists
+            var deleteModal = document.getElementById("deleteModal");
+            if (!deleteModal) {
+                console.error("Modal element not found!");
+                return;
+            }
+
+            // Set the theater ID in the modal text
+            document.getElementById("theaterIdText").textContent = tid;
+
+            // Set up the delete button action inside the modal
+            document.getElementById("confirmDelete").onclick = function () {
+                var form = document.createElement("form");
+                form.method = "POST";
+                form.action = "/Home/Theater_List";
+
+                var input = document.createElement("input");
+                input.type = "hidden";
+                input.name = "deleteId";
+                input.value = tid;
+
+                form.appendChild(input);
+                document.body.appendChild(form);
+                form.submit();
+            };
+
+            // Show the Bootstrap modal
+            var modalInstance = new bootstrap.Modal(deleteModal);
+            modalInstance.show();
+        }
+    </script>
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to delete this theater with ID <strong id="theaterIdText"></strong>?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" id="confirmDelete" class="btn btn-danger">Yes, Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Bootstrap 5 Modal for Deletion Confirmation -->
+    <!--<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to delete this theater with <strong id="theaterIdText"></strong>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <a href="#" id="confirmDelete" class="btn btn-danger">Yes, Delete</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        function showDeleteModal(tid, deleteUrl) {
+            document.getElementById('theaterIdText').textContent = `(Theater ID: ${tid})`; // Display T_ID in modal
+            document.getElementById('confirmDelete').href = deleteUrl; // Set delete URL dynamically
+            var deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+            deleteModal.show();
+        }
+    </script>-->
+    <!-- Bootstrap 5 JS and Popper.js -->
+    <script src="https://cdn.jsdelivr.net/npm/popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+
+    <!-- Custom JavaScript -->
+    <script>
+        function showDeleteModal(tid, deleteUrl) {
+            document.getElementById('theaterIdText').textContent = `Theater ID:${tid}`;
+            document.getElementById('confirmDelete').href = deleteUrl;
+            var deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+            deleteModal.show();
+        }
+    </script>
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let today = new Date();
+            let firstDay = new Date(today.getFullYear(), today.getMonth(), 1); // 1st day of the current month
+
+            let formatDate = (date) => {
+                let year = date.getFullYear();
+                let month = (date.getMonth() + 1).toString().padStart(2, '0'); // Ensure 2-digit month
+                let day = date.getDate().toString().padStart(2, '0'); // Ensure 2-digit day
+                return `${year}-${month}-${day}`;
+            };
+
+            document.getElementById("fromDate").value = formatDate(firstDay); // Set 1st day of the month
+            document.getElementById("toDate").value = formatDate(today); // Set today's date
+        });
+    </script>
+
+</body>
+</html>

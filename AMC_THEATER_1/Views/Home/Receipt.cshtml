@@ -1,0 +1,345 @@
+﻿@{
+    ViewBag.Title = "Receipt";
+    ViewBag.ShowBasicNavbar = false; // Show only the basic navbar
+    ViewBag.ShowNavbar = true;
+    ViewBag.ShowSideBar = true;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Life of Travel - Ahmedabad</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <!-- Include html2pdf.js for downloading as PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.js"></script>
+    <style>
+        /* Set a fixed height for the navbar */
+        /*.fixed-navbar-height {
+            height: 80px;*/ /* Fixed height for the navbar */
+        /*padding: 5px !important;*/ /* Remove extra padding */
+        /*line-height: 1;*/ /* Vertically center content */
+        /*}*/
+
+        /* Set the dimensions of the logo */
+        /*.custom-logo {
+            margin-bottom:70px !important ;
+            height: 70px !important;*/ /* Set desired logo height */
+        /*width: 88px !important;*/ /* Set desired logo width */
+        /*margin-left: 3% !important;*/ /* Remove margin */
+        /*}
+
+        .text-muted {
+            margin: 1px !important;
+            margin-top: 3% !important;
+            color: gray !important;
+            margin-bottom:0px !important ;
+            margin-left:2px !important ;
+        }*/
+        .custom-navbar-brand {
+            display: flex;
+            align-items: flex-start; /* Align all items to the top */
+            margin: 0; /* Remove any default margins */
+            padding: 0; /* Remove any default padding */
+        }
+
+        .custom-logo {
+            flex-shrink: 0; /* Prevent the logo from resizing */
+            height: 70px; /* Keep consistent logo size */
+            width: 70px; /* Keep consistent logo size */
+            align-self: flex-start; /* Align the logo to the top */
+        }
+
+        .custom-navbar-brand span {
+            display: flex;
+            flex-direction: column; /* Stack the main text and subtitle vertically */
+            margin-left: 10px; /* Add space between the logo and the text */
+            color: white; /* Ensure the text color is white for visibility */
+            line-height: 1.2; /* Adjust line height for better spacing */
+            justify-content: flex-start; /* Ensure the text content is aligned to the top */
+        }
+
+            .custom-navbar-brand span .text-muted {
+                font-size: 14px; /* Make the small text visually distinct */
+                color: gray !important; /* Ensure muted text remains gray */
+                margin-top: 2px; /* Add slight spacing between the main text and subtitle */
+                line-height: 1.1; /* Tighten line height for subtitle */
+            }
+
+        /* General body styles for normal display */
+        body {
+            font-family: Arial, sans-serif;
+            transition: margin-left 0.3s;
+            margin: 0; /* Remove body margin */
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        }
+
+        /* Navbar styles */
+        .navbar {
+            background-color: #007bff;
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            padding: 0; /* Remove any padding */
+        }
+
+        /* Navbar brand styles */
+        .custom-navbar-brand {
+            padding: 0; /* Remove padding */
+            margin: 0; /* Remove margin */
+        }
+
+            /* Text next to the logo */
+            .custom-navbar-brand .fs-5 {
+                margin-top: 0; /* Adjust as needed */
+                padding: 0; /* Remove padding */
+                line-height: 1.2; /* Adjust line height to control the distance between lines */
+            }
+
+        /* Sidebar styles */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 250px;
+            height: 100%;
+            background-color: #343a40;
+            color: white;
+            padding-top: 60px;
+            transition: 0.3s;
+        }
+
+            .sidebar a {
+                color: white;
+                padding: 8px 15px;
+                text-decoration: none;
+                display: block;
+                font-size: 18px;
+            }
+
+                .sidebar a:hover {
+                    background-color: #575757;
+                }
+
+        @@media print {
+            .no-print {
+                display: none; /* Hide buttons and navbar during print */
+            }
+            /* Adjust the container for printing */
+            .container {
+                margin-right: 90% !important; /* Center the container */
+                padding: 0px;
+                width: 200% !important; /* Ensure it takes full width */
+            }
+            /* Ensure the navbar and sidebar are hidden during print */
+            .navbar, .sidebar {
+                display: none;
+            }
+            /* Adjust the table to fit the page width */
+            table {
+                width: 100% !important;
+            }
+            /* Ensure no margins around the body for full-width printing */
+            body {
+                margin: 0;
+                padding: 0;
+            }
+            /* Receipt styling for print */
+            .receipt-main {
+                margin: 0 auto !important; /* Center the receipt horizontally */
+                border-top: 12px solid #9f181c;
+                border-bottom: 12px solid #333;
+                width: 100% !important; /* Make the receipt take up full width */
+                max-width: 500% !important; /* Set a max width for the receipt */
+                page-break-before: always;
+            }
+        }
+
+
+        /* Center the main receipt container for display on screen */
+        .container {
+            margin-left: auto;
+            margin-right: auto;
+            max-width: 900px;
+            padding: 15px;
+        }
+
+        /* Styling for the receipt */
+        .receipt-main {
+            border-top: 12px solid #9f181c;
+            border-bottom: 12px solid #333;
+        }
+
+        .btn {
+            font-size: 16px;
+        }
+
+        .no-print {
+            display: block;
+        }
+    </style>
+</head>
+<body class="bg-light ms-5">
+
+    <div class="container ms-5 m-2">
+        <div class="ms-5">
+            <div class="ms-5">
+                <div class="receipt-main mx-auto col-lg-12 bg-white shadow-sm p-4 position-relative">
+                    <!-- Receipt content here -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="receipt-left">
+                                <img class="img-fluid rounded-circle" src="https://upload.wikimedia.org/wikipedia/en/thumb/3/35/Amdavad_Municipal_Corporation_logo.png/255px-Amdavad_Municipal_Corporation_logo.png" alt="Profile Image" style="width: 71px;">
+                            </div>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <div class="receipt-right">
+                                <h5>Theater name: PVR</h5>
+                                <p>+91 1234567890 <i class="fas fa-phone"></i></p>
+                            </div>
+                            <div class="receipt-right">
+                                <h5>Theater ID : 004</h5>
+                               
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-8">
+                            <div class="receipt-right">
+                                <h5>Owner Name: ABC</h5>
+                                <p><b>Mobile:</b> +91 123456780</p>
+                                <p><b>Email:</b> abc@gmail.com</p>
+                                <p><b>Address:</b> Ahmedabad</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <div class="receipt-left">
+                                <h4>Receipt No: #01</h4>
+                            </div>
+                            <div class="receipt-right">
+                                <p><b>Date:</b> 12-01-2025</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <table class="table table-bordered">
+                        <thead class="bg-dark text-white">
+                            <tr>
+                                <th>Description</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Payment for January 2025</td>
+                                <td><i class="fas fa-rupee-sign"></i> 5,000/-</td>
+                            </tr>
+                            <tr>
+                                <td>Payment Mode</td>
+                                <td>Online</td>
+                            </tr>
+                            <tr>
+                                <td class="text-end"><h2><strong class="fs-4">Total:</strong></h2></td>
+                                <td class="text-success fs-5"><h2><strong class="fs-5"><i class="fas fa-rupee-sign"></i> 5,000/-</strong></h2></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Buttons for Print and Download -->
+            <div class="row mt-2 ms-5 no-print">
+                <div class="col-md-12 text-center">
+                    <button class="btn btn-primary" id="generateReceiptBtn">
+                        <i class="fas fa-print"></i> Print
+                    </button>
+                    <button class="btn btn-success ms-3" id="downloadReceiptBtn">
+                        <i class="fas fa-download"></i> Download
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bootstrap 5 JS -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script>
+            document.getElementById('generateReceiptBtn').addEventListener('click', function () {
+                // Hide the navbar, sidebar, and buttons before printing
+                hideNavbarAndSidebar();
+                window.print();
+                // After printing, restore the navbar and sidebar
+                restoreNavbarAndSidebar();
+            });
+
+            document.getElementById('downloadReceiptBtn').addEventListener('click', function () {
+                // Hide the navbar, sidebar, and buttons before downloading
+                hideNavbarAndSidebar();
+
+                const receiptContent = document.querySelector('.receipt-main');
+
+                // Adjust the options for html2pdf
+                const options = {
+                    margin: 0.5,  // Slight margin around the content
+                    filename: 'receipt.pdf',
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: {
+                        scale: 5,
+                        logging: true,
+                        letterRendering: true,
+                        useCORS: true
+                    },
+                    jsPDF: {
+                        unit: 'in',
+                        format: [11, 14],
+                        orientation: 'portrait',
+                        compressPDF: true,
+                        width: 11,
+                        height: 14,
+                    }
+                };
+
+                // Use html2pdf to generate and download the PDF with the increased width and height
+                html2pdf().from(receiptContent).set(options).save().then(function () {
+                    // After download, restore the navbar and sidebar
+                    restoreNavbarAndSidebar();
+                });
+            });
+
+            function hideNavbarAndSidebar() {
+                // Hide navbar, sidebar, and buttons when downloading or printing
+                const navbar = document.querySelector('.navbar');
+                const sidebar = document.querySelector('.sidebar');
+                const buttons = document.querySelectorAll('.no-print');
+                if (navbar) navbar.style.display = 'none';
+                if (sidebar) sidebar.style.display = 'none';
+                buttons.forEach(function (button) {
+                    button.style.display = 'none';
+                });
+            }
+
+            function restoreNavbarAndSidebar() {
+                // Restore navbar, sidebar, and buttons after downloading or printing
+                const navbar = document.querySelector('.navbar');
+                const sidebar = document.querySelector('.sidebar');
+                const buttons = document.querySelectorAll('.no-print');
+                if (navbar) navbar.style.display = '';
+                if (sidebar) sidebar.style.display = '';
+                buttons.forEach(function (button) {
+                    button.style.display = 'block';
+                });
+            }
+        </script>
+    </div>
+</body>
+</html>

@@ -1,0 +1,587 @@
+﻿
+@model AMC_THEATER_1.Models.TRN_REGISTRATION
+@{
+    ViewBag.Title = "Theater Registration";
+    ViewBag.ShowBasicNavbar = false; // Show only the basic navbar
+                                     // In your controller, set the flag to true for the pages you want the icon to show
+    ViewBag.ShowHomeIcon = true; // For the page where you want the icon
+
+
+    ViewBag.ShowNavbar = true;
+    ViewBag.ShowSideBar = true;
+    var documents = ViewBag.Documents as List<AMC_THEATER_1.Models.MST_DOCS>;
+    var uDocs = ViewBag.Upload as List<AMC_THEATER_1.Models.TRN_THEATRE_DOCS>;
+    string userRole = ViewBag.UserRole;
+    bool isEditPage = ViewBag.IsEditPage;
+
+
+
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Theater Registration Form</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/Scripts/script.js"></script>
+    <style>
+        .container {
+            margin-left: 185px; /* Set this to match the sidebar width */
+            transition: margin-left 0.3s;
+            padding: 15px;
+        }
+    </style>
+</head>
+<body class="bg-light ms-4">
+
+    <div class="container col-md-11 ms-5 mt-3">
+        <div class="card p-4 ms-5 shadow-sm rounded">
+            @*<h2 class="text-center mb-4">Theatre Registration</h2>*@
+            @if (!(ViewBag.IsEditPage ?? false))
+            {
+                <h2 class="text-center bg-light fw-bold p-3 mb-4">Theater Registration Application</h2>
+            }
+            else
+            {
+                <!-- Show the "Registration" title for Edit -->
+                <h2 class="text-center bg-light p-3 mb-4">Registration</h2>
+            }
+
+
+            @using (Html.BeginForm("ViewApplication", "Department", FormMethod.Post, new { id = "TheaterForm", enctype = "multipart/form-data" }))
+            {
+                @Html.AntiForgeryToken()
+
+                <!-- Theatre Registration Fields -->
+                <div class="row ms-4">
+                    <div class="col-md-4 mb-3">
+                        <label for="TheaterName" class="form-label fw-bold">Theatre Name <span class="text-danger">*</span></label>
+                        @Html.TextBoxFor(m => m.T_NAME, new { @class = "form-control", placeholder = "Enter theater name", required = "required" })
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label for="OwnerName" class="form-label fw-bold">Owner's Name <span class="text-danger">*</span></label>
+                        @Html.TextBoxFor(m => m.T_OWNER_NAME, new { @class = "form-control", placeholder = "Enter owner's name", required = "required" })
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label for="RepresentativeContact" class="form-label fw-bold">Representative's Contact No. <span class="text-danger">*</span></label>
+                        @Html.TextBoxFor(m => m.T_OWNER_NUMBER, new { @class = "form-control", placeholder = "Enter contact number", required = "required" })
+                    </div>
+                </div>
+
+                <!-- Address, Email, Commencement Date -->
+                <div class="row ms-4">
+                    <div class="col-md-4 mb-3">
+                        <label for="TheaterAddress" class="form-label fw-bold">Theatre Address <span class="text-danger">*</span></label>
+                        @Html.TextAreaFor(m => m.T_ADDRESS, new { @class = "form-control", rows = "3", placeholder = "Enter theater address", required = "required" })
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label for="EmailID" class="form-label fw-bold">Email ID <span class="text-danger">*</span></label>
+                        @Html.TextBoxFor(m => m.T_OWNER_EMAIL, new { @class = "form-control", placeholder = "Enter email ID", required = "required" })
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label for="TheaterCommencementDate" class="form-label fw-bold">Theatre Commencement Date <span class="text-danger">*</span></label>
+                        @Html.TextBoxFor(m => m.T_COMMENCEMENT_DATE, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date", required = "required" })
+
+                    </div>
+                </div>
+
+                <!-- City, Zone, Ward -->
+                <div class="row ms-4">
+                    <div class="col-md-4 mb-3">
+                        <label for="City" class="form-label fw-bold">City <span class="text-danger">*</span></label>
+                        @Html.TextBoxFor(m => m.T_CITY, new { @class = "form-control", placeholder = "Enter city", required = "required" })
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label for="Zone" class="form-label fw-bold">Zone <span class="text-danger">*</span></label>
+                        @Html.DropDownListFor(m => m.T_ZONE, new SelectList(new[] { "Zone1", "Zone2", "Zone3", "Zone4" }), "-- Select Zone --", new { @class = "form-control", required = "required" })
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label for="WardZone" class="form-label fw-bold">Ward <span class="text-danger">*</span></label>
+                        @Html.DropDownListFor(m => m.T_WARD, new SelectList(new[] { "Ward1", "Ward2", "Ward3", "Ward4" }), "-- Select Ward Zone --", new { @class = "form-control", required = "required" })
+                    </div>
+                </div>
+
+                <!-- Tax Details -->
+                <div class="row ms-4">
+                    <div class="col-md-4 mb-3">
+                        <label for="AMCPropertyTaxTenementNo" class="form-label fw-bold">AMC Property Tax Tenement No <span class="text-danger">*</span></label>
+                        @Html.TextBoxFor(m => m.T_TENAMENT_NO, new { @class = "form-control", placeholder = "Tenement No", required = "required" })
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label for="AMCProfessionalTaxPECNo" class="form-label fw-bold">AMC Professional Tax PEC No <span class="text-danger">*</span></label>
+                        @Html.TextBoxFor(m => m.T_PEC_NO, new { @class = "form-control", placeholder = "PEC No", required = "required" })
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label for="PRCNo" class="form-label fw-bold">PRC No <span class="text-danger">*</span></label>
+                        @Html.TextBoxFor(m => m.T_PRC_NO, new { @class = "form-control", placeholder = "PRC No", required = "required" })
+                    </div>
+                </div>
+
+                <!-- Tax Payment -->
+                <div class="col-12 ms-4 fw-bold">
+                    <label for="TheaterTaxPaidOffline" class="form-label fw-bold">Has Theatre Tax been paid offline? <span class="text-danger">*</span></label>
+                    <div class="form-check d-inline-block me-3">
+                        @Html.RadioButtonFor(m => m.T_TAX_PAYING_OFFLINE, "true", new { @class = "form-check-input", id = "yes", required = "required", onclick = "toggleFields(true)" })
+                        <label class="form-check-label" for="yes">Yes</label>
+                    </div>
+                    <div class="form-check d-inline-block">
+                        @Html.RadioButtonFor(m => m.T_TAX_PAYING_OFFLINE, "false", new { @class = "form-check-input", id = "no", required = "required", onclick = "toggleFields(false)" })
+                        <label class="form-check-label" for="no">No</label>
+                    </div>
+                </div>
+
+                <div id="offlineTaxDetails" class="ms-4" style="display: @(Model.T_TAX_PAYING_OFFLINE == true ? "block" : "none");">
+                    <div class="row">
+                        <div class="col-md-4 d-inline-block fw-bold">
+                            <label for="offlineTaxPayment" class="form-label ms-3">Offline Tax Payment</label>
+                            @Html.TextBoxFor(m => m.OFFLINE_TAX_PAYMENT, new { @class = "form-control ms-3", placeholder = "Offline Tax Payment" })
+                        </div>
+                        <div class="col-md-4 d-inline-block fw-bold">
+                            <label for="offlineTaxPaidDate" class="form-label ms-2">Offline Tax Paid Date</label>
+                            @Html.TextBoxFor(m => m.OFFLINE_TAX_PAID_DATE, "{0:yyyy-MM-dd}", new { @class = "form-control ms-2 me-5", type = "date" })
+                        </div>
+                        <div class="col-md-4 d-inline-block fw-bold">
+                            <label for="offlineDueDate" class="form-label ms-1">Offline Tax Due Date</label>
+                            @Html.TextBoxFor(m => m.OFFLINE_DUE_DATE, "{0:yyyy-MM-dd}", new { @class = "form-control ms-1", type = "date" })
+                        </div>
+                    </div>
+
+
+                    <script>
+                        // Assuming these values come from the server-side and are already available in registrationData
+                        var offlineTaxPaidDate = registrationData.OFFLINE_TAX_PAID_DATE;
+                        var offlineDueDate = registrationData.OFFLINE_DUE_DATE;
+
+                        // Set the values of the input fields with the correct date format
+                        document.getElementById('offlineTaxPaidDate').value = offlineTaxPaidDate ? offlineTaxPaidDate.toISOString().split('T')[0] : '';
+                        document.getElementById('offlineDueDate').value = offlineDueDate ? offlineDueDate.toISOString().split('T')[0] : '';
+                    </script>
+
+                </div>
+
+
+                <script>
+                    // Function to toggle visibility of #offlineTaxDetails
+                    function toggleFields(isOffline) {
+                        const offlineTaxDetails = document.getElementById('offlineTaxDetails');
+
+                        // Show the section if "Yes" is selected; hide it otherwise
+                        if (isOffline) {
+                            offlineTaxDetails.style.display = 'block';
+                        } else {
+                            offlineTaxDetails.style.display = 'none';
+                        }
+                    }
+
+                    // Attach event listener on DOMContentLoaded for initialization
+                    document.addEventListener('DOMContentLoaded', () => {
+                        const yesRadio = document.getElementById('yes');
+                        const noRadio = document.getElementById('no');
+
+                        // Initialize visibility based on pre-selected option
+                        if (yesRadio.checked) {
+                            toggleFields(true);
+                        } else if (noRadio.checked) {
+                            toggleFields(false);
+                        }
+
+                        // Add click event listeners for runtime changes
+                        yesRadio.addEventListener('click', () => toggleFields(true));
+                        noRadio.addEventListener('click', () => toggleFields(false));
+                    });
+                </script>
+
+                <!-- Grid Table for Screen Capacity -->
+                <table id="screenCapacityTable" class="table table-bordered text-center mt-3">
+                    <thead>
+                        <tr>
+                            <th>Screen No</th>
+                            <th>Seat Capacity</th>
+                            <th>Screen Type</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (ViewBag.screens != null && ViewBag.screens.Count > 0)
+                        {
+                            int screenNo = 1;
+                            foreach (var screen in ViewBag.screens)
+                            {
+                                <tr>
+                                    <td>@screenNo</td>
+                                    <td>
+                                        <input type="number" name="seatCapacity" class="form-control ms-4" value="@screen.AUDIENCE_CAPACITY" required oninput="updateScreenType(this)">
+                                    </td>
+                                    <td>
+                                        <input type="text" name="screenType" class="form-control ms-4" value="@screen.SCREEN_TYPE" readonly>
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-primary me-2" onclick="addScreen()" title="Add Screen">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-warning me-2" onclick="editRow(this)" title="Edit Screen">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-danger me-2" onclick="removeRow(this)" title="Delete Screen">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                screenNo++;
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td>1</td>
+                                <td>
+                                    <input type="number" name="seatCapacity" class="form-control ms-4" required oninput="updateScreenType(this)">
+                                </td>
+                                <td>
+                                    <input type="text" name="screenType" class="form-control ms-4" readonly>
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-primary me-2" onclick="addScreen()" title="Add Screen">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-warning me-2" onclick="editRow(this)" title="Edit Screen">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-danger me-2" onclick="removeRow(this)" title="Delete Screen">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+
+                </table>
+
+                <!-- Hidden input to store screen data -->
+                <input type="hidden" id="screenData" name="screenData">
+
+
+                <script>
+                    function addScreen() {
+                        var table = document.getElementById("screenCapacityTable").getElementsByTagName('tbody')[0];
+                        var rowCount = table.rows.length;
+                        var newRow = table.insertRow(rowCount);
+
+                        newRow.innerHTML = `
+                                                                                                                            <td>${rowCount + 1}</td>
+                                                                                                                            <td><input type="number" name="seatCapacity" class="form-control ms-4" required oninput="updateScreenType(this)"></td>
+                                                                                                                            <td><input type="text" name="screenType" class="form-control ms-4" readonly></td>
+                                                                                                                            <td>
+                                                                                                                                <button type="button" class="btn btn-primary me-2" onclick="addScreen()" title="Add Screen">
+                                                                                                                                    <i class="fas fa-plus"></i>
+                                                                                                                                </button>
+                                                                                                                                <button type="button" class="btn btn-warning me-2" onclick="editRow(this)" title="Edit Screen">
+                                                                                                                                    <i class="fas fa-edit"></i>
+                                                                                                                                </button>
+                                                                                                                                <button type="button" class="btn btn-danger me-2" onclick="removeRow(this)" title="Delete Screen">
+                                                                                                                                    <i class="fas fa-trash-alt"></i>
+                                                                                                                                </button>
+                                                                                                                            </td>
+                                                                                                                        `;
+                    }
+
+                    function removeRow(button) {
+                        var row = button.parentNode.parentNode;
+                        row.parentNode.removeChild(row);
+                    }
+
+                    function editRow(button) {
+                        var row = button.parentNode.parentNode;
+                        var seatCapacityInput = row.cells[1].querySelector("input");
+                        seatCapacityInput.removeAttribute("readonly");
+                    }
+
+                    function updateScreenType(input) {
+                        var seatCapacity = input.value;
+                        var row = input.parentNode.parentNode;
+                        var screenTypeInput = row.cells[2].querySelector("input");
+
+                        if (seatCapacity > 125) {
+                            screenTypeInput.value = "Theater";
+                        } else {
+                            screenTypeInput.value = "Video Theater";
+                        }
+                    }
+                </script>
+
+
+
+                <h2 class="text-bg-light p-2">Upload Required Documents :</h2>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <table class="table table-bordered text-center table-striped">
+                            <thead>
+                                <tr>
+                                    <th class="fw-bold">Document Name</th>
+                                    <th class="fw-bold">Document Type</th>
+                                    <th class="fw-bold">Allowed Size (MB)</th>
+                                    <th class="fw-bold">Uploaded Size (MB)</th>
+                                    <th class="fw-bold">Upload</th>
+                                    <th class="fw-bold">View</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                @foreach (var doc in documents)
+                                {
+                                    var uploadedDoc = (uDocs)?.FirstOrDefault(d => d.DOC_ID == doc.DOC_ID);
+                                    string filePath = uploadedDoc?.DOC_FILEPATH ?? string.Empty;
+
+                                    <tr>
+                                        <td>@doc.DOC_NAME</td>
+                                        <td>JPG</td>
+                                        <td>@doc.FILE_SIZE_MB MB</td>
+                                        <td id="size-@doc.DOC_ID">@(filePath != "" ? GetFileSize(filePath) + " MB" : "0 MB")</td>
+                                        <td>
+                                            <input type="file"
+                                                   class="form-control"
+                                                   id="file-@doc.DOC_ID"
+                                                   name="@doc.DOC_ID"
+                                                   accept=".pdf,.jpg,.png,.docx"
+                                                   onchange="updateFileSize('@doc.DOC_ID')"
+                                                   required />
+                                        </td>
+                                        <td>
+                                            @if (!string.IsNullOrEmpty(filePath))
+                                            {
+                                                <a href="@Url.Content("~/UploadedFiles/" + Path.GetFileName(filePath))"
+                                                   target="_blank"
+                                                   class="btn btn-primary btn-sm">View</a>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">Not Available</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+
+                            </tbody>
+
+                        </table>
+                    </div>
+                </div>
+                @functions {
+                    public string GetFileSize(string filePath)
+                    {
+                        string fullPath = HttpContext.Current.Server.MapPath("~/UploadedFiles/" + Path.GetFileName(filePath));
+                        if (System.IO.File.Exists(fullPath))
+                        {
+                            long fileSize = new System.IO.FileInfo(fullPath).Length;
+                            return (fileSize / (1024.0 * 1024.0)).ToString("0.##");
+                        }
+                        return "0";
+                    }
+                }
+
+
+
+                <script>
+                    // Function to update the file size in the table
+                    function updateFileSize(docId) {
+                        const inputElement = document.getElementById(`file-${docId}`);
+                        const sizeElement = document.getElementById(`size-${docId}`);
+
+                        if (inputElement.files.length > 0) {
+                            // Get the size of the uploaded file in bytes
+                            const fileSizeBytes = inputElement.files[0].size;
+
+                            // Convert the size to MB (1 MB = 1024 * 1024 bytes)
+                            const fileSizeMB = (fileSizeBytes / (1024 * 1024)).toFixed(2);
+
+                            // Update the size column with the file size
+                            sizeElement.textContent = `${fileSizeMB} MB`;
+
+                            // Optional: Add validation to check if the file size exceeds 5 MB
+                            if (fileSizeMB > 5) {
+                                alert("The selected file exceeds the maximum allowed size of 5 MB. Please select a smaller file.");
+                                inputElement.value = ""; // Clear the input
+                                sizeElement.textContent = "0 MB"; // Reset the size
+                            }
+                        } else {
+                            // Reset the size if no file is selected
+                            sizeElement.textContent = "0 MB";
+                        }
+                    }
+                </script>
+
+
+
+
+                <!-- Include Font Awesome for icons -->
+                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+
+                <script>
+                    let screenCount = 1; // Initial screen count
+
+                    function addScreen() {
+                        const tableBody = document.getElementById('screenCapacityTable').querySelector('tbody');
+
+                        if (screenCount >= 10) {
+                            alert("You can add up to 10 screens only.");
+                            return;
+                        }
+
+                        const lastRow = tableBody.querySelector('tr:last-child');
+                        if (lastRow) {
+                            const seatCapacityInput = lastRow.querySelector('input[name="seatCapacity"]');
+                            if (seatCapacityInput && seatCapacityInput.value === '') {
+                                alert("Please fill in the seat capacity before adding a new screen.");
+                                return;
+                            }
+                            seatCapacityInput.readOnly = true;
+                        }
+
+                        screenCount++;
+                        const row = `
+                                                                                                                                                                                            <tr>
+                                                                                                                                                                                                <td>${screenCount}</td>
+                                                                                                                                                                                                <td>
+                                                                                                                                                                                                    <input type="number" name="seatCapacity" class="form-control ms-4" required oninput="updateScreenType(this)">
+                                                                                                                                                                                                </td>
+                                                                                                                                                                                                <td>
+                                                                                                                                                                                                    <input type="text" name="screenType" class="form-control ms-4" readonly>
+                                                                                                                                                                                                </td>
+                                                                                                                                                                                                <td>
+                                                                                                                                                                                                    <button type="button" class="btn btn-primary me-2 " onclick="addScreen()">
+                                                                                                                                                                                                        <i class="fas fa-plus"></i>
+                                                                                                                                                                                                    </button>
+                                                                                                                                                                                                    <button type="button" class="btn btn-warning me-2" onclick="editRow(this)">
+                                                                                                                                                                                                        <i class="fas fa-edit"></i>
+                                                                                                                                                                                                    </button>
+                                                                                                                                                                                                    <button type="button" class="btn btn-danger me-2" onclick="removeRow(this)">
+                                                                                                                                                                                                        <i class="fas fa-trash-alt"></i>
+                                                                                                                                                                                                    </button>
+                                                                                                                                                                                                </td>
+                                                                                                                                                                                            </tr>
+                                                                                                                                                                                        `;
+                        tableBody.insertAdjacentHTML('beforeend', row);
+                        updateAddScreenButtons();
+                    }
+
+                    function updateScreenType(input) {
+                        const seatCapacity = parseInt(input.value, 10);
+                        const row = input.closest('tr');
+                        const screenTypeInput = row.querySelector('input[name="screenType"]');
+
+                        if (!isNaN(seatCapacity)) {
+                            screenTypeInput.value = seatCapacity > 125 ? 'Theater' : 'Video Theater';
+                        } else {
+                            screenTypeInput.value = '';
+                        }
+                    }
+
+                    function editRow(button) {
+                        const row = button.closest('tr');
+                        const seatCapacityInput = row.querySelector('input[name="seatCapacity"]');
+
+                        if (seatCapacityInput.readOnly) {
+                            seatCapacityInput.readOnly = false;
+                            button.innerHTML = '<i class="fas fa-save"></i>';
+                            button.classList.remove("btn-warning");
+                            button.classList.add("btn-success");
+                        } else {
+                            seatCapacityInput.readOnly = true;
+                            button.innerHTML = '<i class="fas fa-edit"></i>';
+                            button.classList.remove("btn-success");
+                            button.classList.add("btn-warning");
+                        }
+                    }
+
+                    function removeRow(button) {
+                        const row = button.closest('tr');
+                        row.remove();
+                        updateScreenNumbers();
+
+                        const tableBody = document.getElementById('screenCapacityTable').querySelector('tbody');
+                        if (tableBody.querySelectorAll('tr').length === 0) {
+                            screenCount = 0;
+                            addScreen();
+                        }
+
+                        updateAddScreenButtons();
+                    }
+
+                    function updateScreenNumbers() {
+                        const rows = document.querySelectorAll('#screenCapacityTable tbody tr');
+                        screenCount = rows.length;
+
+                        rows.forEach((row, index) => {
+                            const screenNoCell = row.querySelector('td:first-child');
+                            screenNoCell.textContent = index + 1;
+                        });
+                    }
+
+                    function updateAddScreenButtons() {
+                        const rows = document.querySelectorAll('#screenCapacityTable tbody tr');
+                        rows.forEach((row, index) => {
+                            const addScreenButton = row.querySelector('.btn-primary');
+                            addScreenButton.style.display = index === rows.length - 1 ? "inline-block" : "none";
+                        });
+                    }
+
+                    function serializeScreenData() {
+                        const tableBody = document.getElementById('screenCapacityTable').querySelector('tbody');
+                        const rows = tableBody.querySelectorAll('tr');
+                        const screens = [];
+
+                        rows.forEach((row) => {
+                            const seatCapacity = row.querySelector('input[name="seatCapacity"]').value;
+                            const screenType = row.querySelector('input[name="screenType"]').value;
+                            screens.push({
+                                SeatCapacity: parseInt(seatCapacity),
+                                ScreenType: screenType
+                            });
+                        });
+
+                        document.getElementById('screenData').value = JSON.stringify(screens);
+                    }
+
+                    document.querySelector('form').addEventListener('submit', serializeScreenData);
+                    updateAddScreenButtons();
+                </script>
+                <div class="text-center">
+                    <form method="post">
+                        @* Form fields go here *@
+
+                        <!-- Show Submit button on Create page -->
+                        @if (!(ViewBag.IsEditPage ?? false))
+                        {
+                            <button type="submit" class="btn btn-success mt-4 w-25">Submit</button>
+                        }
+                        else
+                        {
+                            <!-- Show Edit and Cancel buttons on Edit page -->
+
+                            <button type="submit" class="btn btn-success">Approve</button>
+                            <button type="button" class="btn btn-warning" onclick="location.href='@Url.Action("SecondPage","Home")'">Reject</button>
+                        }
+                    </form>
+
+                </div>
+
+            }
+        </div>
+    </div>
+
+</body>
+</html>

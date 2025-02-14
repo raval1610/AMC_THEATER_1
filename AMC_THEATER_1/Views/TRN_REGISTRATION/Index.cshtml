@@ -1,0 +1,165 @@
+﻿@model IEnumerable<AMC_THEATER_1.Models.TRN_REGISTRATION>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.T_ACTIVE)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.T_NAME)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.T_ADDRESS)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.T_OWNER_NAME)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.T_OWNER_NUMBER)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.T_OWNER_EMAIL)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.T_COMMENCEMENT_DATE)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.T_CITY)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.T_ZONE)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.T_WARD)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.T_TENAMENT_NO)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.T_PEC_NO)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.T_PRC_NO)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.T_TAX_PAYING_OFFLINE)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.OFFLINE_TAX_PAYMENT)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.OFFLINE_TAX_PAID_DATE)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.OFFLINE_DUE_DATE)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.CREATE_DATE)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.CREATE_USER)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.UPDATE_DATE)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.UPDATE_USER)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.DELETE_DATE)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.DELETE_USER)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.T_ACTIVE)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.T_NAME)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.T_ADDRESS)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.T_OWNER_NAME)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.T_OWNER_NUMBER)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.T_OWNER_EMAIL)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.T_COMMENCEMENT_DATE)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.T_CITY)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.T_ZONE)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.T_WARD)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.T_TENAMENT_NO)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.T_PEC_NO)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.T_PRC_NO)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.T_TAX_PAYING_OFFLINE)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.OFFLINE_TAX_PAYMENT)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.OFFLINE_TAX_PAID_DATE)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.OFFLINE_DUE_DATE)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.CREATE_DATE)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.CREATE_USER)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.UPDATE_DATE)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.UPDATE_USER)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.DELETE_DATE)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.DELETE_USER)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id=item.T_ID }) |
+            @Html.ActionLink("Details", "Details", new { id=item.T_ID }) |
+            @Html.ActionLink("Delete", "Delete", new { id=item.T_ID })
+        </td>
+    </tr>
+}
+
+</table>

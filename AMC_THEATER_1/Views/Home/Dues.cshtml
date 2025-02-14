@@ -1,0 +1,65 @@
+﻿@model IEnumerable<AMC_THEATER_1.Models.DueViewModel>
+
+@{
+    ViewBag.Title = "Dues";
+    ViewBag.ShowBasicNavbar = false; // Show only the basic navbar
+    ViewBag.ShowHomeIcon = true;
+    ViewBag.Module = true;
+    ViewBag.ShowNavbar = true;
+    ViewBag.ShowSideBar = true;
+}
+
+<style>
+    .container {
+        margin-left: 185px; /* Set this to match the sidebar width */
+        transition: margin-left 0.3s;
+        padding: 15px;
+    }
+</style>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+</head>
+<body>
+    <div class="container  justify-content-center">
+        <div class="w-75 ">
+            <h2 class="text-center mt-3 p-3 text-bg-light ">Pending Dues</h2>
+            <table class="table table-bordered ">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Month</th>
+                        <th>Year</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var due in Model)
+                        {
+                            <tr id="theater-@due.DUE_ID">
+                                <td>@due.D_MON</td>
+                                <td>@due.D_YEAR</td>
+                                <td>@due.D_STATUS</td>
+                                
+                                <td>
+                                    <a href="@Url.Action("Theater_Tax", "Home")" class="btn btn-primary btn-sm">Make Payment</a>
+                                    
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center">No theater data available.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

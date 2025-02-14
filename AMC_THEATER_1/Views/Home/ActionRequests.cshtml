@@ -1,0 +1,20 @@
+﻿
+@model IEnumerable<AMC_THEATER_1.Models.TheaterViewModel>
+@{
+
+    ViewBag.CurrentAction = "ActionRequests";
+    Layout = "~/Views/Shared/_Deptpage.cshtml";
+    ViewBag.ShowBasicNavbar1 = true; // Show only the basic navbar
+    ViewBag.ShowNavbar1 = true;
+    ViewBag.ShowSideBar1 = true;
+    ViewBag.Login1 = false;
+}
+
+
+@if (ViewBag.Message != null)
+{
+    <div class="alert alert-warning">@ViewBag.Message</div>
+}
+
+<!-- Use the Common Table View -->
+@Html.Partial("CommonTableView", Model)
