@@ -126,44 +126,6 @@
                                             <button type="button" onclick="confirmSoftDelete('@theater.T_ID')" class="btn btn-danger btn-sm" disabled>
                                                 Delete
                                             </button>
-
-
-
-                                            <script>
-                                                function confirmSoftDelete(tid) {
-                                                    console.log("Delete button clicked. Theater ID:", tid); // Debugging step
-
-                                                    // Ensure the modal element exists
-                                                    var deleteModal = document.getElementById("deleteModal");
-                                                    if (!deleteModal) {
-                                                        console.error("Modal element not found!");
-                                                        return;
-                                                    }
-
-                                                    // Set the theater ID in the modal text
-                                                    document.getElementById("theaterIdText").textContent = tid;
-
-                                                    // Set up the delete button action inside the modal
-                                                    document.getElementById("confirmDelete").onclick = function () {
-                                                        var form = document.createElement("form");
-                                                        form.method = "POST";
-                                                        form.action = "/Home/Theater_List";
-
-                                                        var input = document.createElement("input");
-                                                        input.type = "hidden";
-                                                        input.name = "deleteId";
-                                                        input.value = tid;
-
-                                                        form.appendChild(input);
-                                                        document.body.appendChild(form);
-                                                        form.submit();
-                                                    };
-
-                                                    // Show the Bootstrap modal
-                                                    var modalInstance = new bootstrap.Modal(deleteModal);
-                                                    modalInstance.show();
-                                                }
-                                            </script>
                                             <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
                                                 <div class="modal-dialog">
                                                     <div class="modal-content">
@@ -202,6 +164,61 @@
         </div>
     </div>
 
+
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to delete this theater with <strong id="theaterIdText"></strong>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <a href="#" id="confirmDelete" class="btn btn-danger">Yes, Delete</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function confirmSoftDelete(tid) {
+            console.log("Delete button clicked. Theater ID:", tid); // Debugging step
+
+            // Ensure the modal element exists
+            var deleteModal = document.getElementById("deleteModal");
+            if (!deleteModal) {
+                console.error("Modal element not found!");
+                return;
+            }
+
+            // Set the theater ID in the modal text
+            document.getElementById("theaterIdText").textContent = tid;
+
+            // Set up the delete button action inside the modal
+            document.getElementById("confirmDelete").onclick = function () {
+                var form = document.createElement("form");
+                form.method = "POST";
+                form.action = "/Home/Theater_List";
+
+                var input = document.createElement("input");
+                input.type = "hidden";
+                input.name = "deleteId";
+                input.value = tid;
+
+                form.appendChild(input);
+                document.body.appendChild(form);
+                form.submit();
+            };
+
+            // Show the Bootstrap modal
+            var modalInstance = new bootstrap.Modal(deleteModal);
+            modalInstance.show();
+        }
+    </script>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -229,23 +246,6 @@
 
     </script>
 
-    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    Are you sure you want to delete this theater with <strong id="theaterIdText"></strong>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <a href="#" id="confirmDelete" class="btn btn-danger">Yes, Delete</a>
-                </div>
-            </div>
-        </div>
-    </div>
 
 
     <script>

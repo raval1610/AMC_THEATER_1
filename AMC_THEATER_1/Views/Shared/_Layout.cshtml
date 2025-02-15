@@ -23,149 +23,6 @@
             margin-left: 1px !important;
         }
     </style>
-</head>
-
-<body>
-    <!-- Navbar for FirstPage and Login -->
-    @if (ViewBag.ShowBasicNavbar == true)
-    {
-        <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
-            @*<div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav ms-auto">
-                        <li class="nav-item">
-                            <a href="@Url.Action("Login", "Home")" class="btn text-white">Login</a>
-                        </li>
-                    </ul>
-                </div>*@
-        </nav>
-    }
-
-    <!-- Sidebar and Navbar for other pages -->
-    @if (ViewBag.ShowNavbar == true)
-    {
-        <nav class="navbar navbar-expand-sm navbar-dark bg-dark no-print fixed-navbar-height">
-            <div class="container-fluid p-0">
-                <!-- Left-aligned logo -->
-                <a href="@Url.Action("Index", "Home")" class="navbar-brand align-items-center custom-navbar-brand d-flex ms-1">
-                    <img src="https://upload.wikimedia.org/wikipedia/en/3/35/Amdavad_Municipal_Corporation_logo.png"
-                         alt="Logo"
-                         class="img-fluid bg-white rounded-circle custom-logo">
-                    <!-- Text next to the logo -->
-                    <span class="ms-2 mb-2 text-white fs-2">
-                        Ahmedabad Municipal Corporation
-                        <small class="text-light text-muted mt-1 ms-1 fs-5 d-block m-0">અમદાવાદ મ્યુનિસિપલ કોર્પોરેશન</small>
-                    </span>
-
-                </a>
-                @if (ViewBag.Module == true)
-                {
-                    <h3 class="text-end text-white">
-                        Theater Tax <i class="fas fa-file-invoice-dollar text-info"></i>
-                    </h3>
-                }
-                    @*@if (ViewBag.ShowHomeIcon == true)
-            {
-                <div class="d-flex ms-auto">
-                    <a href="@Url.Action("SecondPage", "Home")" class="btn btn-secondary">
-                        <i class="fas fa-door-open"></i> Dashboard
-                    </a>
-
-                </div>
-            }*@
-
-
-                    <!-- Conditionally render the Login button -->
-                    @if (ViewBag.Login == true)
-                    {
-                        <div class="collapse navbar-collapse mt-2" id="navbarNav">
-                            <ul class="navbar-nav ms-auto">
-                                <li class="nav-item mb-3">
-                                    <a href="@Url.Action("Home_Page", "Home")" class="btn text-white">Home</a>
-                                    <a href="@Url.Action("Login", "Home")" class="btn text-white">Login</a>
-                                    <a href="@Url.Action("Department_Login", "Home")" class="btn text-white">Department Login</a>
-
-                                </li>
-                            </ul>
-                        </div>
-                    }
-
-                </div>
-        </nav>
-    }
-
-    @if (ViewBag.ShowSideBar == true && (Session["HideMenu"] == null || !(bool)Session["HideMenu"]))
-    {
-        <!-- Sidebar Menu -->
-        <div class="sidebar show" id="sidebar">
-            <div class="mt-4">
-                <div class="mt-4">
-                    <a href="@Url.Action("Theater_List", "Home")">Theater List</a>
-                    <a href="@Url.Action("Registration", "TRN_REGISTRATION")">Registration</a>
-
-                    <a href="@Url.Action("Theater_Tax", "Home")">Make Payment</a>
-
-                    <a href="@Url.Action("List_of_Application", "Home")">List of Application</a>
-                    <a href="@Url.Action("PaymentHistoryFilter", "Home")">Payment History</a>
-                    <a href="@Url.Action("Dues", "Home")">Pending Dues</a>
-                    <a href="@Url.Action("AllReceipt", "Home")">Receipts</a>
-                    <a href="@Url.Action("Tax_Hold", "Home")">Tax Hold Period</a>
-
-
-
-                </div>
-            </div>
-        </div>
-    }
-
-    <script type="text/javascript">
- function handleForgotIdClick() {
-     var currentUrl = window.location.href;
-
-     // Check if the URL contains the query parameter 'hideMenu=True'
-     if (currentUrl.includes("hideMenu=True")) {
-         // If 'hideMenu' parameter exists, redirect to a different page (Search ID or another page)
-         window.location.href = "@Url.Action("SearchID", "Home")"; // Change this to your desired redirect URL
-     } else {
-         // If 'hideMenu' parameter does not exist, show the modal
-         showModal('Find Your Theater ID In The Theater List')
-     }
- }
-
- // Function to show the Bootstrap modal with a message
- function showModal(message) {
-     // Set the modal message dynamically
-     document.getElementById('modalMessage').innerText = message;
-
-     // Show the modal using Bootstrap
-     var myModal = new bootstrap.Modal(document.getElementById('messageModal'));
-     myModal.show();
- }
-    </script>
-
-    <!-- Modal HTML (Bootstrap Modal) -->
-    <div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="messageModalLabel">Forgot Your ID?</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p id="modalMessage">Please contact support for assistance with your ID.</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-    <!-- Main Content -->
-    <div class="container mt-5 open-sidebar" id="mainContent">
-        @RenderBody()
-    </div>
-
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -211,5 +68,152 @@
                     background-color: #575757;
                 }
     </style>
+
+</head>
+
+<body>
+    <!-- Navbar for FirstPage and Login -->
+    @if (ViewBag.ShowBasicNavbar == true)
+    {
+        <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
+            @*<div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a href="@Url.Action("Login", "Home")" class="btn text-white">Login</a>
+                        </li>
+                    </ul>
+                </div>*@
+        </nav>
+    }
+
+    <!-- Sidebar and Navbar for other pages -->
+    @if (ViewBag.ShowNavbar == true)
+    {
+        <nav class="navbar navbar-expand-sm navbar-dark bg-dark no-print fixed-navbar-height">
+            <div class="container-fluid p-0">
+                <!-- Left-aligned logo -->
+                <a href="@Url.Action("Index", "Home")" class="navbar-brand align-items-center custom-navbar-brand d-flex ms-1">
+                    <img src="https://upload.wikimedia.org/wikipedia/en/3/35/Amdavad_Municipal_Corporation_logo.png"
+                         alt="Logo"
+                         class="img-fluid bg-white rounded-circle custom-logo">
+                    <!-- Text next to the logo -->
+                    <span class="ms-2 mb-2 text-white fs-2">
+                        Ahmedabad Municipal Corporation
+                        <small class="text-light text-muted mt-1 ms-1 fs-5 d-block m-0">અમદાવાદ મ્યુનિસિપલ કોર્પોરેશન</small>
+                    </span>
+
+                </a>
+                @if (ViewBag.Module == true)
+                {
+                    <h3 class="text-end text-white">
+                        Theater Tax <i class="fas fa-file-invoice-dollar text-info"></i>
+                    </h3>
+                }
+                @*@if (ViewBag.ShowHomeIcon == true)
+                    {
+                        <div class="d-flex ms-auto">
+                            <a href="@Url.Action("SecondPage", "Home")" class="btn btn-secondary">
+                                <i class="fas fa-door-open"></i> Dashboard
+                            </a>
+
+                        </div>
+                    }*@
+
+
+                <!-- Conditionally render the Login button -->
+                @if (ViewBag.Login == true)
+                {
+                    <div class="collapse navbar-collapse mt-2" id="navbarNav">
+                        <ul class="navbar-nav ms-auto">
+                            <li class="nav-item mb-3">
+                                <a href="@Url.Action("Home_Page", "Home")" class="btn text-white">Home</a>
+                                <a href="@Url.Action("Login", "Home")" class="btn text-white">Login</a>
+                                <a href="@Url.Action("Department_Login", "Home")" class="btn text-white">Department Login</a>
+
+                            </li>
+                        </ul>
+                    </div>
+                }
+
+            </div>
+        </nav>
+    }
+
+    @if (ViewBag.ShowSideBar == true && (Session["HideMenu"] == null || !(bool)Session["HideMenu"]))
+    {
+        <!-- Sidebar Menu -->
+        <div class="sidebar show" id="sidebar">
+            <div class="mt-4">
+                <div class="mt-4">
+                    <a href="@Url.Action("Theater_List", "Home")">Theater List</a>
+                    <a href="@Url.Action("Registration", "TRN_REGISTRATION")">Registration</a>
+
+                    <a href="@Url.Action("Theater_Tax", "Home")">Make Payment</a>
+
+                    <a href="@Url.Action("List_of_Application", "Home")">List of Application</a>
+                    <a href="@Url.Action("PaymentHistoryFilter", "Home")">Payment History</a>
+                    <a href="@Url.Action("Dues", "Home")">Pending Dues</a>
+                    <a href="@Url.Action("AllReceipt", "Home")">Receipts</a>
+                    <a href="@Url.Action("Tax_Hold", "Home")">Tax Hold Period</a>
+
+
+
+                </div>
+            </div>
+        </div>
+    }
+
+
+
+    <!-- Modal HTML (Bootstrap Modal) -->
+    <div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="messageModalLabel">Forgot Your ID?</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="modalMessage">Please contact support for assistance with your ID.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Main Content -->
+    <div class="container mt-5 open-sidebar" id="mainContent">
+        @RenderBody()
+    </div>
+
+   
+
+    <script type="text/javascript">
+ function handleForgotIdClick() {
+     var currentUrl = window.location.href;
+
+     // Check if the URL contains the query parameter 'hideMenu=True'
+     if (currentUrl.includes("hideMenu=True")) {
+         // If 'hideMenu' parameter exists, redirect to a different page (Search ID or another page)
+         window.location.href = "@Url.Action("SearchID", "Home")"; // Change this to your desired redirect URL
+     } else {
+         // If 'hideMenu' parameter does not exist, show the modal
+         showModal('Find Your Theater ID In The Theater List')
+     }
+ }
+
+ // Function to show the Bootstrap modal with a message
+ function showModal(message) {
+     // Set the modal message dynamically
+     document.getElementById('modalMessage').innerText = message;
+
+     // Show the modal using Bootstrap
+     var myModal = new bootstrap.Modal(document.getElementById('messageModal'));
+     myModal.show();
+ }
+    </script>
 </body>
 </html>

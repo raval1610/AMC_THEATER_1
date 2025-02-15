@@ -24,6 +24,51 @@
             margin-left: 1px !important;
         }
     </style>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            transition: margin-left 0.3s;
+        }
+
+        .navbar {
+            background-color: #007bff;
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            padding: 10px 20px;
+        }
+
+        .custom-navbar-brand .fs-5 {
+            margin-top: -2px; /* Adjust as needed */
+            line-height: 1.2; /* Adjust line height to control the distance between lines */
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 250px;
+            height: 100%;
+            background-color: #343a40;
+            color: white;
+            padding-top: 60px;
+            transition: 0.3s;
+        }
+
+            .sidebar a {
+                color: white;
+                padding: 8px 15px;
+                text-decoration: none;
+                display: block;
+                font-size: 18px;
+            }
+
+                .sidebar a:hover {
+                    background-color: #575757;
+                }
+    </style>
 </head>
 
 <body>
@@ -105,50 +150,6 @@
         @RenderBody()
     </div>
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            transition: margin-left 0.3s;
-        }
-
-        .navbar {
-            background-color: #007bff;
-            width: 100%;
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 1000;
-            padding: 10px 20px;
-        }
-
-        .custom-navbar-brand .fs-5 {
-            margin-top: -2px; /* Adjust as needed */
-            line-height: 1.2; /* Adjust line height to control the distance between lines */
-        }
-
-        .sidebar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 250px;
-            height: 100%;
-            background-color: #343a40;
-            color: white;
-            padding-top: 60px;
-            transition: 0.3s;
-        }
-
-            .sidebar a {
-                color: white;
-                padding: 8px 15px;
-                text-decoration: none;
-                display: block;
-                font-size: 18px;
-            }
-
-                .sidebar a:hover {
-                    background-color: #575757;
-                }
-    </style>
+   
 </body>
 </html>
