@@ -110,7 +110,7 @@
                     <a href="@Url.Action("PaymentHistoryFilter", "Home")">Payment History</a>
                     <a href="@Url.Action("Dues", "Home")">Pending Dues</a>
                     <a href="@Url.Action("AllReceipt", "Home")">Receipts</a>
-                    <a href="@Url.Action("Skip_Payment", "Home")">Tax Hold Period</a>
+                    <a href="@Url.Action("Tax_Hold", "Home")">Tax Hold Period</a>
 
                 </div>
             </div>
@@ -120,9 +120,11 @@
         <div class="sidebar show" id="sidebar">
             <div class="mt-4">
 
-                <a href="@Url.Action("FirstPage", "Home")">
+                <a href="@Url.Action("Home_Page", "Home")">
                     <i class="fa fa-home"></i> Home
                 </a>
+                <a href="@Url.Action("Tax_Hold", "Home")">Tax Hold Period</a>
+
             </div>
         </div>
     }

@@ -1250,7 +1250,10 @@ namespace Amc_theater.Controllers
             }
         }
 
-
+        public ActionResult Tax_Hold()
+        {
+            return View();
+        }
 
 
 
