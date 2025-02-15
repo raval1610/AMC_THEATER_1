@@ -76,7 +76,7 @@
                     </form>
 
 
-                  
+
 
 
                     <div class="mb-4">
@@ -165,7 +165,7 @@
                                                    value="@Model.Screens[i].ScreenPrice" readonly />
                                         </td>
                                         <td>@Model.Screens[i].ScreenType</td>
-                                       
+
 
                                         <td>
                                             <input type="number" class="form-control totalShow"
@@ -214,94 +214,96 @@
                         </div>
 
                     }
-                    <script>
-                        function calculateActualShow(index) {
-                            let totalShow = parseInt(document.querySelector(`[name='Screens[${index}].TotalShow']`).value) || 0;
-                            let cancelShow = parseInt(document.querySelector(`[name='Screens[${index}].CancelShow']`).value) || 0;
-                            let actualShowInput = document.getElementById(`actualShow_${index}`);
-                            let amountInput = document.getElementById(`amtPerScreen_${index}`);
 
-                            // Locate the correct row
-                            let row = document.querySelector(`[name='Screens[${index}].TotalShow']`).closest("tr");
-
-                            // Fetch the ScreenType
-                            let screenType = row ? row.cells[2].textContent.trim() : ""; // Fetching 3rd <td> (index 2)
-
-                            console.log(`Index: ${index}, Screen Type: ${screenType}`); // Debugging
-
-                            let rate = parseFloat(document.querySelector(`[name='Screens[${index}].ScreenPrice']`).value) || 0;
-
-                            // Calculate Actual Shows
-                            let actualShow = Math.max(totalShow - cancelShow, 0);
-                            actualShowInput.value = actualShow;
-
-                            // Determine screen type multiplier
-                            let multiplier = screenType.toLowerCase() === "theater" ? 75 : 25;
-
-                            // Calculate Amount per Screen
-                            let amount = actualShow * multiplier;
-                            amountInput.value = amount;
-
-                            // Recalculate total amount
-                            calculateTotalAmount();
-                        }
-
-                        function calculateTotalAmount() {
-                            let totalAmount = 0;
-                            document.querySelectorAll(".amount").forEach(input => {
-                                totalAmount += parseFloat(input.value) || 0;
-                            });
-                            document.getElementById("totalAmount").innerText = `₹${totalAmount.toFixed(2)}`;
-                        }
-
-                        document.addEventListener("DOMContentLoaded", function () {
-                            document.querySelectorAll(".totalShow, .cancelShow").forEach(input => {
-                                input.addEventListener("input", function () {
-                                    let index = this.getAttribute("data-index");
-                                    calculateActualShow(index);
-                                });
-                            });
-                        });
-                    </script>
 
 
 
 
 
                 </div>
-                </div>
-
-
             </div>
+
+
         </div>
+    </div>
 
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-        <script>
-            document.addEventListener("DOMContentLoaded", function () {
-                function updateAmounts(index) {
-                    var totalShows = document.querySelector(`[name="Screens[${index}].TotalShow"]`).value || 0;
-                    var cancelShows = document.querySelector(`[name="Screens[${index}].CancelShow"]`).value || 0;
-                    var screenPrice = document.querySelector(`[name="Screens[${index}].ScreenPrice"]`).value || 0;
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 
-                    totalShows = parseInt(totalShows);
-                    cancelShows = parseInt(cancelShows);
-                    screenPrice = parseFloat(screenPrice);
+    <script>
+        function calculateActualShow(index) {
+            let totalShow = parseInt(document.querySelector(`[name='Screens[${index}].TotalShow']`).value) || 0;
+            let cancelShow = parseInt(document.querySelector(`[name='Screens[${index}].CancelShow']`).value) || 0;
+            let actualShowInput = document.getElementById(`actualShow_${index}`);
+            let amountInput = document.getElementById(`amtPerScreen_${index}`);
 
-                    var actualShows = Math.max(totalShows - cancelShows, 0);
-                    var amount = actualShows * screenPrice;
+            // Locate the correct row
+            let row = document.querySelector(`[name='Screens[${index}].TotalShow']`).closest("tr");
 
-                    document.querySelector(`[name="Screens[${index}].ActualShow"]`).value = actualShows;
-                    document.querySelector(`[name="Screens[${index}].AmtPerScreen"]`).value = amount.toFixed(2);
-                }
+            // Fetch the ScreenType
+            let screenType = row ? row.cells[2].textContent.trim() : ""; // Fetching 3rd <td> (index 2)
 
-                document.querySelectorAll(".totalShow, .cancelShow").forEach(input => {
-                    input.addEventListener("input", function () {
-                        var index = this.getAttribute("data-index");
-                        updateAmounts(index);
-                    });
+            console.log(`Index: ${index}, Screen Type: ${screenType}`); // Debugging
+
+            let rate = parseFloat(document.querySelector(`[name='Screens[${index}].ScreenPrice']`).value) || 0;
+
+            // Calculate Actual Shows
+            let actualShow = Math.max(totalShow - cancelShow, 0);
+            actualShowInput.value = actualShow;
+
+            // Determine screen type multiplier
+            let multiplier = screenType.toLowerCase() === "theater" ? 75 : 25;
+
+            // Calculate Amount per Screen
+            let amount = actualShow * multiplier;
+            amountInput.value = amount;
+
+            // Recalculate total amount
+            calculateTotalAmount();
+        }
+
+        function calculateTotalAmount() {
+            let totalAmount = 0;
+            document.querySelectorAll(".amount").forEach(input => {
+                totalAmount += parseFloat(input.value) || 0;
+            });
+            document.getElementById("totalAmount").innerText = `₹${totalAmount.toFixed(2)}`;
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelectorAll(".totalShow, .cancelShow").forEach(input => {
+                input.addEventListener("input", function () {
+                    let index = this.getAttribute("data-index");
+                    calculateActualShow(index);
                 });
             });
-        </script>
-      
+        });
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            function updateAmounts(index) {
+                var totalShows = document.querySelector(`[name="Screens[${index}].TotalShow"]`).value || 0;
+                var cancelShows = document.querySelector(`[name="Screens[${index}].CancelShow"]`).value || 0;
+                var screenPrice = document.querySelector(`[name="Screens[${index}].ScreenPrice"]`).value || 0;
+
+                totalShows = parseInt(totalShows);
+                cancelShows = parseInt(cancelShows);
+                screenPrice = parseFloat(screenPrice);
+
+                var actualShows = Math.max(totalShows - cancelShows, 0);
+                var amount = actualShows * screenPrice;
+
+                document.querySelector(`[name="Screens[${index}].ActualShow"]`).value = actualShows;
+                document.querySelector(`[name="Screens[${index}].AmtPerScreen"]`).value = amount.toFixed(2);
+            }
+
+            document.querySelectorAll(".totalShow, .cancelShow").forEach(input => {
+                input.addEventListener("input", function () {
+                    var index = this.getAttribute("data-index");
+                    updateAmounts(index);
+                });
+            });
+        });
+    </script>
+
 </body>
 </html>
