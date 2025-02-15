@@ -1,11 +1,19 @@
 ﻿@model IEnumerable<AMC_THEATER_1.Models.TheaterViewModel>
 @{
     ViewBag.CurrentAction = "List of Application";
+    Layout = "~/Views/Shared/_HomeSideBar.cshtml";
+
+    ViewBag.Title = "List";
+
     ViewBag.ShowBasicNavbar = false;
-    ViewBag.ShowHomeIcon = true;
+
 
     ViewBag.ShowNavbar = true;
+
+
     ViewBag.ShowSideBar = true;
+    ViewBag.Login = false;
+    ViewBag.ModuleTax = true;
 }
 
 

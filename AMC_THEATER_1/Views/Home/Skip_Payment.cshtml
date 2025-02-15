@@ -1,7 +1,4 @@
-﻿
-@{
-    ViewBag.Title = "Skip_Payment";
-
+﻿@{
     Layout = "~/Views/Shared/_HomeSideBar.cshtml";
 
     ViewBag.Title = "Theater Tax Payment";
@@ -30,17 +27,19 @@
         }
 
         .container {
-            margin-left: 120px; /* Set this to match the sidebar width */
+            margin-left: 120px;
             transition: margin-left 0.3s;
             padding: 15px;
         }
 
-        .form-control {
-            width: 100%;
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            gap: 20px;
         }
 
-        .form-label {
-            font-weight: bold;
+        .text-muted {
+            color: gray !important;
         }
     </style>
 </head>
@@ -49,45 +48,107 @@
         <div class="card windows-card">
             <div class="card-body">
                 <h4 class="card-title fw-bold text-center mb-4">Skip Payment</h4>
+
+                <!-- Full Theater or Specific Screens Selection -->
+                <div class="mb-3 toggle-container">
+                    <div>
+                        <label class="form-label fw-bold">Apply Skip Payment For:</label>
+                        <div class="btn-group" role="group">
+                            <input type="radio" class="btn-check" name="skipType" id="fullTheater" value="full" checked>
+                            <label class="btn btn-outline-primary" for="fullTheater">Entire Theater</label>
+
+                            <input type="radio" class="btn-check" name="skipType" id="specificScreens" value="screens">
+                            <label class="btn btn-outline-primary" for="specificScreens">Specific Screens</label>
+                        </div>
+                    </div>
+
+                    <!-- Screens Selection Toggle (Inline) -->
+                    <div class="d-none" id="screensSelection">
+                        <label class="form-label fw-bold ms-5">Select Screens:</label>
+                        <div class="d-flex flex-wrap gap-4">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="screen1" name="screens[]" value="Screen1">
+                                <label class="form-check-label" for="screen1">Screen 1</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="screen2" name="screens[]" value="Screen2">
+                                <label class="form-check-label" for="screen2">Screen 2</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="screen3" name="screens[]" value="Screen3">
+                                <label class="form-check-label" for="screen3">Screen 3</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="screen4" name="screens[]" value="Screen4">
+                                <label class="form-check-label" for="screen4">Screen 4</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="screen4" name="screens[]" value="Screen4">
+                                <label class="form-check-label" for="screen4">Screen 5</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="screen4" name="screens[]" value="Screen4">
+                                <label class="form-check-label" for="screen4">Screen 6</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="screen4" name="screens[]" value="Screen4">
+                                <label class="form-check-label" for="screen4">Screen 7</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="screen4" name="screens[]" value="Screen4">
+                                <label class="form-check-label" for="screen4">Screen 8</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="screen4" name="screens[]" value="Screen4">
+                                <label class="form-check-label" for="screen4">Screen 9</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="screen4" name="screens[]" value="Screen4">
+                                <label class="form-check-label" for="screen4">Screen 10</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <form>
                     <div class="row">
                         <div class="col-md-8">
-                            <label class="form-label">Select Months</label>
+                            <label class="form-label fw-bold">Select Months</label>
                             <div class="row">
                                 <script>
                                     const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
                                     document.write('<div class="col-md-4">' + months.slice(0, 4).map(m => `<div class='form-check'>
-                                                                                                        <input class='form-check-input' type='checkbox' id='${m}' name='months[]' value='${m}'>
-                                                                                                        <label class='form-check-label' for='${m}'>${m}</label>
-                                                                                                    </div>`).join('') + '</div>');
+                                                                                                                                        <input class='form-check-input' type='checkbox' id='${m}' name='months[]' value='${m}'>
+                                                                                                                                        <label class='form-check-label' for='${m}'>${m}</label>
+                                                                                                                                    </div>`).join('') + '</div>');
                                     document.write('<div class="col-md-4">' + months.slice(4, 8).map(m => `<div class='form-check'>
-                                                                                                        <input class='form-check-input' type='checkbox' id='${m}' name='months[]' value='${m}'>
-                                                                                                        <label class='form-check-label' for='${m}'>${m}</label>
-                                                                                                    </div>`).join('') + '</div>');
+                                                                                                                                        <input class='form-check-input' type='checkbox' id='${m}' name='months[]' value='${m}'>
+                                                                                                                                        <label class='form-check-label' for='${m}'>${m}</label>
+                                                                                                                                    </div>`).join('') + '</div>');
                                     document.write('<div class="col-md-4">' + months.slice(8, 12).map(m => `<div class='form-check'>
-                                                                                                        <input class='form-check-input' type='checkbox' id='${m}' name='months[]' value='${m}'>
-                                                                                                        <label class='form-check-label' for='${m}'>${m}</label>
-                                                                                                    </div>`).join('') + '</div>');
+                                                                                                                                        <input class='form-check-input' type='checkbox' id='${m}' name='months[]' value='${m}'>
+                                                                                                                                        <label class='form-check-label' for='${m}'>${m}</label>
+                                                                                                                                    </div>`).join('') + '</div>');
                                 </script>
                             </div>
                         </div>
 
                         <div class="col-md-4">
-                            <label for="reason" class="form-label">Give Reason</label>
+                            <label for="reason" class="form-label fw-bold">Give Reason</label>
                             <select id="reason" class="form-select" name="reason">
                                 <option value="" selected disabled>Select Reason</option>
-                                <option value="Medical">Under Construction</option>
-                                <option value="Financial">Under Maintanance</option>
+                                <option value="Construction">Under Construction</option>
+                                <option value="Maintenance">Under Maintenance</option>
                                 <option value="Emergency">Fire Emergency</option>
                                 <option value="Other">Other</option>
                             </select>
 
                             <div class="mt-3 d-none" id="otherReasonDiv">
-                                <label for="otherReason" class="form-label">Specify Other Reason</label>
+                                <label for="otherReason" class="form-label fw-bold">Specify Other Reason</label>
                                 <textarea id="otherReason" class="form-control" name="otherReason" rows="3"></textarea>
                             </div>
                             <div class="mb-3 mt-3">
-                                <label for="proof" class="form-label">Upload Proof</label>
+                                <label for="proof" class="form-label fw-bold">Upload Proof</label>
                                 <input type="file" class="form-control" id="proof" name="proof">
                             </div>
                         </div>
@@ -103,6 +164,12 @@
 
     <script>
         $(document).ready(function () {
+            // Toggle screens selection based on radio button choice
+            $('input[name="skipType"]').change(function () {
+                $('#screensSelection').toggleClass('d-none', !$('#specificScreens').is(':checked'));
+            });
+
+            // Show or hide "Other" reason text area
             $('#reason').change(function () {
                 if ($(this).val() === 'Other') {
                     $('#otherReasonDiv').removeClass('d-none');
@@ -112,6 +179,15 @@
             });
         });
     </script>
+
+    <script>
+        $(document).ready(function () {
+            $('input[name="skipType"]').change(function () {
+                $('#screensSelection').toggleClass('d-none', !$('#specificScreens').is(':checked'));
+            });
+        });
+    </script>
+
 </body>
 </html>
 
