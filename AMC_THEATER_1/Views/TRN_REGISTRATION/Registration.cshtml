@@ -26,6 +26,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/Scripts/script.js"></script>
+    @*<script src="@Url.Content("~/Scripts/TrnRegScript.js")"></script>*@
+
     <style>
         .container {
             margin-left: 135px; /* Set this to match the sidebar width */
@@ -118,28 +120,6 @@
                         @Html.DropDownListFor(m => m.T_WARD, new SelectList(new[] { "Ward1", "Ward2", "Ward3", "Ward4" }), "-- Select Ward Zone --",
                         new { @class = "form-control readonly-field", required = "required" })
                     </div>
-                    <script>
-    function makeDropdownReadonly(className) {
-        let elements = document.querySelectorAll("." + className);
-        elements.forEach(el => {
-            el.addEventListener("mousedown", function (event) {
-                event.preventDefault(); // Prevents opening the dropdown
-            });
-
-            el.style.backgroundColor = "#e9ecef"; // Light gray background (like readonly)
-            el.style.pointerEvents = "none"; // Prevents clicking
-            el.style.opacity = "1"; // Ensures visibility
-            el.style.color = "#495057"; // Matches text color of readonly input
-        });
-    }
-
-    document.addEventListener("DOMContentLoaded", function () {
-        @if (ViewBag.IsViewPage == true) {
-            @:makeDropdownReadonly("readonly-field");
-        }
-    });
-                    </script>
-
                 </div>
 
                 <!-- Tax Details -->
@@ -198,59 +178,10 @@
                                    class="form-control ms-1 readonly-field"
                                    value="@Model?.OFFLINE_DUE_DATE?.ToString(" yyyy-MM-dd")" />
                         </div>
-                        <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        var offlineTaxPaidDate = '@(Model?.OFFLINE_TAX_PAID_DATE?.ToString("yyyy-MM-dd"))';
-        var offlineDueDate = '@(Model?.OFFLINE_DUE_DATE?.ToString("yyyy-MM-dd"))';
-
-        document.getElementById('offlineTaxPaidDate').value = offlineTaxPaidDate || '';
-        document.getElementById('offlineDueDate').value = offlineDueDate || '';
-    });
-                        </script>
-                        <script>
-                            // Assuming these values come from the server-side and are already available in registrationData
-                            var offlineTaxPaidDate = registrationData.OFFLINE_TAX_PAID_DATE;
-                            var offlineDueDate = registrationData.OFFLINE_DUE_DATE;
-
-                            // Set the values of the input fields with the correct date format
-                            document.getElementById('offlineTaxPaidDate').value = offlineTaxPaidDate ? offlineTaxPaidDate.toISOString().split('T')[0] : '';
-                            document.getElementById('offlineDueDate').value = offlineDueDate ? offlineDueDate.toISOString().split('T')[0] : '';
-                        </script>
-
                     </div>
                 </div>
-
-                <script>
-                    // Function to toggle visibility of #offlineTaxDetails
-                    function toggleFields(isOffline) {
-                        const offlineTaxDetails = document.getElementById('offlineTaxDetails');
-
-                        // Show the section if "Yes" is selected; hide it otherwise
-                        if (isOffline) {
-                            offlineTaxDetails.style.display = 'block';
-                        } else {
-                            offlineTaxDetails.style.display = 'none';
-                        }
-                    }
-
-                    // Attach event listener on DOMContentLoaded for initialization
-                    document.addEventListener('DOMContentLoaded', () => {
-                        const yesRadio = document.getElementById('yes');
-                        const noRadio = document.getElementById('no');
-
-                        // Initialize visibility based on pre-selected option
-                        if (yesRadio.checked) {
-                            toggleFields(true);
-                        } else if (noRadio.checked) {
-                            toggleFields(false);
-                        }
-
-                        // Add click event listeners for runtime changes
-                        yesRadio.addEventListener('click', () => toggleFields(true));
-                        noRadio.addEventListener('click', () => toggleFields(false));
-                    });
-                </script>
-
+    
+                
                 <!-- Grid Table for Screen Capacity -->
                 <table id="screenCapacityTable" class="table table-bordered text-center mt-3">
                     <thead>
@@ -317,75 +248,7 @@
                     </tbody>
                 </table>
 
-                <!-- JavaScript to Hide Elements -->
-                <script>
-    function hideElementsByClass(HideAtDept) {
-        let elements = document.querySelectorAll("." + HideAtDept);
-        elements.forEach(el => el.style.display = "none");
-    }
-
-    document.addEventListener("DOMContentLoaded", function () {
-        @if (ViewBag.IsViewPage == true) // If condition is true, call the function
-        {
-            @:hideElementsByClass("HideAtDept");
-        }
-    });
-                </script>
-
-
-                <!-- Hidden input to store screen data -->
-                <input type="hidden" id="screenData" name="screenData">
-                <script>
-                    function addScreen() {
-                        var table = document.getElementById("screenCapacityTable").getElementsByTagName('tbody')[0];
-                        var rowCount = table.rows.length;
-                        var newRow = table.insertRow(rowCount);
-
-                        newRow.innerHTML = ` <td>${rowCount + 1}</td>
-                                                                                                                                                                                                                                            <td><input type="number" name="seatCapacity" class="form-control ms-4" required oninput="updateScreenType(this)"></td>
-                                                                                                                                                                                                                                            <td><input type="text" name="screenType" class="form-control" me-1 readonly></td>
-                                                                                                                                                                                                                                            <td>
-                                                                                                                                                                                                                                                <button type="button" class="btn btn-primary me-2" onclick="addScreen()" title="Add Screen">
-                                                                                                                                                                                                                                                    <i class="fas fa-plus"></i>
-                                                                                                                                                                                                                                                </button>
-                                                                                                                                                                                                                                                <button type="button" class="btn btn-warning me-2" onclick="editRow(this)" title="Edit Screen">
-                                                                                                                                                                                                                                                    <i class="fas fa-edit"></i>
-                                                                                                                                                                                                                                                </button>
-                                                                                                                                                                                                                                                <button type="button" class="btn btn-danger me-2" onclick="removeRow(this)" title="Delete Screen">
-                                                                                                                                                                                                                                                    <i class="fas fa-trash-alt"></i>
-                                                                                                                                                                                                                      </td>
-                                                                                                                                                                                                                                        `;
-                    }
-
-                    function removeRow(button) {
-                        var row = button.parentNode.parentNode;
-                        row.parentNode.removeChild(row);
-                    }
-
-                    function editRow(button) {
-                        var row = button.parentNode.parentNode;
-                        var seatCapacityInput = row.cells[1].querySelector("input");
-                        seatCapacityInput.removeAttribute("readonly");
-                    }
-
-                    function updateScreenType(input) {
-                        var seatCapacity = input.value;
-                        var row = input.parentNode.parentNode;
-                        var screenTypeInput = row.cells[2].querySelector("input");
-
-                        if (seatCapacity > 125) {
-                            screenTypeInput.value = "Theater";
-                        } else {
-                            screenTypeInput.value = "Video";
-                        }
-                    }
-                </script>
-
-
-
                 <h2 class="text-bg-light p-2">Upload Required Documents :</h2>
-
-
                 <div class="row">
                     <div class="col-md-12">
                         <table class="table table-bordered  table-striped">
@@ -435,56 +298,12 @@
                                                 <span class="text-muted">Not Available</span>
                                             }
                                         </td>
-
-
-
-
                                     </tr>
                                 }
                             </tbody>
                         </table>
-
-
                     </div>
                 </div>
-
-                <script>
-                    function updateFileSize(docId) {
-                        const inputElement = document.getElementById(`file-${docId}`);
-                        const sizeElement = document.getElementById(`size-${docId}`);
-
-                        if (inputElement.files.length > 0) {
-                            // Get file size in bytes
-                            const fileSizeBytes = inputElement.files[0].size;
-
-                            // Convert to MB
-                            const fileSizeMB = (fileSizeBytes / (1024 * 1024)).toFixed(2);
-
-                            // Update size column
-                            sizeElement.textContent = `${fileSizeMB} MB`;
-
-                            // Validate file size (Max: 5 MB)
-                            if (fileSizeMB > 5) {
-                                alert("The selected file exceeds the maximum allowed size of 5 MB. Please select a smaller file.");
-                                inputElement.value = ""; // Clear input
-                                sizeElement.textContent = "0 MB"; // Reset size
-                            }
-                        } else {
-                            sizeElement.textContent = "0 MB";
-                        }
-                    }
-
-                    function showViewButton(docId, input) {
-                        if (input.files.length > 0) {
-                            let file = input.files[0];
-                            let fileURL = URL.createObjectURL(file);
-
-                            document.getElementById(`viewBtn-${docId}`).innerHTML =
-                                `<a href='${fileURL}' target='_blank' class='btn btn-primary btn-sm'>View</a>`;
-                        }
-                    }
-                </script>
-
 
                 @functions {
                     public string GetFileSize(string filePath)
@@ -499,175 +318,21 @@
                     }
                 }
 
-
-
-
-
                 <!-- Include Font Awesome for icons -->
                 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
-
-                <script>
-                    let screenCount = 1; // Initial screen count
-
-                    function addScreen() {
-                        const tableBody = document.getElementById('screenCapacityTable').querySelector('tbody');
-
-                        if (screenCount >= 10) {
-                            alert("You can add up to 10 screens only.");
-                            return;
-                        }
-
-                        const lastRow = tableBody.querySelector('tr:last-child');
-                        if (lastRow) {
-                            const seatCapacityInput = lastRow.querySelector('input[name="seatCapacity"]');
-                            if (seatCapacityInput && seatCapacityInput.value === '') {
-                                alert("Please fill in the seat capacity before adding a new screen.");
-                                return;
-                            }
-                            seatCapacityInput.readOnly = true;
-                        }
-
-                        screenCount++;
-                        const row = `    <tr>
-                                                                                                                                                                        <td>${screenCount}</td>
-                                                                                                                                                                        <td>
-                                                                                                                                                                            <input type="number" name="seatCapacity" class="form-control ms-4" required oninput="updateScreenType(this)">
-                                                                                                                                                                        </td>
-                                                                                                                                                                        <td>
-                                                                                                                                                                            <input type="text" name="screenType" class="form-control ms-4" readonly>
-                                                                                                                                                                        </td>
-                                                                                                                                                                        <td>
-                                                                                                                                                                            <button type="button" class="btn btn-primary me-2 " onclick="addScreen()">
-                                                                                                                                                                                <i class="fas fa-plus"></i>
-                                                                                                                                                                            </button>
-                                                                                                                                                                            <button type="button" class="btn btn-warning me-2" onclick="editRow(this)">
-                                                                                                                                                                                <i class="fas fa-edit"></i>
-                                                                                                                                                                            </button>
-                                                                                                                                                                            <button type="button" class="btn btn-danger me-2" onclick="removeRow(this)">
-                                                                                                                                                                                <i class="fas fa-trash-alt"></i>
-                                                                                                                                                                            </button>
-                                                                                                                                                                        </td>
-                                                                                                                                                                    </tr>
-`;
-
-                        tableBody.insertAdjacentHTML('beforeend', row);
-                        updateAddScreenButtons();
-                    }
-
-                    function updateScreenType(input) {
-                        const seatCapacity = parseInt(input.value, 10);
-                        const row = input.closest('tr');
-                        const screenTypeInput = row.querySelector('input[name="screenType"]');
-
-                        if (!isNaN(seatCapacity)) {
-                            screenTypeInput.value = seatCapacity > 125 ? 'Theater' : 'Video';
-                        } else {
-                            screenTypeInput.value = '';
-                        }
-                    }
-
-                    function editRow(button) {
-                        const row = button.closest('tr');
-                        const seatCapacityInput = row.querySelector('input[name="seatCapacity"]');
-
-                        if (seatCapacityInput.readOnly) {
-                            seatCapacityInput.readOnly = false;
-                            button.innerHTML = '<i class="fas fa-save"></i>';
-                            button.classList.remove("btn-warning");
-                            button.classList.add("btn-success");
-                        } else {
-                            seatCapacityInput.readOnly = true;
-                            button.innerHTML = '<i class="fas fa-edit"></i>';
-                            button.classList.remove("btn-success");
-                            button.classList.add("btn-warning");
-                        }
-                    }
-
-                    function removeRow(button) {
-                        const row = button.closest('tr');
-                        row.remove();
-                        updateScreenNumbers();
-
-                        const tableBody = document.getElementById('screenCapacityTable').querySelector('tbody');
-                        if (tableBody.querySelectorAll('tr').length === 0) {
-                            screenCount = 0;
-                            addScreen();
-                        }
-
-                        updateAddScreenButtons();
-                    }
-
-                    function updateScreenNumbers() {
-                        const rows = document.querySelectorAll('#screenCapacityTable tbody tr');
-                        screenCount = rows.length;
-
-                        rows.forEach((row, index) => {
-                            const screenNoCell = row.querySelector('td:first-child');
-                            screenNoCell.textContent = index + 1;
-                        });
-                    }
-
-                    function updateAddScreenButtons() {
-                        const rows = document.querySelectorAll('#screenCapacityTable tbody tr');
-                        rows.forEach((row, index) => {
-                            const addScreenButton = row.querySelector('.btn-primary');
-                            addScreenButton.style.display = index === rows.length - 1 ? "inline-block" : "none";
-                        });
-                    }
-
-                    function serializeScreenData() {
-                        const tableBody = document.getElementById('screenCapacityTable').querySelector('tbody');
-                        const rows = tableBody.querySelectorAll('tr');
-                        const screens = [];
-
-                        rows.forEach((row) => {
-                            const seatCapacity = row.querySelector('input[name="seatCapacity"]').value;
-                            const screenType = row.querySelector('input[name="screenType"]').value;
-                            screens.push({
-                                SeatCapacity: parseInt(seatCapacity),
-                                ScreenType: screenType
-                            });
-                        });
-
-                        document.getElementById('screenData').value = JSON.stringify(screens);
-                    }
-
-                    document.querySelector('form').addEventListener('submit', serializeScreenData);
-                    updateAddScreenButtons();
-                </script>
                 <div class="text-center">
-
                     <form method="post">
-
-
-
                         @if (ViewBag.IsEditPage == false && ViewBag.IsViewPage == false)
                         {
                             ViewBag.Module = true;
                             <button type="submit" class="btn btn-success mt-4 w-25">Submit</button>
                         }
-
-
                         @if (ViewBag.IsEditPage == true && ViewBag.IsViewPage == false)
                         {
                             ViewBag.Module = true;
                             <button type="submit" class="btn btn-success" onclick="enableEditMode()">Update</button>
                             <button type="button" class="btn btn-warning" onclick="location.href='@Url.Action("SecondPage", "Home")'">Cancel</button>
-                            <script>
-                                function enableEditMode() {
-                                    // Select all fields with the class "readonly-field" and remove the readonly attribute
-                                    document.querySelectorAll(".readonly-field").forEach(field => {
-                                        field.removeAttribute("readonly");
-                                    });
-
-                                    // Optionally focus on the first input field after enabling edit mode
-                                    document.querySelector(".readonly-field")?.focus();
-                                }
-                            </script>
                         }
-
-
                         @if (ViewBag.IsViewPage == true)
                         {
                             ViewBag.Title = "DeptHomePage";
@@ -708,53 +373,8 @@
                                     </div>
                                 </div>
                             </div>
-
-                            <script>
-                                function setAction(actionType) {
-                                    document.getElementById("actionType").value = actionType;
-
-                                    if (actionType === "Reject") {
-                                        var reason = document.getElementById("rejectReason").value.trim();
-                                        if (reason === "") {
-                                            alert("Please provide a reason for rejection.");
-                                            return;
-                                        }
-                                        document.getElementById("rejectReasonInput").value = reason;
-                                    } else {
-                                        document.getElementById("rejectReasonInput").value = ""; // Clear reason if approved
-                                    }
-
-                                    setTimeout(() => {
-                                        document.getElementById("TheaterForm").submit();
-                                    }, 500);
-                                }
-                            </script>
-
                         }
-
-
                     </form>
-
-
-                    <script>
-     document.addEventListener("DOMContentLoaded", function () {
-        let isViewPage = @Html.Raw(Json.Encode(isViewPage));
-
-        if (isViewPage) {
-            // Keep fields readonly in Approve/Reject mode
-            document.querySelectorAll(".readonly-field").forEach(field => {
-                field.readOnly = true;
-            });
-        } else {
-            // Allow editing if not in Approve/Reject mode
-            document.getElementById("updateBtn")?.addEventListener("click", function () {
-                document.querySelectorAll(".readonly-field").forEach(field => {
-                    field.removeAttribute("readonly");
-                });
-            });
-        }
-    });
-                    </script>
 
                     <!-- Modal for Reject Reason -->
                     <div class="modal fade" id="rejectModal" tabindex="-1" role="dialog" aria-labelledby="rejectModalLabel" aria-hidden="true">
@@ -776,38 +396,401 @@
                             </div>
                         </div>
                     </div>
-
                 </div>
-
             }
         </div>
     </div>
-
 </body>
 </html>
 
 
-
+@*SCRIPT*@
+@*offlineTax *@
 <script>
-   function submitRejection() {
-    var reason = document.getElementById("rejectReason").value;
+function makeDropdownReadonly(className) {
+    let elements = document.querySelectorAll("." + className);
+    elements.forEach(el => {
+        el.addEventListener("mousedown", function (event) {
+            event.preventDefault(); // Prevents opening the dropdown
+        });
 
-    if (reason != "") {
-        // Close the modal
-        $('#rejectModal').modal('hide');
-
-        // Set the action to "Reject" and submit the form
-        document.getElementById("action").value = "Reject";
-        document.getElementById("rejectReasonInput").value = reason;
-        document.getElementById("TheaterForm").submit(); // Replace "yourFormId" with the actual ID of your form
-    } else {
-        alert("Please provide a reason for rejection.");
-    }
+        el.style.backgroundColor = "#e9ecef"; // Light gray background (like readonly)
+        el.style.pointerEvents = "none"; // Prevents clicking
+        el.style.opacity = "1"; // Ensures visibility
+        el.style.color = "#495057"; // Matches text color of readonly input
+    });
 }
+
+document.addEventListener("DOMContentLoaded", function () {
+    @if (ViewBag.IsViewPage == true) {
+        @:makeDropdownReadonly("readonly-field");
+    }
+});
 </script>
 
-<!-- Bootstrap CSS -->
-@*<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">*@
+
+@*offlineTax payment and dates *@
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    var offlineTaxPaidDate = '@(Model?.OFFLINE_TAX_PAID_DATE?.ToString("yyyy-MM-dd"))';
+    var offlineDueDate = '@(Model?.OFFLINE_DUE_DATE?.ToString("yyyy-MM-dd"))';
+
+    document.getElementById('offlineTaxPaidDate').value = offlineTaxPaidDate || '';
+    document.getElementById('offlineDueDate').value = offlineDueDate || '';
+});
+</script>
+<script>
+    // Assuming these values come from the server-side and are already available in registrationData
+    var offlineTaxPaidDate = registrationData.OFFLINE_TAX_PAID_DATE;
+    var offlineDueDate = registrationData.OFFLINE_DUE_DATE;
+
+    // Set the values of the input fields with the correct date format
+    document.getElementById('offlineTaxPaidDate').value = offlineTaxPaidDate ? offlineTaxPaidDate.toISOString().split('T')[0] : '';
+    document.getElementById('offlineDueDate').value = offlineDueDate ? offlineDueDate.toISOString().split('T')[0] : '';
+</script>
+
+@*offlineTax button yes and no*@
+<script>
+    // Function to toggle visibility of #offlineTaxDetails
+    function toggleFields(isOffline) {
+        const offlineTaxDetails = document.getElementById('offlineTaxDetails');
+
+        // Show the section if "Yes" is selected; hide it otherwise
+        if (isOffline) {
+            offlineTaxDetails.style.display = 'block';
+        } else {
+            offlineTaxDetails.style.display = 'none';
+        }
+    }
+
+    // Attach event listener on DOMContentLoaded for initialization
+    document.addEventListener('DOMContentLoaded', () => {
+        const yesRadio = document.getElementById('yes');
+        const noRadio = document.getElementById('no');
+
+        // Initialize visibility based on pre-selected option
+        if (yesRadio.checked) {
+            toggleFields(true);
+        } else if (noRadio.checked) {
+            toggleFields(false);
+        }
+
+        // Add click event listeners for runtime changes
+        yesRadio.addEventListener('click', () => toggleFields(true));
+        noRadio.addEventListener('click', () => toggleFields(false));
+    });
+</script>
+
+
+<!-- JavaScript to Hide Elements -->
+<script>
+function hideElementsByClass(HideAtDept) {
+    let elements = document.querySelectorAll("." + HideAtDept);
+    elements.forEach(el => el.style.display = "none");
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    @if (ViewBag.IsViewPage == true) // If condition is true, call the function
+    {
+        @:hideElementsByClass("HideAtDept");
+    }
+});
+</script>
+
+
+<!-- Hidden input to store screen data -->
+@*addScreen for update*@
+<input type="hidden" id="screenData" name="screenData">
+<script>
+    function addScreen() {
+        var table = document.getElementById("screenCapacityTable").getElementsByTagName('tbody')[0];
+        var rowCount = table.rows.length;
+        var newRow = table.insertRow(rowCount);
+
+        newRow.innerHTML = ` <td>${rowCount + 1}
+        </td>
+          <td><input type="number" name="seatCapacity" class="form-control ms-4" required oninput="updateScreenType(this)"></td>
+          <td><input type="text" name="screenType" class="form-control" me-1 readonly></td>
+          <td>
+           <button type="button" class="btn btn-primary me-2" onclick="addScreen()" title="Add Screen">
+            <i class="fas fa-plus"></i>
+           </button>
+           <button type="button" class="btn btn-warning me-2" onclick="editRow(this)" title="Edit Screen">
+            <i class="fas fa-edit"></i>
+           </button>
+           <button type="button" class="btn btn-danger me-2" onclick="removeRow(this)" title="Delete Screen">
+            <i class="fas fa-trash-alt"></i>
+        </td>`
+    }
+
+    function removeRow(button) {
+        var row = button.parentNode.parentNode;
+        row.parentNode.removeChild(row);
+    }
+
+    function editRow(button) {
+        var row = button.parentNode.parentNode;
+        var seatCapacityInput = row.cells[1].querySelector("input");
+        seatCapacityInput.removeAttribute("readonly");
+    }
+
+    function updateScreenType(input) {
+        var seatCapacity = input.value;
+        var row = input.parentNode.parentNode;
+        var screenTypeInput = row.cells[2].querySelector("input");
+
+        if (seatCapacity > 125) {
+            screenTypeInput.value = "Theater";
+        } else {
+            screenTypeInput.value = "Video";
+        }
+    }
+</script>
+
+@*update document File Size*@
+<script>
+    function updateFileSize(docId) {
+        const inputElement = document.getElementById(`file-${docId}`);
+        const sizeElement = document.getElementById(`size-${docId}`);
+
+        if (inputElement.files.length > 0) {
+            // Get file size in bytes
+            const fileSizeBytes = inputElement.files[0].size;
+
+            // Convert to MB
+            const fileSizeMB = (fileSizeBytes / (1024 * 1024)).toFixed(2);
+
+            // Update size column
+            sizeElement.textContent = `${fileSizeMB} MB`;
+
+            // Validate file size (Max: 5 MB)
+            if (fileSizeMB > 5) {
+                alert("The selected file exceeds the maximum allowed size of 5 MB. Please select a smaller file.");
+                inputElement.value = ""; // Clear input
+                sizeElement.textContent = "0 MB"; // Reset size
+            }
+        } else {
+            sizeElement.textContent = "0 MB";
+        }
+    }
+
+    function showViewButton(docId, input) {
+        if (input.files.length > 0) {
+            let file = input.files[0];
+            let fileURL = URL.createObjectURL(file);
+
+            document.getElementById(`viewBtn-${docId}`).innerHTML =
+                `<a href='${fileURL}' target='_blank' class='btn btn-primary btn-sm'>View</a>`;
+        }
+    }
+</script>
+
+
+@*addScreen for registration *@
+<script>
+    let screenCount = 1; // Initial screen count
+
+    function addScreen() {
+        const tableBody = document.getElementById('screenCapacityTable').querySelector('tbody');
+
+        if (screenCount >= 10) {
+            alert("You can add up to 10 screens only.");
+            return;
+        }
+
+        const lastRow = tableBody.querySelector('tr:last-child');
+        if (lastRow) {
+            const seatCapacityInput = lastRow.querySelector('input[name="seatCapacity"]');
+            if (seatCapacityInput && seatCapacityInput.value === '') {
+                alert("Please fill in the seat capacity before adding a new screen.");
+                return;
+            }
+            seatCapacityInput.readOnly = true;
+        }
+
+        screenCount++;
+        const row =
+            `<tr>
+        <td>${screenCount}</td>
+        <td>
+             <input type="number" name="seatCapacity" class="form-control ms-4" required oninput="updateScreenType(this)">
+         </td>
+         <td>
+             <input type="text" name="screenType" class="form-control ms-4" readonly>
+         </td>
+         <td>
+             <button type="button" class="btn btn-primary me-2 " onclick="addScreen()">
+                 <i class="fas fa-plus"></i>
+             </button>
+             <button type="button" class="btn btn-warning me-2" onclick="editRow(this)">
+                 <i class="fas fa-edit"></i>
+             </button>
+             <button type="button" class="btn btn-danger me-2" onclick="removeRow(this)">
+                 <i class="fas fa-trash-alt"></i>
+             </button>
+         </td>
+      </tr>`;
+
+        tableBody.insertAdjacentHTML('beforeend', row);
+        updateAddScreenButtons();
+    }
+
+    function updateScreenType(input) {
+        const seatCapacity = parseInt(input.value, 10);
+        const row = input.closest('tr');
+        const screenTypeInput = row.querySelector('input[name="screenType"]');
+
+        if (!isNaN(seatCapacity)) {
+            screenTypeInput.value = seatCapacity > 125 ? 'Theater' : 'Video';
+        } else {
+            screenTypeInput.value = '';
+        }
+    }
+
+    function editRow(button) {
+        const row = button.closest('tr');
+        const seatCapacityInput = row.querySelector('input[name="seatCapacity"]');
+
+        if (seatCapacityInput.readOnly) {
+            seatCapacityInput.readOnly = false;
+            button.innerHTML = '<i class="fas fa-save"></i>';
+            button.classList.remove("btn-warning");
+            button.classList.add("btn-success");
+        } else {
+            seatCapacityInput.readOnly = true;
+            button.innerHTML = '<i class="fas fa-edit"></i>';
+            button.classList.remove("btn-success");
+            button.classList.add("btn-warning");
+        }
+    }
+
+    function removeRow(button) {
+        const row = button.closest('tr');
+        row.remove();
+        updateScreenNumbers();
+
+        const tableBody = document.getElementById('screenCapacityTable').querySelector('tbody');
+        if (tableBody.querySelectorAll('tr').length === 0) {
+            screenCount = 0;
+            addScreen();
+        }
+
+        updateAddScreenButtons();
+    }
+
+    function updateScreenNumbers() {
+        const rows = document.querySelectorAll('#screenCapacityTable tbody tr');
+        screenCount = rows.length;
+
+        rows.forEach((row, index) => {
+            const screenNoCell = row.querySelector('td:first-child');
+            screenNoCell.textContent = index + 1;
+        });
+    }
+
+    function updateAddScreenButtons() {
+        const rows = document.querySelectorAll('#screenCapacityTable tbody tr');
+        rows.forEach((row, index) => {
+            const addScreenButton = row.querySelector('.btn-primary');
+            addScreenButton.style.display = index === rows.length - 1 ? "inline-block" : "none";
+        });
+    }
+
+    function serializeScreenData() {
+        const tableBody = document.getElementById('screenCapacityTable').querySelector('tbody');
+        const rows = tableBody.querySelectorAll('tr');
+        const screens = [];
+
+        rows.forEach((row) => {
+            const seatCapacity = row.querySelector('input[name="seatCapacity"]').value;
+            const screenType = row.querySelector('input[name="screenType"]').value;
+            screens.push({
+                SeatCapacity: parseInt(seatCapacity),
+                ScreenType: screenType
+            });
+        });
+
+        document.getElementById('screenData').value = JSON.stringify(screens);
+    }
+
+    document.querySelector('form').addEventListener('submit', serializeScreenData);
+    updateAddScreenButtons();
+</script>
+@*Edit readonly-field *@
+<script>
+    function enableEditMode() {
+        // Select all fields with the class "readonly-field" and remove the readonly attribute
+        document.querySelectorAll(".readonly-field").forEach(field => {
+            field.removeAttribute("readonly");
+        });
+
+        // Optionally focus on the first input field after enabling edit mode
+        document.querySelector(".readonly-field")?.focus();
+    }
+</script>
+@*rejectReason*@
+<script>
+    function setAction(actionType) {
+        document.getElementById("actionType").value = actionType;
+
+        if (actionType === "Reject") {
+            var reason = document.getElementById("rejectReason").value.trim();
+            if (reason === "") {
+                alert("Please provide a reason for rejection.");
+                return;
+            }
+            document.getElementById("rejectReasonInput").value = reason;
+        } else {
+            document.getElementById("rejectReasonInput").value = ""; // Clear reason if approved
+        }
+
+        setTimeout(() => {
+            document.getElementById("TheaterForm").submit();
+        }, 500);
+    }
+</script>
+
+@*Keep fields readonly for update*@
+<script>
+     document.addEventListener("DOMContentLoaded", function () {
+        let isViewPage = @Html.Raw(Json.Encode(isViewPage));
+
+        if (isViewPage) {
+            // Keep fields readonly in Approve/Reject mode
+            document.querySelectorAll(".readonly-field").forEach(field => {
+                field.readOnly = true;
+            });
+        } else {
+            // Allow editing if not in Approve/Reject mode
+            document.getElementById("updateBtn")?.addEventListener("click", function () {
+                document.querySelectorAll(".readonly-field").forEach(field => {
+                    field.removeAttribute("readonly");
+                });
+            });
+        }
+    });
+</script>
+
+@*rejectReasonInput*@
+<script>
+    function submitRejection() {
+        var reason = document.getElementById("rejectReason").value;
+
+        if (reason != "") {
+            // Close the modal
+            $('#rejectModal').modal('hide');
+
+            // Set the action to "Reject" and submit the form
+            document.getElementById("action").value = "Reject";
+            document.getElementById("rejectReasonInput").value = reason;
+            document.getElementById("TheaterForm").submit(); // Replace "yourFormId" with the actual ID of your form
+        } else {
+            alert("Please provide a reason for rejection.");
+        }
+    }
+</script>
+    
+    
 
 <!-- jQuery and Bootstrap JS -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
