@@ -338,7 +338,6 @@
     <Content Include="Views\Department\ViewApplication.cshtml" />
     <Content Include="Views\Shared\_HomeSideBar.cshtml" />
     <Content Include="Views\Home\CommonTableView.cshtml" />
-    <Content Include="Views\Home\Skip_Payment.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

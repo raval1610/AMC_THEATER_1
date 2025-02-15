@@ -41,16 +41,18 @@
                             <input type="text" id="theaterId" name="theaterId" class="form-control form-control-sm" />
                         </div>
 
-                        <!-- Start Date Column -->
-                        <div class="col-md-3 d-inline-block">
+                        <!-- From Date -->
+                        <div class="col-md-3">
                             <label for="fromDate" class="fw-bold text-dark" style="font-size: 14px;">From Date:</label>
-                            <input type="date" id="fromDate" name="fromDate" class="form-control form-control-sm" />
+                            <input type="date" id="fromDate" name="fromDate" class="form-control form-control-sm"
+                                   value="@Request.QueryString["fromDate"]" />
                         </div>
 
-                        <!-- End Date Column -->
-                        <div class="col-md-3 d-inline-block">
+                        <!-- To Date -->
+                        <div class="col-md-3">
                             <label for="toDate" class="fw-bold text-dark" style="font-size: 14px;">To Date:</label>
-                            <input type="date" id="toDate" name="toDate" class="form-control form-control-sm" />
+                            <input type="date" id="toDate" name="toDate" class="form-control form-control-sm"
+                                   value="@Request.QueryString["toDate"]" />
                         </div>
 
                         <!-- Status Column -->
@@ -117,6 +119,43 @@
             </div>
         </div>
     </div>
+    <p>hiii</p>
+    <p>hiii</p>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const filters = ["theaterId", "fromDate", "toDate", "cityFilter", "wardFilter", "zoneFilter", "statusFilter"];
+
+            // Retrieve and set filter values from localStorage
+            filters.forEach(filter => {
+                let storedValue = localStorage.getItem(filter);
+                if (storedValue) {
+                    let element = document.getElementById(filter);
+                    if (element) {
+                        element.value = storedValue;
+                    }
+                }
+            });
+
+            // Store filter values when form is submitted
+            document.getElementById("filterForm").addEventListener("submit", function () {
+                filters.forEach(filter => {
+                    let element = document.getElementById(filter);
+                    if (element) {
+                        localStorage.setItem(filter, element.value);
+                    }
+                });
+            });
+
+            // Clear filters on reset button click
+            document.getElementById("resetButton").addEventListener("click", function () {
+                filters.forEach(filter => localStorage.removeItem(filter));
+                document.getElementById("filterForm").reset();
+                window.location.href = window.location.pathname; // Reload page
+            });
+        });
+    </script>
+
 
     <script type="text/javascript">
         function resetForm() {
