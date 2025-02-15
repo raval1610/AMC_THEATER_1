@@ -87,7 +87,6 @@ namespace AMC_THEATER_1.Controllers
 
 
 
-   
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -104,26 +103,34 @@ namespace AMC_THEATER_1.Controllers
                 {
                     LogOldValues(existingRegistration);
                     UpdateRegistration(existingRegistration, model);
-                    // If exists, update status and log changes
-                    UpdateTheaterStatus(model.T_ID, actionType, rejectReason);
-
-
                     theaterId = model.T_ID; // Keep the same T_ID
                 }
                 else
                 {
                     // Create new theater and get T_ID
-                    // model.STATUS = "Pending";  // Ensure default status
                     theaterId = CreateNewRegistration(model);
                 }
 
-                // Now process screens and documents using correct theater ID
+                // Update status (Approve, Reject, Edit)
+                UpdateTheaterStatus(theaterId, actionType, rejectReason);
+
+                // Process screens and documents after updating the status
                 HandleScreens(theaterId, seatCapacity, screenType);
                 HandleDocuments(theaterId);
 
-                db.SaveChanges();
+                db.SaveChanges(); // Save all updates
+
                 TempData["SuccessMessage"] = "Theater saved successfully!";
-                return RedirectToAction("Index");
+
+                // **Redirect based on action type**
+                if (actionType == "Approve" || actionType == "Reject")
+                {
+                    return RedirectToAction("ActionRequests", "Home");
+                }
+                else
+                {
+                    return RedirectToAction("List_of_Application", "Home");
+                }
             }
             catch (Exception ex)
             {
@@ -134,6 +141,7 @@ namespace AMC_THEATER_1.Controllers
             ViewBag.Documents = db.MST_DOCS.Where(d => d.DOC_ACTIVE == true).ToList();
             return View(model);
         }
+
         private void HandleScreens(int tId, string[] seatCapacity, string[] screenType)
         {
             using (var transaction = db.Database.BeginTransaction())
@@ -249,6 +257,7 @@ namespace AMC_THEATER_1.Controllers
                 db.Entry(existingRegistration).State = EntityState.Modified;
                 db.SaveChanges();
             }
+
         }
 
 

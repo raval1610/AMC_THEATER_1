@@ -170,7 +170,6 @@
                         <th class="fw-bold">Zone</th>
                         <th class="fw-bold">Address</th>
                         <th class="fw-bold">Tenament Number</th>
-                        <th class="fw-bold">Status</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -179,16 +178,14 @@
                         foreach (var theater in Model)
                         {
                             <tr id="theater-@theater.T_ID">
-                                <td>@theater.T_ID</td>
+                                <td>@theater.REG_ID</td>
                                 <td>@theater.T_NAME</td>
                                 <td>@theater.T_CITY</td>
                                 <td>@theater.T_WARD</td>
                                 <td>@theater.T_ZONE</td>
                                 <td>@theater.T_ADDRESS</td>
                                 <td>@theater.T_TENAMENT_NO</td>
-                                <td class="status-cell @(theater.STATUS == "Approved" ? "text-success" : (theater.STATUS == "Rejected" ? "text-danger" : "text-warning"))">
-                                    @(theater.STATUS == "Approved" ? "Approved" : theater.STATUS == "Rejected" ? "Rejected" : "Pending")
-                                </td>
+                                
 
 
                             </tr>

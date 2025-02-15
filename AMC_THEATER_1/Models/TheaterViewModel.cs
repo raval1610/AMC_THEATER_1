@@ -20,6 +20,8 @@ namespace AMC_THEATER_1.Models
         public string T_OWNER_NAME { get; set; }
         public string T_OWNER_NUMBER { get; set; }
         public string T_OWNER_EMAIL { get; set; }
+        public string REG_ID { get; set; } // Separate count for Theater
+
         public string T_ADDRESS { get; set; }
         public DateTime UPDATE_DATE { get; set; }
         public int SCREEN_COUNT { get; set; } // New field for screen count

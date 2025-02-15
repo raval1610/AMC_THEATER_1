@@ -483,7 +483,9 @@ namespace Amc_theater.Controllers
                             tr.T_TENAMENT_NO,
                             tr.T_ZONE,
                             tr.T_WARD,
-                            tr.STATUS
+                            tr.STATUS,
+                            tr.REG_ID
+
                         };
 
 
@@ -501,7 +503,9 @@ namespace Amc_theater.Controllers
                 T_TENAMENT_NO = tr.T_TENAMENT_NO,
                 T_ZONE = tr.T_ZONE,
                 T_WARD = tr.T_WARD,
-                STATUS = tr.STATUS
+                STATUS = tr.STATUS,
+                REG_ID = tr.REG_ID
+
             }).ToList();
 
             return View(theaterList);
