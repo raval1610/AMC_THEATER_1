@@ -1,0 +1,117 @@
+﻿
+@{
+    ViewBag.Title = "Skip_Payment";
+
+    Layout = "~/Views/Shared/_HomeSideBar.cshtml";
+
+    ViewBag.Title = "Theater Tax Payment";
+    ViewBag.ShowBasicNavbar = false;
+    ViewBag.ShowNavbar = true;
+    ViewBag.ShowSideBar = true;
+    ViewBag.Login = false;
+    ViewBag.ModuleTax = true;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skip Payment</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        .windows-card {
+            border-radius: 12px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            background: #f8f9fa;
+            width: 80%;
+            margin: auto;
+        }
+
+        .container {
+            margin-left: 120px; /* Set this to match the sidebar width */
+            transition: margin-left 0.3s;
+            padding: 15px;
+        }
+
+        .form-control {
+            width: 100%;
+        }
+
+        .form-label {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="card windows-card">
+            <div class="card-body">
+                <h4 class="card-title fw-bold text-center mb-4">Skip Payment</h4>
+                <form>
+                    <div class="row">
+                        <div class="col-md-8">
+                            <label class="form-label">Select Months</label>
+                            <div class="row">
+                                <script>
+                                    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+                                    document.write('<div class="col-md-4">' + months.slice(0, 4).map(m => `<div class='form-check'>
+                                                                                                        <input class='form-check-input' type='checkbox' id='${m}' name='months[]' value='${m}'>
+                                                                                                        <label class='form-check-label' for='${m}'>${m}</label>
+                                                                                                    </div>`).join('') + '</div>');
+                                    document.write('<div class="col-md-4">' + months.slice(4, 8).map(m => `<div class='form-check'>
+                                                                                                        <input class='form-check-input' type='checkbox' id='${m}' name='months[]' value='${m}'>
+                                                                                                        <label class='form-check-label' for='${m}'>${m}</label>
+                                                                                                    </div>`).join('') + '</div>');
+                                    document.write('<div class="col-md-4">' + months.slice(8, 12).map(m => `<div class='form-check'>
+                                                                                                        <input class='form-check-input' type='checkbox' id='${m}' name='months[]' value='${m}'>
+                                                                                                        <label class='form-check-label' for='${m}'>${m}</label>
+                                                                                                    </div>`).join('') + '</div>');
+                                </script>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="reason" class="form-label">Give Reason</label>
+                            <select id="reason" class="form-select" name="reason">
+                                <option value="" selected disabled>Select Reason</option>
+                                <option value="Medical">Under Construction</option>
+                                <option value="Financial">Under Maintanance</option>
+                                <option value="Emergency">Fire Emergency</option>
+                                <option value="Other">Other</option>
+                            </select>
+
+                            <div class="mt-3 d-none" id="otherReasonDiv">
+                                <label for="otherReason" class="form-label">Specify Other Reason</label>
+                                <textarea id="otherReason" class="form-control" name="otherReason" rows="3"></textarea>
+                            </div>
+                            <div class="mb-3 mt-3">
+                                <label for="proof" class="form-label">Upload Proof</label>
+                                <input type="file" class="form-control" id="proof" name="proof">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary w-25">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            $('#reason').change(function () {
+                if ($(this).val() === 'Other') {
+                    $('#otherReasonDiv').removeClass('d-none');
+                } else {
+                    $('#otherReasonDiv').addClass('d-none');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+
