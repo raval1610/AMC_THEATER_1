@@ -1253,7 +1253,12 @@ namespace Amc_theater.Controllers
 
 
 
+        public ActionResult Skip_Payment()
+        {
+            ViewBag.Message = "Your contact page.";
 
+            return View();
+        }
 
     }
 }
