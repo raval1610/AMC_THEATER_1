@@ -23,51 +23,6 @@
             margin-left: 1px !important;
         }
     </style>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            transition: margin-left 0.3s;
-        }
-
-        .navbar {
-            background-color: #007bff;
-            width: 100%;
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 1000;
-            padding: 10px 20px;
-        }
-
-        .custom-navbar-brand .fs-5 {
-            margin-top: -2px; /* Adjust as needed */
-            line-height: 1.2; /* Adjust line height to control the distance between lines */
-        }
-
-        .sidebar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 250px;
-            height: 100%;
-            background-color: #343a40;
-            color: white;
-            padding-top: 60px;
-            transition: 0.3s;
-        }
-
-            .sidebar a {
-                color: white;
-                padding: 8px 15px;
-                text-decoration: none;
-                display: block;
-                font-size: 18px;
-            }
-
-                .sidebar a:hover {
-                    background-color: #575757;
-                }
-    </style>
 </head>
 
 <body>
@@ -172,7 +127,30 @@
             </div>
         </div>
     }
+    <script type="text/javascript">
+ function handleForgotIdClick() {
+     var currentUrl = window.location.href;
 
+     // Check if the URL contains the query parameter 'hideMenu=True'
+     if (currentUrl.includes("hideMenu=True")) {
+         // If 'hideMenu' parameter exists, redirect to a different page (Search ID or another page)
+         window.location.href = "@Url.Action("SearchID", "Home")"; // Change this to your desired redirect URL
+     } else {
+         // If 'hideMenu' parameter does not exist, show the modal
+         showModal('Find Your Theater ID In The Theater List')
+     }
+ }
+
+ // Function to show the Bootstrap modal with a message
+ function showModal(message) {
+     // Set the modal message dynamically
+     document.getElementById('modalMessage').innerText = message;
+
+     // Show the modal using Bootstrap
+     var myModal = new bootstrap.Modal(document.getElementById('messageModal'));
+     myModal.show();
+ }
+    </script>
 
     <!-- Modal HTML (Bootstrap Modal) -->
     <div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
@@ -198,31 +176,50 @@
         @RenderBody()
     </div>
 
-   
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            transition: margin-left 0.3s;
+        }
 
-    <script type="text/javascript">
-function handleForgotIdClick() {
-    var currentUrl = window.location.href;
+        .navbar {
+            background-color: #007bff;
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            padding: 10px 20px;
+        }
 
-    // Check if the URL contains the query parameter 'hideMenu=True'
-    if (currentUrl.includes("hideMenu=True")) {
-        // If 'hideMenu' parameter exists, redirect to a different page (Search ID or another page)
-        window.location.href = "@Url.Action("SearchID", "Home")"; // Change this to your desired redirect URL
-    } else {
-        // If 'hideMenu' parameter does not exist, show the modal
-        showModal('Find Your Theater ID In The Theater List')
-    }
-}
+        .custom-navbar-brand .fs-5 {
+            margin-top: -2px; /* Adjust as needed */
+            line-height: 1.2; /* Adjust line height to control the distance between lines */
+        }
 
-// Function to show the Bootstrap modal with a message
-function showModal(message) {
-    // Set the modal message dynamically
-    document.getElementById('modalMessage').innerText = message;
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 250px;
+            height: 100%;
+            background-color: #343a40;
+            color: white;
+            padding-top: 60px;
+            transition: 0.3s;
+        }
 
-    // Show the modal using Bootstrap
-    var myModal = new bootstrap.Modal(document.getElementById('messageModal'));
-    myModal.show();
-}
-    </script>
+            .sidebar a {
+                color: white;
+                padding: 8px 15px;
+                text-decoration: none;
+                display: block;
+                font-size: 18px;
+            }
+
+                .sidebar a:hover {
+                    background-color: #575757;
+                }
+    </style>
 </body>
 </html>
