@@ -105,15 +105,15 @@
                                     <textarea id="address" name="address" class="form-control w-100" rows="1" readonly required>@Model.Address</textarea>
                                 </div>
 
-                                <div class="col-md-4">
-                                    <label for="email" class="form-label fw-bold">Email</label>
-                                    <input type="email" id="email" name="email" class="form-control" value="@Model.Email" readonly required>
-                                </div>
-                                <form action="@Url.Action("ProcessTaxPayment", "Home")" method="post" enctype="multipart/form-data">
-                                    <input type="hidden" name="TheaterId" value="@Model.TheaterId" />
+                                <div class="row mt-5">
+                                    <div class="col-md-4 me-0">
+                                        <label for="email" class="form-label fw-bold">Email</label>
+                                        <input type="email" id="email" name="email" class="form-control" value="@Model.Email" readonly required>
+                                    </div>
+
                                     <div class="col-md-4">
                                         <label for="month" class="form-label fw-bold">Month</label>
-                                        <select id="month" name="month" class="form-select" required>
+                                        <select id="month" name="month" class="form-select ms-1" required>
                                             <option value="">Select Month</option>
                                             @foreach (var month in new[] { "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" })
                                             {
@@ -123,8 +123,8 @@
                                     </div>
 
                                     <div class="col-md-4">
-                                        <label for="year" class="form-label fw-bold">Year</label>
-                                        <select id="year" name="year" class="form-select" required>
+                                        <label for="year" class="form-label fw-bold ms-3">Year</label>
+                                        <select id="year" name="year" class="form-select ms-2" required>
                                             <option value="">Select Year</option>
                                             @for (int year = DateTime.Now.Year; year <= DateTime.Now.Year + 3; year++)
                                             {
@@ -132,6 +132,8 @@
                                             }
                                         </select>
                                     </div>
+                                </div>
+
                             </div>
                         </div>
 
