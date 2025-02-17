@@ -10,6 +10,7 @@ namespace AMC_THEATER_1.Models
   
         public int ScreenId { get; set; }
         public int AudienceCapacity { get; set; }
+
         public string ScreenType { get; set; }
         public string SeatCapacity { get; set; }
         public int ScreenPrice { get; set; }  // Store price from TRN_SCREEN_TAX_PRICE
