@@ -111,199 +111,330 @@
                                         <input type="email" id="email" name="email" class="form-control" value="@Model.Email" readonly required>
                                     </div>
 
-                                    <div class="col-md-4">
-                                        <label for="month" class="form-label fw-bold">Month</label>
-                                        <select id="month" name="month" class="form-select ms-1" required>
-                                            <option value="">Select Month</option>
-                                            @foreach (var month in new[] { "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" })
-                                            {
-                                                <option value="@month" @(month == Model.Month ? "selected" : "")>@month</option>
-                                            }
-                                        </select>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <label for="fromDate" class="form-label fw-bold">From Date</label>
+                                            <input type="month" id="fromDate" class="form-control">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="toDate" class="form-label fw-bold">To Date</label>
+                                            <input type="month" id="toDate" class="form-control">
+                                        </div>
                                     </div>
 
-                                    <div class="col-md-4">
-                                        <label for="year" class="form-label fw-bold ms-3">Year</label>
-                                        <select id="year" name="year" class="form-select ms-2" required>
-                                            <option value="">Select Year</option>
-                                            @for (int year = DateTime.Now.Year; year <= DateTime.Now.Year + 3; year++)
-                                            {
-                                                <option value="@year" @(year == Model.Year ? "selected" : "")>@year</option>
-                                            }
-                                        </select>
-                                    </div>
+                                    <button type="button" class="btn btn-primary mt-3" id="generateBtn">Generate Table</button>
+
+
                                 </div>
-
                             </div>
-                        </div>
 
 
-                        <table id="screenCapacityTable" class="table table-bordered text-center mt-3">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>Screen No</th>
-                                    <th>Rate</th>
-                                    <th>Screen Type</th>
-                                    <th>Total Shows</th>
-                                    <th>Canceled Shows</th>
-                                    <th>Actual Shows</th>
-                                    <th>Amount</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @for (int i = 0; i < Model.Screens.Count; i++)
-                                {
+                            <table id="screenCapacityTable" class="table table-bordered text-center mt-3">
+                                <thead class="table-light">
                                     <tr>
-                                        <td>@Model.Screens[i].SEQUENTIAL_SCREEN_NO</td>
-
-                                        <!-- Hidden Field to Ensure ScreenId is Passed -->
-                                        <input type="hidden" name="Screens[@i].ScreenId" value="@Model.Screens[i].ScreenId" />
-
-                                        <td>
-                                            <input type="text" class="form-control screenPrice"
-                                                   name="Screens[@i].ScreenPrice"
-                                                   value="@Model.Screens[i].ScreenPrice" readonly />
-                                        </td>
-                                        <td>@Model.Screens[i].ScreenType</td>
-
-
-                                        <td>
-                                            <input type="number" class="form-control totalShow"
-                                                   name="Screens[@i].TotalShow"
-                                                   data-index="@i"
-                                                   oninput="calculateActualShow(@i)" required />
-                                        </td>
-                                        <td>
-                                            <input type="number" class="form-control cancelShow"
-                                                   name="Screens[@i].CancelShow"
-                                                   data-index="@i"
-                                                   oninput="calculateActualShow(@i)" required />
-                                        </td>
-                                        <td>
-                                            <input type="number" class="form-control actualShow"
-                                                   name="Screens[@i].ActualShow"
-                                                   id="actualShow_@i"
-                                                   value="0" readonly />
-                                        </td>
-                                        <td>
-                                            <input type="text" class="form-control amount"
-                                                   name="Screens[@i].AmtPerScreen"
-                                                   id="amtPerScreen_@i"
-                                                   value="0" readonly />
-                                        </td>
+                                        <th>Month & Year</th>
+                                        <th>Screen No</th>
+                                        <th>Rate</th>
+                                        <th>Screen Type</th>
+                                        <th>Total Shows</th>
+                                        <th>Canceled Shows</th>
+                                        <th>Actual Shows</th>
+                                        <th>Amount</th>
                                     </tr>
+                                </thead>
+                                <tbody id="tableBody">
+                                <tbody id="tableBody">
+                                    @for (int i = 0; i < Model.Screens.Count; i++)
+                                    {
+                                        <tr>
+                                            <!-- Month & Year Column (Displayed for the first screen only per month) -->
+                                            @if (i == 0)
+                                            {
+                                                <td rowspan="@Model.Screens.Count" class="fw-bold">
+                                                    @Model.MonthYear <!-- This should be dynamically generated -->
+                                                </td>
+                                            }
 
-                                }
+                                            <td>@Model.Screens[i].SEQUENTIAL_SCREEN_NO</td>
 
-                            </tbody>
-                            <tfoot>
-                                <tr>
-                                    <td colspan="5" class="text-danger">Calculate by Actual Shows × Rate = Amount </td>
-                                    <td colspan="1" class="text-end fw-bold">Total Amount:</td>
-                                    <td id="totalAmount" class="fw-bold text-end">₹0</td>
-                                </tr>
-                            </tfoot>
-                        </table>
-                        <div class="mb-3">
-                            <label for="file" class="form-label fw-bold">Upload Show Statement</label>
-                            <input type="file" id="file" name="DocumentPath" class="form-control" accept=".jpg,.jpeg,.png,.pdf" required>
-                        </div>
+                                            <!-- Hidden Field to Ensure ScreenId is Passed -->
+                                            <input type="hidden" name="Screens[@i].ScreenId" value="@Model.Screens[i].ScreenId" />
 
-                        <div class="col-12 text-center">
-                            <button type="submit" class="btn btn-success m-3 w-25">Submit Payment</button>
+                                            <td>
+                                                <input type="text" class="form-control screenPrice"
+                                                       name="Screens[@i].ScreenPrice"
+                                                       value="@Model.Screens[i].ScreenPrice" readonly />
+                                            </td>
+
+                                            <td>@Model.Screens[i].ScreenType</td>
+
+                                            <td>
+                                                <input type="number" class="form-control totalShow"
+                                                       name="Screens[@i].TotalShow"
+                                                       data-index="@i"
+                                                       oninput="calculateActualShow(@i)" required />
+                                            </td>
+
+                                            <td>
+                                                <input type="number" class="form-control cancelShow"
+                                                       name="Screens[@i].CancelShow"
+                                                       data-index="@i"
+                                                       oninput="calculateActualShow(@i)" required />
+                                            </td>
+
+                                            <td>
+                                                <input type="number" class="form-control actualShow"
+                                                       name="Screens[@i].ActualShow"
+                                                       id="actualShow_@i"
+                                                       value="0" readonly />
+                                            </td>
+
+                                            <td>
+                                                <input type="text" class="form-control amount"
+                                                       name="Screens[@i].AmtPerScreen"
+                                                       id="amtPerScreen_@i"
+                                                       value="0" readonly />
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="6" class="text-danger">Calculate by Actual Shows × Rate = Amount</td>
+                                        <td class="text-end fw-bold">Total Amount:</td>
+                                        <td id="totalAmount" class="fw-bold text-end">₹0</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+
+                            <div class="mb-3">
+                                <label for="file" class="form-label fw-bold">Upload Show Statement</label>
+                                <input type="file" id="file" name="DocumentPath" class="form-control" accept=".jpg,.jpeg,.png,.pdf" required>
+                            </div>
+
+                            <div class="col-12 text-center">
+                                <button type="submit" class="btn btn-success m-3 w-25">Submit Payment</button>
+                            </div>
+
+
+
+
+
+
+
+
                         </div>
 
                     }
 
-
-
-
-
-
                 </div>
             </div>
-
-
-        </div>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-
-    <script>
-        function calculateActualShow(index) {
-            let totalShow = parseInt(document.querySelector(`[name='Screens[${index}].TotalShow']`).value) || 0;
-            let cancelShow = parseInt(document.querySelector(`[name='Screens[${index}].CancelShow']`).value) || 0;
-            let actualShowInput = document.getElementById(`actualShow_${index}`);
-            let amountInput = document.getElementById(`amtPerScreen_${index}`);
-
-            // Locate the correct row
-            let row = document.querySelector(`[name='Screens[${index}].TotalShow']`).closest("tr");
-
-            // Fetch the ScreenType
-            let screenType = row ? row.cells[2].textContent.trim() : ""; // Fetching 3rd <td> (index 2)
-
-            console.log(`Index: ${index}, Screen Type: ${screenType}`); // Debugging
-
-            let rate = parseFloat(document.querySelector(`[name='Screens[${index}].ScreenPrice']`).value) || 0;
-
-            // Calculate Actual Shows
-            let actualShow = Math.max(totalShow - cancelShow, 0);
-            actualShowInput.value = actualShow;
-
-            // Determine screen type multiplier
-            let multiplier = screenType.toLowerCase() === "theater" ? 75 : 25;
-
-            // Calculate Amount per Screen
-            let amount = actualShow * multiplier;
-            amountInput.value = amount;
-
-            // Recalculate total amount
-            calculateTotalAmount();
-        }
-
-        function calculateTotalAmount() {
-            let totalAmount = 0;
-            document.querySelectorAll(".amount").forEach(input => {
-                totalAmount += parseFloat(input.value) || 0;
-            });
-            document.getElementById("totalAmount").innerText = `₹${totalAmount.toFixed(2)}`;
-        }
-
-        document.addEventListener("DOMContentLoaded", function () {
-            document.querySelectorAll(".totalShow, .cancelShow").forEach(input => {
-                input.addEventListener("input", function () {
-                    let index = this.getAttribute("data-index");
-                    calculateActualShow(index);
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+            <script>
+                document.getElementById("generateBtn").addEventListener("click", function () {
+                    generateTable();
                 });
+
+                function generateTable() {
+                    let fromDate = document.getElementById("fromDate").value;
+                    let toDate = document.getElementById("toDate").value;
+
+                    if (!fromDate || !toDate) {
+                        alert("Please select both From Date and To Date.");
+                        return;
+                    }
+
+                    let from = new Date(fromDate + "-01");
+                    let to = new Date(toDate + "-01");
+
+                    if (from > to) {
+                        alert("From Date cannot be greater than To Date.");
+                        return;
+                    }
+
+                    let tableBody = document.getElementById("tableBody");
+                    tableBody.innerHTML = ""; // Clear previous data
+
+                    let current = new Date(from);
+                    let months = [];
+
+                    // Generate months array
+                    while (current <= to) {
+                        let monthYear = current.toLocaleString('default', { month: 'short' }) + " " + current.getFullYear();
+                        months.push(monthYear);
+                        current.setMonth(current.getMonth() + 1);
+                    }
+
+                    // Now dynamically generate rows based on months and screen info
+                    months.forEach((month, monthIndex) => {
+                        let screenCount = 2; // You can adjust this count or fetch it dynamically from form inputs
+                        for (let screenIndex = 0; screenIndex < screenCount; screenIndex++) {
+                            let row = document.createElement("tr");
+
+                            // Add month cell for first screen of each month
+                            if (screenIndex === 0) {
+                                let monthCell = document.createElement("td");
+                                monthCell.setAttribute("rowspan", screenCount);
+                                monthCell.className = "fw-bold align-middle";
+                                monthCell.innerText = month;
+                                row.appendChild(monthCell);
+                            }
+
+                            // Screen Number
+                            let screenNoCell = document.createElement("td");
+                            screenNoCell.innerText = screenIndex + 1; // Dynamic screen number
+                            row.appendChild(screenNoCell);
+
+                            // Screen Price (input field)
+                            let rateCell = document.createElement("td");
+                            rateCell.innerHTML = `<input type="text" class="form-control screenPrice" name="Screens[${monthIndex}][${screenIndex}].ScreenPrice" value="" required />`;
+                            row.appendChild(rateCell);
+
+                            // Screen Type (input field)
+                            let screenTypeCell = document.createElement("td");
+                            screenTypeCell.innerHTML = `<input type="text" class="form-control screenType" name="Screens[${monthIndex}][${screenIndex}].ScreenType" value="" required />`;
+                            row.appendChild(screenTypeCell);
+
+                            // Total Show
+                            let totalShowCell = document.createElement("td");
+                            totalShowCell.innerHTML = `<input type="number" class="form-control totalShow" name="Screens[${monthIndex}][${screenIndex}].TotalShow" data-index="${monthIndex}-${screenIndex}" required />`;
+                            row.appendChild(totalShowCell);
+
+                            // Cancel Show
+                            let cancelShowCell = document.createElement("td");
+                            cancelShowCell.innerHTML = `<input type="number" class="form-control cancelShow" name="Screens[${monthIndex}][${screenIndex}].CancelShow" data-index="${monthIndex}-${screenIndex}" required />`;
+                            row.appendChild(cancelShowCell);
+
+                            // Actual Show (readonly)
+                            let actualShowCell = document.createElement("td");
+                            actualShowCell.innerHTML = `<input type="number" class="form-control actualShow" name="Screens[${monthIndex}][${screenIndex}].ActualShow" readonly />`;
+                            row.appendChild(actualShowCell);
+
+                            // Amount per Screen (readonly)
+                            let amountCell = document.createElement("td");
+                            amountCell.innerHTML = `<input type="text" class="form-control amount" name="Screens[${monthIndex}][${screenIndex}].AmtPerScreen" readonly />`;
+                            row.appendChild(amountCell);
+
+                            tableBody.appendChild(row);
+                        }
+                    });
+                }
+            </script>
+
+            @*<script>
+            document.getElementById("generateBtn").addEventListener("click", function () {
+                generateTable();
             });
-        });
-    </script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            function updateAmounts(index) {
-                var totalShows = document.querySelector(`[name="Screens[${index}].TotalShow"]`).value || 0;
-                var cancelShows = document.querySelector(`[name="Screens[${index}].CancelShow"]`).value || 0;
-                var screenPrice = document.querySelector(`[name="Screens[${index}].ScreenPrice"]`).value || 0;
 
-                totalShows = parseInt(totalShows);
-                cancelShows = parseInt(cancelShows);
-                screenPrice = parseFloat(screenPrice);
+            function generateTable() {
+                let fromDate = document.getElementById("fromDate").value;
+                let toDate = document.getElementById("toDate").value;
 
-                var actualShows = Math.max(totalShows - cancelShows, 0);
-                var amount = actualShows * screenPrice;
+                if (!fromDate || !toDate) {
+                    alert("Please select both From Date and To Date.");
+                    return;
+                }
 
-                document.querySelector(`[name="Screens[${index}].ActualShow"]`).value = actualShows;
-                document.querySelector(`[name="Screens[${index}].AmtPerScreen"]`).value = amount.toFixed(2);
+                let from = new Date(fromDate + "-01");
+                let to = new Date(toDate + "-01");
+
+                if (from > to) {
+                    alert("From Date cannot be greater than To Date.");
+                    return;
+                }
+
+                let tableBody = document.getElementById("tableBody");
+                tableBody.innerHTML = ""; // Clear previous data
+
+                let current = new Date(from);
+                let months = [];
+
+                while (current <= to) {
+                    let monthYear = current.toLocaleString('default', { month: 'short' }) + " " + current.getFullYear();
+                    months.push(monthYear);
+                    current.setMonth(current.getMonth() + 1);
+                }
+
+                let screens = [
+                    { SEQUENTIAL_SCREEN_NO: 1, ScreenPrice: 500, ScreenType: "2D" },
+                    { SEQUENTIAL_SCREEN_NO: 2, ScreenPrice: 700, ScreenType: "3D" }
+                ];
+
+                months.forEach((month, monthIndex) => {
+                    screens.forEach((screen, screenIndex) => {
+                        let row = document.createElement("tr");
+
+                        if (screenIndex === 0) {
+                            let monthCell = document.createElement("td");
+                            monthCell.setAttribute("rowspan", screens.length);
+                            monthCell.className = "fw-bold align-middle";
+                            monthCell.innerText = month;
+                            row.appendChild(monthCell);
+                        }
+
+                        let screenNoCell = document.createElement("td");
+                        screenNoCell.innerText = screen.SEQUENTIAL_SCREEN_NO;
+                        row.appendChild(screenNoCell);
+
+                        let rateCell = document.createElement("td");
+                        rateCell.innerHTML = `<input type="text" class="form-control screenPrice" name="Screens[${monthIndex}][${screenIndex}].ScreenPrice" value="${screen.ScreenPrice}" readonly />`;
+                        row.appendChild(rateCell);
+
+                        let screenTypeCell = document.createElement("td");
+                        screenTypeCell.innerText = screen.ScreenType;
+                        row.appendChild(screenTypeCell);
+
+                        let totalShowCell = document.createElement("td");
+                        totalShowCell.innerHTML = `<input type="number" class="form-control totalShow" name="Screens[${monthIndex}][${screenIndex}].TotalShow" data-index="${monthIndex}-${screenIndex}" oninput="calculateActualShow(this)" required />`;
+                        row.appendChild(totalShowCell);
+
+                        let cancelShowCell = document.createElement("td");
+                        cancelShowCell.innerHTML = `<input type="number" class="form-control cancelShow" name="Screens[${monthIndex}][${screenIndex}].CancelShow" data-index="${monthIndex}-${screenIndex}" oninput="calculateActualShow(this)" required />`;
+                        row.appendChild(cancelShowCell);
+
+                        let actualShowCell = document.createElement("td");
+                        actualShowCell.innerHTML = `<input type="number" class="form-control actualShow" name="Screens[${monthIndex}][${screenIndex}].ActualShow" readonly />`;
+                        row.appendChild(actualShowCell);
+
+                        let amountCell = document.createElement("td");
+                        amountCell.innerHTML = `<input type="text" class="form-control amount" name="Screens[${monthIndex}][${screenIndex}].AmtPerScreen" readonly />`;
+                        row.appendChild(amountCell);
+
+                        tableBody.appendChild(row);
+                    });
+                });
             }
 
-            document.querySelectorAll(".totalShow, .cancelShow").forEach(input => {
-                input.addEventListener("input", function () {
-                    var index = this.getAttribute("data-index");
-                    updateAmounts(index);
+            function calculateActualShow(input) {
+                let index = input.getAttribute("data-index");
+                let row = input.closest("tr");
+
+                let totalShow = parseInt(row.querySelector(".totalShow").value) || 0;
+                let cancelShow = parseInt(row.querySelector(".cancelShow").value) || 0;
+                let actualShowInput = row.querySelector(".actualShow");
+                let amountInput = row.querySelector(".amount");
+
+                let rate = parseFloat(row.querySelector(".screenPrice").value) || 0;
+
+                let actualShow = Math.max(totalShow - cancelShow, 0);
+                actualShowInput.value = actualShow;
+
+                let amount = actualShow * rate;
+                amountInput.value = amount.toFixed(2);
+
+                calculateTotalAmount();
+            }
+
+            function calculateTotalAmount() {
+                let totalAmount = 0;
+                document.querySelectorAll(".amount").forEach(input => {
+                    totalAmount += parseFloat(input.value) || 0;
                 });
-            });
-        });
-    </script>
+                document.getElementById("totalAmount").innerText = `₹${totalAmount.toFixed(2)}`;
+            }
+        </script>*@
+
 
 </body>
 </html>

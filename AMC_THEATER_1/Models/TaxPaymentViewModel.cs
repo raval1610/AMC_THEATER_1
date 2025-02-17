@@ -17,6 +17,10 @@ namespace AMC_THEATER_1.Models
         [Required]
         [Range(2000, 2100, ErrorMessage = "Year must be between 2000 and 2100.")]
         public int Year { get; set; }
+        public int MonthYear { get; set; }
+
+
+        
         public int ScreenId { get; set; }
         public int TotalShow { get; set; }
         
