@@ -170,6 +170,8 @@
                         <th class="fw-bold">Zone</th>
                         <th class="fw-bold">Address</th>
                         <th class="fw-bold">Tenament Number</th>
+                        <th class="fw-bold">View</th>
+
                     </tr>
                 </thead>
                 <tbody>
@@ -185,10 +187,19 @@
                                 <td>@theater.T_ZONE</td>
                                 <td>@theater.T_ADDRESS</td>
                                 <td>@theater.T_TENAMENT_NO</td>
-                                
+                                <td>
 
 
-                            </tr>
+                                    <a href="@Url.Action("Registration", "TRN_REGISTRATION", new { id = theater.T_ID, isViewPage = true })"
+                                       class="btn btn-primary btn-sm"
+                                       title="View">
+                                        <i class="fa fa-eye"></i> View
+                                    </a>
+
+
+
+
+</tr>
                         }
                     }
                     else

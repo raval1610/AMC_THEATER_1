@@ -7,13 +7,13 @@
 
     ViewBag.ShowNavbar = true;
     ViewBag.ShowSideBar = true;
-    var documents = ViewBag.Documents as List<AMC_THEATER_1.Models.MST_DOCS>;
-    var uDocs = ViewBag.UploadedDocs as List<AMC_THEATER_1.Models.TRN_THEATRE_DOCS>; // ✅ Corrected variable name
-    var isReadOnly = ViewBag.IsViewPage == true ? "readonly" : "";
-    bool isEditPage = ViewBag.IsEditPage ?? false;
     bool isViewPage = ViewBag.IsViewPage ?? false;
+    // Get the documents and uploaded docs for the view
+    var documents = ViewBag.Documents as List<AMC_THEATER_1.Models.MST_DOCS>;
+    var uDocs = ViewBag.UploadedDocs as List<AMC_THEATER_1.Models.TRN_THEATRE_DOCS>;
 
-
+    // Determine if the page is view-only
+    var isReadOnly = ViewBag.IsViewPage == true ? "readonly" : "";
 }
 
 <!DOCTYPE html>
@@ -25,6 +25,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places"></script>
+
     <script src="~/Scripts/script.js"></script>
     @*<script src="@Url.Content("~/Scripts/TrnRegScript.js")"></script>*@
 
@@ -34,6 +36,12 @@
             transition: margin-left 0.3s;
             padding: 15px;
         }
+        .required-field::after {
+            content: " *";
+            color: red;
+            font-weight: bold;
+        }
+
     </style>
 </head>
 <body class="bg-light ms-5">
@@ -60,7 +68,7 @@
             {
                 <h2 class="text-center bg-light p-3 mb-4">Theater Request</h2>
             }
-            @using (Html.BeginForm("Registration", "TRN_REGISTRATION", FormMethod.Post, new { id = "TheaterForm", enctype = "multipart/form-data" }))
+            @using (Html.BeginForm("Create", "TRN_REGISTRATION", FormMethod.Post, new { id = "TheaterForm", enctype = "multipart/form-data" }))
             {
                 @Html.AntiForgeryToken()
                 @Html.HiddenFor(m => m.T_ID)
@@ -68,17 +76,19 @@
                 <!-- Theatre Registration Fields -->
                 <div class="row ms-4">
                     <div class="col-md-4 mb-3">
-                        <label for="TheaterName" class="form-label fw-bold">Theatre Name <span class="text-danger">*</span></label>
+                        <label for="TheaterName" class="form-label fw-bold required-field">Theatre Name </label>
                         @Html.TextBoxFor(m => m.T_NAME, new { @class = "form-control readonly-field", placeholder = "Enter theater name", required = "required" })
                     </div>
 
-                    <div class="col-md-4 mb-3">
-                        <label for="OwnerName" class="form-label fw-bold">Owner's Name <span class="text-danger">*</span></label>
-                        @Html.TextBoxFor(m => m.T_OWNER_NAME, new { @class = "form-control readonly-field", placeholder = "Enter owner's name", required = "required" })
-                    </div>
 
                     <div class="col-md-4 mb-3">
-                        <label for="RepresentativeContact" class="form-label fw-bold">Representative's Contact No. <span class="text-danger">*</span></label>
+                        <label for="OwnerName" class="form-label fw-bold required-field">Owner's Name</label>
+                        @Html.TextBoxFor(m => m.T_OWNER_NAME, new { @class = "form-control", id = "OwnerNameInput", placeholder = "Enter owner's name", required = "required" })
+                    </div>
+
+
+                    <div class="col-md-4 mb-3">
+                        <label for="RepresentativeContact" class="form-label fw-bold required-field">Representative's Contact No. </label>
                         @Html.TextBoxFor(m => m.T_OWNER_NUMBER, new { @class = "form-control readonly-field", placeholder = "Enter contact number", required = "required" })
                     </div>
                 </div>
@@ -86,17 +96,17 @@
                 <!-- Address, Email, Commencement Date -->
                 <div class="row ms-4">
                     <div class="col-md-4 mb-3">
-                        <label for="TheaterAddress" class="form-label fw-bold">Theatre Address <span class="text-danger">*</span></label>
+                        <label for="TheaterAddress" class="form-label fw-bold required-field">Theatre Address </label>
                         @Html.TextAreaFor(m => m.T_ADDRESS, new { @class = "form-control readonly-field", rows = "3", placeholder = "Enter theater address", required = "required" })
                     </div>
 
                     <div class="col-md-4 mb-3">
-                        <label for="EmailID" class="form-label fw-bold">Email ID <span class="text-danger">*</span></label>
+                        <label for="EmailID" class="form-label fw-bold required-field">Email ID </label>
                         @Html.TextBoxFor(m => m.T_OWNER_EMAIL, new { @class = "form-control readonly-field", placeholder = "Enter email ID", required = "required" })
                     </div>
 
                     <div class="col-md-4 mb-3">
-                        <label for="TheaterCommencementDate" class="form-label fw-bold">Theatre Commencement Date <span class="text-danger">*</span></label>
+                        <label for="TheaterCommencementDate" class="form-label fw-bold required-field">Theatre Commencement Date </label>
                         @Html.TextBoxFor(m => m.T_COMMENCEMENT_DATE, "{0:yyyy-MM-dd}", new { @class = "form-control readonly-field", type = "date", required = "required" })
 
                     </div>
@@ -105,44 +115,46 @@
                 <!-- City, Zone, Ward -->
                 <div class="row ms-4">
                     <div class="col-md-4 mb-3">
-                        <label for="City" class="form-label fw-bold">City <span class="text-danger">*</span></label>
+                        <label for="City" class="form-label fw-bold required-field">City </label>
                         @Html.TextBoxFor(m => m.T_CITY, new { @class = "form-control readonly-field ddrread", placeholder = "Enter city", required = "required" })
                     </div>
 
                     <div class="col-md-4 mb-3">
-                        <label for="Zone" class="form-label fw-bold">Zone <span class="text-danger">*</span></label>
+                        <label for="Zone" class="form-label fw-bold required-field">Zone </label>
                         @Html.DropDownListFor(m => m.T_ZONE, new SelectList(new[] { "Zone1", "Zone2", "Zone3", "Zone4" }), "-- Select Zone --",
                         new { @class = "form-control readonly-field ddrread", required = "required" })
                     </div>
 
                     <div class="col-md-4 mb-3">
-                        <label for="WardZone" class="form-label fw-bold">Ward <span class="text-danger">*</span></label>
+                        <label for="WardZone" class="form-label fw-bold required-field">Ward </label>
                         @Html.DropDownListFor(m => m.T_WARD, new SelectList(new[] { "Ward1", "Ward2", "Ward3", "Ward4" }), "-- Select Ward Zone --",
                         new { @class = "form-control readonly-field", required = "required" })
                     </div>
+
+
                 </div>
 
                 <!-- Tax Details -->
                 <div class="row ms-4">
                     <div class="col-md-4 mb-3">
-                        <label for="AMCPropertyTaxTenementNo" class="form-label fw-bold">AMC Property Tax Tenement No <span class="text-danger">*</span></label>
+                        <label for="AMCPropertyTaxTenementNo" class="form-label fw-bold required-field">AMC Property Tax Tenement No</label>
                         @Html.TextBoxFor(m => m.T_TENAMENT_NO, new { @class = "form-control readonly-field", placeholder = "Tenement No", required = "required" })
                     </div>
 
                     <div class="col-md-4 mb-3">
-                        <label for="AMCProfessionalTaxPECNo" class="form-label fw-bold">AMC Professional Tax PEC No <span class="text-danger">*</span></label>
+                        <label for="AMCProfessionalTaxPECNo" class="form-label fw-bold required-field">AMC Professional Tax PEC No </label>
                         @Html.TextBoxFor(m => m.T_PEC_NO, new { @class = "form-control readonly-field", placeholder = "PEC No", required = "required" })
                     </div>
 
                     <div class="col-md-4 mb-3">
-                        <label for="PRCNo" class="form-label fw-bold">PRC No <span class="text-danger">*</span></label>
+                        <label for="PRCNo" class="form-label fw-bold required-field">PRC No </label>
                         @Html.TextBoxFor(m => m.T_PRC_NO, new { @class = "form-control readonly-field", placeholder = "PRC No", required = "required" })
                     </div>
                 </div>
 
                 <!-- Tax Payment -->
                 <div class="col-12 ms-4 fw-bold">
-                    <label for="TheaterTaxPaidOffline" class="form-label fw-bold">Has Theatre Tax been paid offline? <span class="text-danger">*</span></label>
+                    <label for="TheaterTaxPaidOffline" class="form-label fw-bold required-field">Has Theatre Tax been paid offline? </label>
                     <div class="form-check d-inline-block me-3">
                         @Html.RadioButtonFor(m => m.T_TAX_PAYING_OFFLINE, "true", new { @class = "form-check-input readonly-field", id = "yes", required = "required", onclick = "toggleFields(true)" })
                         <label class="form-check-label" for="yes">Yes</label>
@@ -178,10 +190,13 @@
                                    class="form-control ms-1 readonly-field"
                                    value="@Model?.OFFLINE_DUE_DATE?.ToString(" yyyy-MM-dd")" />
                         </div>
+
+
                     </div>
                 </div>
-    
-                
+
+
+
                 <!-- Grid Table for Screen Capacity -->
                 <table id="screenCapacityTable" class="table table-bordered text-center mt-3">
                     <thead>
@@ -248,7 +263,16 @@
                     </tbody>
                 </table>
 
+
+
+
+                <!-- Hidden input to store screen data -->
+                <input type="hidden" id="screenData" name="screenData">
+
+
                 <h2 class="text-bg-light p-2">Upload Required Documents :</h2>
+
+
                 <div class="row">
                     <div class="col-md-12">
                         <table class="table table-bordered  table-striped">
@@ -298,12 +322,21 @@
                                                 <span class="text-muted">Not Available</span>
                                             }
                                         </td>
+
+
+
+
                                     </tr>
                                 }
                             </tbody>
                         </table>
+
+
                     </div>
                 </div>
+
+
+
 
                 @functions {
                     public string GetFileSize(string filePath)
@@ -318,22 +351,23 @@
                     }
                 }
 
+
                 <!-- Include Font Awesome for icons -->
                 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
                 <div class="text-center">
                     <form method="post">
-                        @if (ViewBag.IsEditPage == false && ViewBag.IsViewPage == false)
+                        @if (ViewBag.Mode == "Create")
                         {
                             ViewBag.Module = true;
                             <button type="submit" class="btn btn-success mt-4 w-25">Submit</button>
                         }
-                        @if (ViewBag.IsEditPage == true && ViewBag.IsViewPage == false)
+                        else if (ViewBag.Mode == "Edit")
                         {
                             ViewBag.Module = true;
                             <button type="submit" class="btn btn-success" onclick="enableEditMode()">Update</button>
-                            <button type="button" class="btn btn-warning" onclick="location.href='@Url.Action("SecondPage", "Home")'">Cancel</button>
+                            <button type="button" class="btn btn-warning" onclick="location.href='@Url.Action("Theater_List", "Home")'">Cancel</button>
                         }
-                        @if (ViewBag.IsViewPage == true)
+                        else if (ViewBag.Mode == "View")
                         {
                             ViewBag.Title = "DeptHomePage";
                             Layout = "~/Views/Shared/_Deptpage.cshtml";
@@ -342,21 +376,12 @@
                             ViewBag.ShowSideBar1 = true;
                             ViewBag.Login1 = false;
                             ViewBag.ModuleDept = true;
-                            @Html.HiddenFor(m => m.T_ID)
-                            <input type="hidden" id="actionType" name="actionType" />
-                            <input type="hidden" id="rejectReasonInput" name="rejectReason" />
-
-                            <button type="submit" class="btn btn-success" onclick="setAction('Approve')">
+                            ViewBag.IsViewPage = true;
+                            @Html.HiddenFor(m => m.T_ID)<input type="hidden" id="actionType" name="actionType" /><input type="hidden" id="rejectReasonInput" name="rejectReason" /><button type="submit" class="btn btn-success" onclick="setAction('Approve')">
                                 <i class="fa fa-check"></i> Approve
-                            </button>
-
-                            <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#rejectModal">
+                            </button><button type="button" class="btn btn-danger" data-toggle="modal" data-target="#rejectModal">
                                 <i class="fa fa-times"></i> Reject
-                            </button>
-
-
-                            <!-- Reject Reason Modal -->
-                            <div class="modal fade" id="rejectModal" tabindex="-1" role="dialog">
+                            </button><!-- Reject Reason Modal --><div class="modal fade" id="rejectModal" tabindex="-1" role="dialog">
                                 <div class="modal-dialog" role="document">
                                     <div class="modal-content">
                                         <div class="modal-header">
@@ -373,6 +398,13 @@
                                     </div>
                                 </div>
                             </div>
+                        }
+                        else
+                        {
+                            ViewBag.Module = true;
+                            ViewBag.IsViewPage = true;
+
+                            <button type="submit" class="btn btn-primary">Back</button>
                         }
                     </form>
 
@@ -403,8 +435,67 @@
 </body>
 </html>
 
-
 @*SCRIPT*@
+@*To Search City*@
+<script>
+    // Predefined list of possible addresses in Ahmedabad
+    var addressList = [
+        'Ahmedabad, Gujarat, India',
+        'Sarkhej, Ahmedabad',
+        'Vastrapur, Ahmedabad',
+        'Prahlad Nagar, Ahmedabad',
+        'Maninagar, Ahmedabad',
+        'Navrangpura, Ahmedabad',
+        'Bopal, Ahmedabad',
+        'Ambli, Ahmedabad',
+        'Shahibaug, Ahmedabad',
+        'Ashram Road, Ahmedabad',
+        'Nikol, Ahmedabad',
+        'Naroda, Ahmedabad'
+    ];
+
+
+    var input = document.getElementById('TheaterAddress');
+    var suggestionsContainer = document.getElementById('addressSuggestions');
+
+    // Function to filter and show suggestions
+    input.addEventListener('input', function () {
+        var query = input.value.toLowerCase();
+        suggestionsContainer.innerHTML = ''; // Clear previous suggestions
+
+        if (query.length > 0) {
+            var filteredAddresses = addressList.filter(function (address) {
+                return address.toLowerCase().includes(query); // Case-insensitive search
+            });
+
+            if (filteredAddresses.length > 0) {
+                suggestionsContainer.style.display = 'block'; // Show suggestions
+                filteredAddresses.forEach(function (address) {
+                    var listItem = document.createElement('li');
+                    listItem.classList.add('list-group-item');
+                    listItem.textContent = address;
+                    listItem.addEventListener('click', function () {
+                        input.value = address; // Fill input with selected address
+                        suggestionsContainer.style.display = 'none'; // Hide suggestions
+                    });
+                    suggestionsContainer.appendChild(listItem);
+                });
+            } else {
+                suggestionsContainer.style.display = 'none'; // Hide suggestions if no match
+            }
+        } else {
+            suggestionsContainer.style.display = 'none'; // Hide suggestions if input is empty
+        }
+    });
+
+    // Hide suggestions when clicking outside the input or suggestions list
+    document.addEventListener('click', function (event) {
+        if (!input.contains(event.target) && !suggestionsContainer.contains(event.target)) {
+            suggestionsContainer.style.display = 'none';
+        }
+    });
+</script>
+
 @*offlineTax *@
 <script>
 function makeDropdownReadonly(className) {
@@ -751,25 +842,25 @@ document.addEventListener("DOMContentLoaded", function () {
 </script>
 
 @*Keep fields readonly for update*@
-<script>
-     document.addEventListener("DOMContentLoaded", function () {
-        let isViewPage = @Html.Raw(Json.Encode(isViewPage));
+@*<script>
+         document.addEventListener("DOMContentLoaded", function () {
+            let isViewPage = @Html.Raw(Json.Encode(isViewPage));
 
-        if (isViewPage) {
-            // Keep fields readonly in Approve/Reject mode
-            document.querySelectorAll(".readonly-field").forEach(field => {
-                field.readOnly = true;
-            });
-        } else {
-            // Allow editing if not in Approve/Reject mode
-            document.getElementById("updateBtn")?.addEventListener("click", function () {
+            if (isViewPage) {
+                // Keep fields readonly in Approve/Reject mode
                 document.querySelectorAll(".readonly-field").forEach(field => {
-                    field.removeAttribute("readonly");
+                    field.readOnly = true;
                 });
-            });
-        }
-    });
-</script>
+            } else {
+                // Allow editing if not in Approve/Reject mode
+                document.getElementById("updateBtn")?.addEventListener("click", function () {
+                    document.querySelectorAll(".readonly-field").forEach(field => {
+                        field.removeAttribute("readonly");
+                    });
+                });
+            }
+        });
+    </script>*@
 
 @*rejectReasonInput*@
 <script>
@@ -789,8 +880,8 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 </script>
-    
-    
+
+
 
 <!-- jQuery and Bootstrap JS -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

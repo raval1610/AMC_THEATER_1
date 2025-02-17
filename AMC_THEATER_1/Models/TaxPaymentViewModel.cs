@@ -12,16 +12,19 @@ namespace AMC_THEATER_1.Models
         public int TheaterId { get; set; }
 
         [Required]
-        public string FromDate { get; set; }
+        public string Month { get; set; }
 
         [Required]
         [Range(2000, 2100, ErrorMessage = "Year must be between 2000 and 2100.")]
-        public int ToDate { get; set; } // Change to string
+        public int Year { get; set; }
+        public int MonthYear { get; set; }
+
+
+        
         public int ScreenId { get; set; }
         public int TotalShow { get; set; }
-        public List<string> Months { get; set; } // List of months as strings
-
-        public int Amount { get; set; }
+        
+             public int Amount { get; set; }
 
         public string OwnerName { get; set; }
         public string MobileNo { get; set; }
