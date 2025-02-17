@@ -1274,7 +1274,20 @@ namespace Amc_theater.Controllers
         {
             return View();
         }
+         public JsonResult GetTheaters(string term)
+    {
+        var theaters = db.TRN_REGISTRATION
+                          .Where(t => t.T_NAME.Contains(term)) // Search by theater name
+                          .Select(t => new
+                          {
+                              Id = t.T_ID,  // Theater ID
+                              T_NAME = t.T_NAME, // Theater Name
+                              T_OWNER_NAME = t.T_OWNER_NAME // Owner Name
+                          })
+                          .ToList();
 
+        return Json(theaters, JsonRequestBehavior.AllowGet);
+    }
 
 
 

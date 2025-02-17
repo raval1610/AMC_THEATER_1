@@ -17,12 +17,12 @@ namespace AMC_THEATER_1.Controllers
     public class TRN_REGISTRATIONController : Controller
     {
         private THEATER_MODULEEntities2 db = new THEATER_MODULEEntities2();
-
         public ActionResult Registration(int? id, bool isViewPage = false)
         {
             ViewBag.PageTitle = "Theater Registration";
-            ViewBag.IsEditPage = false;
-            ViewBag.IsViewPage = isViewPage;
+
+            // Default to "Create"
+            string mode = "Create";
 
             // Fetch active documents
             ViewBag.Documents = GetActiveDocuments();
@@ -38,17 +38,14 @@ namespace AMC_THEATER_1.Controllers
 
                 ViewBag.Screens = GetScreens(id.Value);
                 ViewBag.UploadedDocs = GetUploadedDocs(id.Value);
-                ViewBag.IsEditPage = true;
 
-                return View(registrationData);
+                // Determine mode
+                mode = isViewPage ? "View" : "Edit";
             }
 
-            return View();
+            ViewBag.Mode = mode; // ✅ Ensure mode is set correctly
+            return id.HasValue ? View(GetRegistrationData(id.Value)) : View();
         }
-
-
-
-
 
         private TRN_REGISTRATION GetRegistrationData(int id)
         {
@@ -84,9 +81,6 @@ namespace AMC_THEATER_1.Controllers
                 .AsNoTracking()
                 .ToList();
         }
-
-
-
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -141,7 +135,6 @@ namespace AMC_THEATER_1.Controllers
             ViewBag.Documents = db.MST_DOCS.Where(d => d.DOC_ACTIVE == true).ToList();
             return View(model);
         }
-
         private void HandleScreens(int tId, string[] seatCapacity, string[] screenType)
         {
             using (var transaction = db.Database.BeginTransaction())

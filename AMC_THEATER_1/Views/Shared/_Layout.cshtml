@@ -63,33 +63,33 @@
                         Theater Tax <i class="fas fa-file-invoice-dollar text-info"></i>
                     </h3>
                 }
-                    @*@if (ViewBag.ShowHomeIcon == true)
-            {
-                <div class="d-flex ms-auto">
-                    <a href="@Url.Action("SecondPage", "Home")" class="btn btn-secondary">
-                        <i class="fas fa-door-open"></i> Dashboard
-                    </a>
-
-                </div>
-            }*@
-
-
-                    <!-- Conditionally render the Login button -->
-                    @if (ViewBag.Login == true)
+                @*@if (ViewBag.ShowHomeIcon == true)
                     {
-                        <div class="collapse navbar-collapse mt-2" id="navbarNav">
-                            <ul class="navbar-nav ms-auto">
-                                <li class="nav-item mb-3">
-                                    <a href="@Url.Action("Home_Page", "Home")" class="btn text-white">Home</a>
-                                    <a href="@Url.Action("Login", "Home")" class="btn text-white">Login</a>
-                                    <a href="@Url.Action("Department_Login", "Home")" class="btn text-white">Department Login</a>
+                        <div class="d-flex ms-auto">
+                            <a href="@Url.Action("SecondPage", "Home")" class="btn btn-secondary">
+                                <i class="fas fa-door-open"></i> Dashboard
+                            </a>
 
-                                </li>
-                            </ul>
                         </div>
-                    }
+                    }*@
 
-                </div>
+
+                <!-- Conditionally render the Login button -->
+                @if (ViewBag.Login == true)
+                {
+                    <div class="collapse navbar-collapse mt-2" id="navbarNav">
+                        <ul class="navbar-nav ms-auto">
+                            <li class="nav-item mb-3">
+                                <a href="@Url.Action("Home_Page", "Home")" class="btn text-white">Home</a>
+                                <a href="@Url.Action("Login", "Home")" class="btn text-white">Login</a>
+                                <a href="@Url.Action("Department_Login", "Home")" class="btn text-white">Department Login</a>
+
+                            </li>
+                        </ul>
+                    </div>
+                }
+
+            </div>
         </nav>
     }
 
