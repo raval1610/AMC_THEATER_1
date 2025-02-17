@@ -58,16 +58,26 @@
                     <form action="@Url.Action("Theater_Tax", "Home")" method="post">
                         <div class="mb-4 ms-5">
                             <div class="d-flex align-items-center justify-content-between">
-                                <div class="d-flex mt-4 align-items-center">
+                                <div class="position-relative d-flex mt-4 align-items-center">
                                     <input type="text" id="theater_id" name="theater_id"
                                            class="form-control me-2 w-100 text-center"
                                            placeholder="Enter Theater ID"
-                                           value="@Request.Form["theater_id"]" required> <!-- ✅ Retains input value -->
+                                           required>
 
                                     <button type="submit" class="btn btn-secondary">
                                         <i class="fas fa-search"></i>
                                     </button>
+
+                                    <ul id="suggestionBox" class="list-group position-absolute w-100 bg-white shadow-lg mt-1"
+                                        style="display: none; top: 100%; left: 0; z-index: 1000; max-height: 200px; overflow-y: auto;">
+                                    </ul>
                                 </div>
+
+
+                                <!-- Suggestion Box -->
+                                <ul id="suggestionBox" class="list-group position-absolute w-100 mt-1" style="display: none; z-index: 1000;"></ul>
+
+
                                 <div class="text-end">
                                     <a href="javascript:void(0);" id="forgotIdLink" class="btn pe-3 ps-3 mt-3 w-2me-5 btn-secondary" onclick="handleForgotIdClick()">Search ID</a>
                                 </div>
@@ -76,7 +86,7 @@
                     </form>
 
 
-                  
+
 
 
                     <div class="mb-4">
@@ -163,7 +173,7 @@
                                                    value="@Model.Screens[i].ScreenPrice" readonly />
                                         </td>
                                         <td>@Model.Screens[i].ScreenType</td>
-                                       
+
 
                                         <td>
                                             <input type="number" class="form-control totalShow"
@@ -267,39 +277,97 @@
 
 
                 </div>
-                </div>
-
-
             </div>
+
+
         </div>
+    </div>
 
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-        <script>
-            document.addEventListener("DOMContentLoaded", function () {
-                function updateAmounts(index) {
-                    var totalShows = document.querySelector(`[name="Screens[${index}].TotalShow"]`).value || 0;
-                    var cancelShows = document.querySelector(`[name="Screens[${index}].CancelShow"]`).value || 0;
-                    var screenPrice = document.querySelector(`[name="Screens[${index}].ScreenPrice"]`).value || 0;
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            function updateAmounts(index) {
+                var totalShows = document.querySelector(`[name="Screens[${index}].TotalShow"]`).value || 0;
+                var cancelShows = document.querySelector(`[name="Screens[${index}].CancelShow"]`).value || 0;
+                var screenPrice = document.querySelector(`[name="Screens[${index}].ScreenPrice"]`).value || 0;
 
-                    totalShows = parseInt(totalShows);
-                    cancelShows = parseInt(cancelShows);
-                    screenPrice = parseFloat(screenPrice);
+                totalShows = parseInt(totalShows);
+                cancelShows = parseInt(cancelShows);
+                screenPrice = parseFloat(screenPrice);
 
-                    var actualShows = Math.max(totalShows - cancelShows, 0);
-                    var amount = actualShows * screenPrice;
+                var actualShows = Math.max(totalShows - cancelShows, 0);
+                var amount = actualShows * screenPrice;
 
-                    document.querySelector(`[name="Screens[${index}].ActualShow"]`).value = actualShows;
-                    document.querySelector(`[name="Screens[${index}].AmtPerScreen"]`).value = amount.toFixed(2);
-                }
+                document.querySelector(`[name="Screens[${index}].ActualShow"]`).value = actualShows;
+                document.querySelector(`[name="Screens[${index}].AmtPerScreen"]`).value = amount.toFixed(2);
+            }
 
-                document.querySelectorAll(".totalShow, .cancelShow").forEach(input => {
-                    input.addEventListener("input", function () {
-                        var index = this.getAttribute("data-index");
-                        updateAmounts(index);
-                    });
+            document.querySelectorAll(".totalShow, .cancelShow").forEach(input => {
+                input.addEventListener("input", function () {
+                    var index = this.getAttribute("data-index");
+                    updateAmounts(index);
                 });
             });
-        </script>
-      
+        });
+    </script>
+    <!-- jQuery & AJAX -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+ $(document).ready(function () {
+    $('#theater_id').on('input', function () {
+        var theaterId = $(this).val().trim();
+        var suggestionBox = $('#suggestionBox');
+
+        if (theaterId.length > 0) {
+            suggestionBox.html('<li class="list-group-item">Loading...</li>').show();
+
+            $.ajax({
+                url: '@Url.Action("GetTheaterSuggestions", "Home")', // Update with actual controller name
+                type: 'GET',
+                data: { theaterId: theaterId },
+                dataType: 'json',
+                success: function (data) {
+                    suggestionBox.empty().show();
+
+                    if (data.length > 0) {
+                        $.each(data, function (index, item) {
+                            suggestionBox.append(
+                                `<li class="list-group-item suggestion-item" data-id="${item.T_ID}" data-name="${item.T_Name}" data-owner="${item.T_Owner}">
+                                    <label><strong>Theater Name:</strong> ${item.T_Name}</label><br>
+                                    <label><strong>Owner:</strong> ${item.T_Owner}</label>
+                                </li>`
+                            );
+                        });
+                    } else {
+                        suggestionBox.append('<li class="list-group-item">No results found</li>');
+                    }
+                },
+                error: function () {
+                    suggestionBox.html('<li class="list-group-item">Error fetching data</li>').show();
+                }
+            });
+        } else {
+            suggestionBox.hide();
+        }
+    });
+
+    // Handle suggestion click
+    $(document).on('click', '.suggestion-item', function () {
+        $('#theater_id').val($(this).data('id')); // Fill input with selected Theater ID
+        $('#theater_name').val($(this).data('name')); // Fill Theater Name input
+        $('#suggestionBox').hide();
+    });
+
+    // Hide suggestions when clicking outside
+    $(document).click(function (e) {
+        if (!$(e.target).closest('#theater_id, #suggestionBox').length) {
+            $('#suggestionBox').hide();
+        }
+    });
+});
+
+
+    </script>
+
 </body>
 </html>

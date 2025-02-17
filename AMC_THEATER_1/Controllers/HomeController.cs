@@ -28,6 +28,26 @@ namespace Amc_theater.Controllers
         private string connectionString = "Server=localhost\\SQLEXPRESS;Database=THEATER_MODULE;Integrated Security=True;";
 
 
+        public JsonResult GetTheaterSuggestions(string theaterId)
+        {
+            if (string.IsNullOrEmpty(theaterId))
+            {
+                return Json(null, JsonRequestBehavior.AllowGet);
+            }
+
+            var theater = db.TRN_REGISTRATION
+                 .Where(t => t.T_ID.ToString().StartsWith(theaterId))
+                 .Select(t => new { T_Name = t.T_NAME ?? "", T_Owner = t.T_OWNER_NAME ?? "" }) // Ensure values are not null
+                 .ToList();
+
+
+            return Json(theater, JsonRequestBehavior.AllowGet);
+        }
+
+
+
+
+
         public ActionResult ActionRequests()
         {
             ViewBag.CurrentAction = "ActionRequests"; // This is important!

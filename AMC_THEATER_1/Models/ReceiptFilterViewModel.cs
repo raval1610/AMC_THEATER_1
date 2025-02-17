@@ -34,5 +34,7 @@ namespace AMC_THEATER_1.Models
         public string T_NAME { get; set; }
         public string PAY_MODE { get; set; }
         public string STATUS { get; set; }
+
+        
     }
 }
