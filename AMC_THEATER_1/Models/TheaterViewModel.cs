@@ -22,6 +22,8 @@ namespace AMC_THEATER_1.Models
         public string T_OWNER_EMAIL { get; set; }
         public string REG_ID { get; set; }
 
+        public DateTime THEATER_COMMENCEMENT_DATE { get; set; }
+
         public string T_ADDRESS { get; set; }
         public DateTime UPDATE_DATE { get; set; }
         public int SCREEN_COUNT { get; set; } // New field for screen count
@@ -32,5 +34,5 @@ namespace AMC_THEATER_1.Models
 
 
 
-
+    
 }
