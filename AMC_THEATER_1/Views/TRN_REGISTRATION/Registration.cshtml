@@ -7,13 +7,13 @@
 
     ViewBag.ShowNavbar = true;
     ViewBag.ShowSideBar = true;
-    var documents = ViewBag.Documents as List<AMC_THEATER_1.Models.MST_DOCS>;
-    var uDocs = ViewBag.UploadedDocs as List<AMC_THEATER_1.Models.TRN_THEATRE_DOCS>; // ✅ Corrected variable name
-    var isReadOnly = ViewBag.IsViewPage == true ? "readonly" : "";
-    bool isEditPage = ViewBag.IsEditPage ?? false;
     bool isViewPage = ViewBag.IsViewPage ?? false;
+    // Get the documents and uploaded docs for the view
+    var documents = ViewBag.Documents as List<AMC_THEATER_1.Models.MST_DOCS>;
+    var uDocs = ViewBag.UploadedDocs as List<AMC_THEATER_1.Models.TRN_THEATRE_DOCS>;
 
-
+    // Determine if the page is view-only
+    var isReadOnly = ViewBag.IsViewPage == true ? "readonly" : "";
 }
 
 <!DOCTYPE html>
@@ -25,6 +25,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places"></script>
+
     <script src="~/Scripts/script.js"></script>
     @*<script src="@Url.Content("~/Scripts/TrnRegScript.js")"></script>*@
 
@@ -87,8 +89,12 @@
                 <div class="row ms-4">
                     <div class="col-md-4 mb-3">
                         <label for="TheaterAddress" class="form-label fw-bold">Theatre Address <span class="text-danger">*</span></label>
-                        @Html.TextAreaFor(m => m.T_ADDRESS, new { @class = "form-control readonly-field", rows = "3", placeholder = "Enter theater address", required = "required" })
+                        <input type="text" id="TheaterAddress" class="form-control" placeholder="Enter theater address" required="required">
+                        <ul id="addressSuggestions" class="list-group" style="display: none; position: absolute; width: 100%; background: white; border: 1px solid #ccc; z-index: 1000;">
+                            <!-- Suggestions will be added here -->
+                        </ul>
                     </div>
+
 
                     <div class="col-md-4 mb-3">
                         <label for="EmailID" class="form-label fw-bold">Email ID <span class="text-danger">*</span></label>
@@ -112,13 +118,13 @@
                     <div class="col-md-4 mb-3">
                         <label for="Zone" class="form-label fw-bold">Zone <span class="text-danger">*</span></label>
                         @Html.DropDownListFor(m => m.T_ZONE, new SelectList(new[] { "Zone1", "Zone2", "Zone3", "Zone4" }), "-- Select Zone --",
-                        new { @class = "form-control readonly-field ddrread", required = "required" })
+                                                 new { @class = "form-control readonly-field ddrread", required = "required" })
                     </div>
 
                     <div class="col-md-4 mb-3">
                         <label for="WardZone" class="form-label fw-bold">Ward <span class="text-danger">*</span></label>
                         @Html.DropDownListFor(m => m.T_WARD, new SelectList(new[] { "Ward1", "Ward2", "Ward3", "Ward4" }), "-- Select Ward Zone --",
-                        new { @class = "form-control readonly-field", required = "required" })
+                                                 new { @class = "form-control readonly-field", required = "required" })
                     </div>
                 </div>
 
@@ -180,8 +186,8 @@
                         </div>
                     </div>
                 </div>
-    
-                
+
+
                 <!-- Grid Table for Screen Capacity -->
                 <table id="screenCapacityTable" class="table table-bordered text-center mt-3">
                     <thead>
@@ -322,18 +328,18 @@
                 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
                 <div class="text-center">
                     <form method="post">
-                        @if (ViewBag.IsEditPage == false && ViewBag.IsViewPage == false)
+                        @if (ViewBag.Mode == "Create")
                         {
                             ViewBag.Module = true;
                             <button type="submit" class="btn btn-success mt-4 w-25">Submit</button>
                         }
-                        @if (ViewBag.IsEditPage == true && ViewBag.IsViewPage == false)
+                        else if (ViewBag.Mode == "Edit")
                         {
                             ViewBag.Module = true;
                             <button type="submit" class="btn btn-success" onclick="enableEditMode()">Update</button>
-                            <button type="button" class="btn btn-warning" onclick="location.href='@Url.Action("SecondPage", "Home")'">Cancel</button>
+                            <button type="button" class="btn btn-warning" onclick="location.href='@Url.Action("Theater_List", "Home")'">Cancel</button>
                         }
-                        @if (ViewBag.IsViewPage == true)
+                        else if (ViewBag.Mode == "View")
                         {
                             ViewBag.Title = "DeptHomePage";
                             Layout = "~/Views/Shared/_Deptpage.cshtml";
@@ -342,21 +348,12 @@
                             ViewBag.ShowSideBar1 = true;
                             ViewBag.Login1 = false;
                             ViewBag.ModuleDept = true;
-                            @Html.HiddenFor(m => m.T_ID)
-                            <input type="hidden" id="actionType" name="actionType" />
-                            <input type="hidden" id="rejectReasonInput" name="rejectReason" />
-
-                            <button type="submit" class="btn btn-success" onclick="setAction('Approve')">
+                            ViewBag.IsViewPage = true;
+                            @Html.HiddenFor(m => m.T_ID)<input type="hidden" id="actionType" name="actionType" /><input type="hidden" id="rejectReasonInput" name="rejectReason" /><button type="submit" class="btn btn-success" onclick="setAction('Approve')">
                                 <i class="fa fa-check"></i> Approve
-                            </button>
-
-                            <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#rejectModal">
+                            </button><button type="button" class="btn btn-danger" data-toggle="modal" data-target="#rejectModal">
                                 <i class="fa fa-times"></i> Reject
-                            </button>
-
-
-                            <!-- Reject Reason Modal -->
-                            <div class="modal fade" id="rejectModal" tabindex="-1" role="dialog">
+                            </button><!-- Reject Reason Modal --><div class="modal fade" id="rejectModal" tabindex="-1" role="dialog">
                                 <div class="modal-dialog" role="document">
                                     <div class="modal-content">
                                         <div class="modal-header">
@@ -373,6 +370,13 @@
                                     </div>
                                 </div>
                             </div>
+                        }
+                        else
+                        {
+                            ViewBag.Module = true;
+                            ViewBag.IsViewPage = true;
+
+                            <button type="submit" class="btn btn-primary" >Back</button>
                         }
                     </form>
 
@@ -403,8 +407,67 @@
 </body>
 </html>
 
-
 @*SCRIPT*@
+@*To Search City*@
+<script>
+    // Predefined list of possible addresses in Ahmedabad
+    var addressList = [
+        'Ahmedabad, Gujarat, India',
+        'Sarkhej, Ahmedabad',
+        'Vastrapur, Ahmedabad',
+        'Prahlad Nagar, Ahmedabad',
+        'Maninagar, Ahmedabad',
+        'Navrangpura, Ahmedabad',
+        'Bopal, Ahmedabad',
+        'Ambli, Ahmedabad',
+        'Shahibaug, Ahmedabad',
+        'Ashram Road, Ahmedabad',
+        'Nikol, Ahmedabad',
+        'Naroda, Ahmedabad'
+    ];
+
+
+    var input = document.getElementById('TheaterAddress');
+    var suggestionsContainer = document.getElementById('addressSuggestions');
+
+    // Function to filter and show suggestions
+    input.addEventListener('input', function () {
+        var query = input.value.toLowerCase();
+        suggestionsContainer.innerHTML = ''; // Clear previous suggestions
+
+        if (query.length > 0) {
+            var filteredAddresses = addressList.filter(function (address) {
+                return address.toLowerCase().includes(query); // Case-insensitive search
+            });
+
+            if (filteredAddresses.length > 0) {
+                suggestionsContainer.style.display = 'block'; // Show suggestions
+                filteredAddresses.forEach(function (address) {
+                    var listItem = document.createElement('li');
+                    listItem.classList.add('list-group-item');
+                    listItem.textContent = address;
+                    listItem.addEventListener('click', function () {
+                        input.value = address; // Fill input with selected address
+                        suggestionsContainer.style.display = 'none'; // Hide suggestions
+                    });
+                    suggestionsContainer.appendChild(listItem);
+                });
+            } else {
+                suggestionsContainer.style.display = 'none'; // Hide suggestions if no match
+            }
+        } else {
+            suggestionsContainer.style.display = 'none'; // Hide suggestions if input is empty
+        }
+    });
+
+    // Hide suggestions when clicking outside the input or suggestions list
+    document.addEventListener('click', function (event) {
+        if (!input.contains(event.target) && !suggestionsContainer.contains(event.target)) {
+            suggestionsContainer.style.display = 'none';
+        }
+    });
+</script>
+
 @*offlineTax *@
 <script>
 function makeDropdownReadonly(className) {
@@ -751,25 +814,25 @@ document.addEventListener("DOMContentLoaded", function () {
 </script>
 
 @*Keep fields readonly for update*@
-<script>
-     document.addEventListener("DOMContentLoaded", function () {
-        let isViewPage = @Html.Raw(Json.Encode(isViewPage));
+@*<script>
+         document.addEventListener("DOMContentLoaded", function () {
+            let isViewPage = @Html.Raw(Json.Encode(isViewPage));
 
-        if (isViewPage) {
-            // Keep fields readonly in Approve/Reject mode
-            document.querySelectorAll(".readonly-field").forEach(field => {
-                field.readOnly = true;
-            });
-        } else {
-            // Allow editing if not in Approve/Reject mode
-            document.getElementById("updateBtn")?.addEventListener("click", function () {
+            if (isViewPage) {
+                // Keep fields readonly in Approve/Reject mode
                 document.querySelectorAll(".readonly-field").forEach(field => {
-                    field.removeAttribute("readonly");
+                    field.readOnly = true;
                 });
-            });
-        }
-    });
-</script>
+            } else {
+                // Allow editing if not in Approve/Reject mode
+                document.getElementById("updateBtn")?.addEventListener("click", function () {
+                    document.querySelectorAll(".readonly-field").forEach(field => {
+                        field.removeAttribute("readonly");
+                    });
+                });
+            }
+        });
+    </script>*@
 
 @*rejectReasonInput*@
 <script>
@@ -789,8 +852,8 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 </script>
-    
-    
+
+
 
 <!-- jQuery and Bootstrap JS -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
