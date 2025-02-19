@@ -13,10 +13,10 @@ namespace AMC_THEATER_1.Models
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
     
-    public partial class THEATER_MODULEEntities2 : DbContext
+    public partial class THEATER_MODULEEntities : DbContext
     {
-        public THEATER_MODULEEntities2()
-            : base("name=THEATER_MODULEEntities2")
+        public THEATER_MODULEEntities()
+            : base("name=THEATER_MODULEEntities")
         {
         }
     

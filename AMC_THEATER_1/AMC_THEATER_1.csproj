@@ -339,6 +339,7 @@
     <Content Include="Views\Shared\_HomeSideBar.cshtml" />
     <Content Include="Views\Home\CommonTableView.cshtml" />
     <Content Include="Views\Home\Tax_Hold.cshtml" />
+    <Content Include="Views\Home\Seprate_Theater_Tax.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

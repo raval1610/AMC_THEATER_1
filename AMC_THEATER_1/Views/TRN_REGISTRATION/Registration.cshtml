@@ -10,7 +10,7 @@
     var documents = ViewBag.Documents as List<AMC_THEATER_1.Models.MST_DOCS>;
     var uDocs = ViewBag.UploadedDocs as List<AMC_THEATER_1.Models.TRN_THEATRE_DOCS>; // ✅ Corrected variable name
     var isReadOnly = ViewBag.IsViewPage == true ? "readonly" : "";
-    bool isEditPage = ViewBag.IsEditPage ?? false;
+   // bool isEditPage = ViewBag.IsEditPage ?? false;
     bool isViewPage = ViewBag.IsViewPage ?? false;
 
 
@@ -84,23 +84,24 @@
                 </div>
 
                 <!-- Address, Email, Commencement Date -->
-                <div class="row ms-4">
-                    <div class="col-md-4 mb-3">
-                        <label for="TheaterAddress" class="form-label fw-bold">Theatre Address <span class="text-danger">*</span></label>
-                        @Html.TextAreaFor(m => m.T_ADDRESS, new { @class = "form-control readonly-field", rows = "3", placeholder = "Enter theater address", required = "required" })
-                    </div>
+        <div class="row ms-4">
+            <div class="col-md-4 mb-3">
+                <label for="TheaterAddress" class="form-label fw-bold required-field">Theatre Address </label>
+                @Html.TextAreaFor(m => m.T_ADDRESS, new { @class = "form-control readonly-field", rows = "3", placeholder = "Enter theater address", required = "required" })
+            </div>
 
-                    <div class="col-md-4 mb-3">
-                        <label for="EmailID" class="form-label fw-bold">Email ID <span class="text-danger">*</span></label>
-                        @Html.TextBoxFor(m => m.T_OWNER_EMAIL, new { @class = "form-control readonly-field", placeholder = "Enter email ID", required = "required" })
-                    </div>
 
-                    <div class="col-md-4 mb-3">
-                        <label for="TheaterCommencementDate" class="form-label fw-bold">Theatre Commencement Date <span class="text-danger">*</span></label>
-                        @Html.TextBoxFor(m => m.T_COMMENCEMENT_DATE, "{0:yyyy-MM-dd}", new { @class = "form-control readonly-field", type = "date", required = "required" })
+            <div class="col-md-4 mb-3">
+                <label for="EmailID" class="form-label fw-bold">Email ID <span class="text-danger">*</span></label>
+                @Html.TextBoxFor(m => m.T_OWNER_EMAIL, new { @class = "form-control readonly-field", placeholder = "Enter email ID", required = "required" })
+            </div>
 
-                    </div>
-                </div>
+            <div class="col-md-4 mb-3">
+                <label for="TheaterCommencementDate" class="form-label fw-bold">Theatre Commencement Date <span class="text-danger">*</span></label>
+                @Html.TextBoxFor(m => m.T_COMMENCEMENT_DATE, "{0:yyyy-MM-dd}", new { @class = "form-control readonly-field", type = "date", required = "required" })
+
+            </div>
+        </div>
 
                 <!-- City, Zone, Ward -->
                 <div class="row ms-4">
@@ -112,13 +113,13 @@
                     <div class="col-md-4 mb-3">
                         <label for="Zone" class="form-label fw-bold">Zone <span class="text-danger">*</span></label>
                         @Html.DropDownListFor(m => m.T_ZONE, new SelectList(new[] { "Zone1", "Zone2", "Zone3", "Zone4" }), "-- Select Zone --",
-                        new { @class = "form-control readonly-field ddrread", required = "required" })
+                     new { @class = "form-control readonly-field ddrread", required = "required" })
                     </div>
 
                     <div class="col-md-4 mb-3">
                         <label for="WardZone" class="form-label fw-bold">Ward <span class="text-danger">*</span></label>
                         @Html.DropDownListFor(m => m.T_WARD, new SelectList(new[] { "Ward1", "Ward2", "Ward3", "Ward4" }), "-- Select Ward Zone --",
-                        new { @class = "form-control readonly-field", required = "required" })
+                     new { @class = "form-control readonly-field", required = "required" })
                     </div>
                 </div>
 
@@ -180,8 +181,8 @@
                         </div>
                     </div>
                 </div>
-    
-                
+
+
                 <!-- Grid Table for Screen Capacity -->
                 <table id="screenCapacityTable" class="table table-bordered text-center mt-3">
                     <thead>
@@ -322,20 +323,21 @@
                 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
                 <div class="text-center">
                     <form method="post">
-                        @if (ViewBag.IsEditPage == false && ViewBag.IsViewPage == false)
+                        @if (ViewBag.Mode == "create")
                         {
-                            ViewBag.Module = true;
-                            <button type="submit" class="btn btn-success mt-4 w-25">Submit</button>
-                        }
-                        @if (ViewBag.IsEditPage == true && ViewBag.IsViewPage == false)
+                            <button type="submit" class="btn btn-success mt-4 w-25">Submit</button> }
+                        else if (ViewBag.Mode == "edit")
                         {
-                            ViewBag.Module = true;
                             <button type="submit" class="btn btn-success" onclick="enableEditMode()">Update</button>
-                            <button type="button" class="btn btn-warning" onclick="location.href='@Url.Action("SecondPage", "Home")'">Cancel</button>
+
+                            <button type="button" class="btn btn-warning" onclick="location.href='@Url.Action("List_of_Application", "Home")'">Cancel</button>
                         }
-                        @if (ViewBag.IsViewPage == true)
+                        else if (ViewBag.Mode == "view")
                         {
-                            ViewBag.Title = "DeptHomePage";
+                            <button type="button" class="btn btn-secondary" onclick="window.history.back()">Back</button>
+                        }
+                        else if (ViewBag.Mode == "approve")
+                        {
                             Layout = "~/Views/Shared/_Deptpage.cshtml";
                             ViewBag.ShowBasicNavbar1 = true; // Show only the basic navbar
                             ViewBag.ShowNavbar1 = true;
@@ -343,6 +345,7 @@
                             ViewBag.Login1 = false;
                             ViewBag.ModuleDept = true;
                             @Html.HiddenFor(m => m.T_ID)
+                                ViewBag.IsViewPAge = true;
                             <input type="hidden" id="actionType" name="actionType" />
                             <input type="hidden" id="rejectReasonInput" name="rejectReason" />
 
@@ -354,8 +357,6 @@
                                 <i class="fa fa-times"></i> Reject
                             </button>
 
-
-                            <!-- Reject Reason Modal -->
                             <div class="modal fade" id="rejectModal" tabindex="-1" role="dialog">
                                 <div class="modal-dialog" role="document">
                                     <div class="modal-content">
@@ -373,10 +374,17 @@
                                     </div>
                                 </div>
                             </div>
+
                         }
+                        else if (ViewBag.Mode == "back")
+                        {
+                            <button type="button" class="btn btn-secondary" onclick="window.history.back()">Back</button>
+                        }
+                       
                     </form>
 
-                    <!-- Modal for Reject Reason -->
+
+                    <!-- Reject Reason Modal -->
                     <div class="modal fade" id="rejectModal" tabindex="-1" role="dialog" aria-labelledby="rejectModalLabel" aria-hidden="true">
                         <div class="modal-dialog" role="document">
                             <div class="modal-content">
@@ -396,10 +404,9 @@
                             </div>
                         </div>
                     </div>
+
                 </div>
             }
-        </div>
-    </div>
 </body>
 </html>
 
@@ -789,8 +796,61 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 </script>
-    
-    
+@*To Search City*@
+<!--<script>
+    // Predefined list of possible addresses in Ahmedabad
+    var addressList = [
+        'Ahmedabad, Gujarat, India',
+        'Sarkhej, Ahmedabad',
+        'Vastrapur, Ahmedabad',
+        'Prahlad Nagar, Ahmedabad',
+        'Maninagar, Ahmedabad',
+        'Navrangpura, Ahmedabad',
+        'Bopal, Ahmedabad',
+        'Ambli, Ahmedabad',
+        'Shahibaug, Ahmedabad',
+        'Ashram Road, Ahmedabad',
+        'Nikol, Ahmedabad',
+        'Naroda, Ahmedabad'
+    ];
+    var input = document.getElementById('TheaterAddress');
+    var suggestionsContainer = document.getElementById('addressSuggestions');
+    // Function to filter and show suggestions
+    input.addEventListener('input', function () {
+        var query = input.value.toLowerCase();
+        suggestionsContainer.innerHTML = ''; // Clear previous suggestions
+        if (query.length > 0) {
+            var filteredAddresses = addressList.filter(function (address) {
+                return address.toLowerCase().includes(query); // Case-insensitive search
+            });
+            if (filteredAddresses.length > 0) {
+                suggestionsContainer.style.display = 'block'; // Show suggestions
+                filteredAddresses.forEach(function (address) {
+                    var listItem = document.createElement('li');
+                    listItem.classList.add('list-group-item');
+                    listItem.textContent = address;
+                    listItem.addEventListener('click', function () {
+                        input.value = address; // Fill input with selected address
+                        suggestionsContainer.style.display = 'none'; // Hide suggestions
+                    });
+                    suggestionsContainer.appendChild(listItem);
+                });
+            } else {
+                suggestionsContainer.style.display = 'none'; // Hide suggestions if no match
+            }
+        } else {
+            suggestionsContainer.style.display = 'none'; // Hide suggestions if input is empty
+        }
+    });
+    // Hide suggestions when clicking outside the input or suggestions list
+    document.addEventListener('click', function (event) {
+        if (!input.contains(event.target) && !suggestionsContainer.contains(event.target)) {
+            suggestionsContainer.style.display = 'none';
+        }
+    });
+</script>-->
+
+
 
 <!-- jQuery and Bootstrap JS -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

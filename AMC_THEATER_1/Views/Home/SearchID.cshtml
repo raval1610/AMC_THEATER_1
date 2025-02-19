@@ -5,7 +5,9 @@
     ViewBag.ShowBasicNavbar = false;
     ViewBag.ShowHomeIcon = true;
     ViewBag.ShowNavbar = true;
-    ViewBag.Module = true;
+    ViewBag.Module = false;
+    ViewBag.Login = true;
+
 
     //ViewBag.ShowSideBar = true;
 }
@@ -27,7 +29,6 @@
 
    
     <div class="container mt-5">
-        <h6>HIIIIsdfgvdfbg</h6>
         <div class="row justify-content-center">
             <div class="col-md-6">
                 <div class="card shadow-lg rounded-3 ms-4 p-4">
@@ -59,7 +60,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body text-center">
-                    <p class="fw-bold">Your Theater ID is : <span class="text-danger fw-bold">@firstTheater.T_ID</span></p>
+                    <p class="fw-bold">Your Theater ID is : <span class="text-danger fw-bold">@firstTheater.REG_ID</span></p>
                     <p class="fw-bold">Your Theater Name is : <span class="text-danger fw-bold">@firstTheater.T_NAME</span></p>
                 </div>
                 <div class="modal-footer">

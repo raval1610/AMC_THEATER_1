@@ -16,12 +16,34 @@ namespace AMC_THEATER_1.Controllers
 {
     public class TRN_REGISTRATIONController : Controller
     {
-        private THEATER_MODULEEntities2 db = new THEATER_MODULEEntities2();
+        private THEATER_MODULEEntities db = new THEATER_MODULEEntities();
 
-        public ActionResult Registration(int? id, bool isViewPage = false)
+        //public ActionResult Registration(int? id, string mode = "create")
+        //{
+        //    ViewBag.PageTitle = "Theater Registration";
+        //    ViewBag.Mode = mode; // ✅ Mode is now always set
+
+        //    ViewBag.Documents = GetActiveDocuments();
+
+        //    if (id.HasValue)
+        //    {
+        //        var registrationData = GetRegistrationData(id.Value);
+        //        if (registrationData == null)
+        //        {
+        //            TempData["ErrorMessage"] = "No registration data found for the provided ID.";
+        //            return RedirectToAction("Index");
+        //        }
+
+        //        ViewBag.Screens = GetScreens(id.Value);
+        //        ViewBag.UploadedDocs = GetUploadedDocs(id.Value);
+        //    }
+
+        //    return View();
+        //}
+        public ActionResult Registration(int? id, bool isViewPage = false, string mode = "create")
         {
             ViewBag.PageTitle = "Theater Registration";
-            ViewBag.IsEditPage = false;
+            ViewBag.Mode = mode; // ✅ Mode is now always set
             ViewBag.IsViewPage = isViewPage;
 
             // Fetch active documents
@@ -45,10 +67,6 @@ namespace AMC_THEATER_1.Controllers
 
             return View();
         }
-
-
-
-
 
         private TRN_REGISTRATION GetRegistrationData(int id)
         {

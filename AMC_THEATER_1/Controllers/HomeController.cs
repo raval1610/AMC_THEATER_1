@@ -18,7 +18,7 @@ namespace Amc_theater.Controllers
     public class HomeController : Controller
     {
 
-        private THEATER_MODULEEntities2 db = new THEATER_MODULEEntities2();
+        private THEATER_MODULEEntities db = new THEATER_MODULEEntities();
 
         private ApplicationDbContext db1 = new ApplicationDbContext(); // Database context
         private readonly ApplicationDbContext _context = new ApplicationDbContext(); // Ass
@@ -66,7 +66,7 @@ namespace Amc_theater.Controllers
                 T_WARD = tr.T_WARD,
                 STATUS = tr.STATUS,
                 T_OWNER_NAME = tr.T_OWNER_NAME,
-                REJECTREASON = tr.REJECT_REASON,
+                REJECT_REASON = tr.REJECT_REASON,
                 UPDATE_DATE = tr.UPDATE_DATE ?? DateTime.MinValue,
                 SCREEN_COUNT = tr.TheaterScreenCount + tr.VideoTheaterScreenCount,
                 THEATER_SCREEN_COUNT = tr.TheaterScreenCount,
@@ -96,6 +96,7 @@ namespace Amc_theater.Controllers
                             tr.REJECT_REASON,
                             tr.UPDATE_DATE,
                             tr.T_OWNER_NAME,
+                            tr.T_COMMENCEMENT_DATE,
 
                             TheaterScreenCount = db.NO_OF_SCREENS.Count(s => s.T_ID == tr.T_ID && s.SCREEN_TYPE == "Theater"),
                             VideoTheaterScreenCount = db.NO_OF_SCREENS.Count(s => s.T_ID == tr.T_ID && s.SCREEN_TYPE == "Video")
@@ -114,7 +115,8 @@ namespace Amc_theater.Controllers
                 T_WARD = tr.T_WARD,
                 STATUS = tr.STATUS,
                 T_OWNER_NAME = tr.T_OWNER_NAME,
-                REJECTREASON = tr.REJECT_REASON,
+                T_COMMENCEMENT_DATE = (DateTime)tr.T_COMMENCEMENT_DATE,
+                REJECT_REASON = tr.REJECT_REASON,
                 UPDATE_DATE = tr.UPDATE_DATE ?? DateTime.MinValue,
                 SCREEN_COUNT = tr.TheaterScreenCount + tr.VideoTheaterScreenCount,
                 THEATER_SCREEN_COUNT = tr.TheaterScreenCount,
@@ -284,7 +286,7 @@ namespace Amc_theater.Controllers
             };
 
             // ✅ Step 1: Fetch screen prices first and store in memory
-            var screenPrices = db.TRN_SCREEN_TAX_PRICE
+          var screenPrices = db.TRN_SCREEN_TAX_PRICE
                 .AsNoTracking() // Improves performance
                 .ToDictionary(p => p.SCREEN_TYPE, p => p.SCREEN_PRICE);
 
@@ -471,6 +473,7 @@ namespace Amc_theater.Controllers
         [HttpGet]
         public ActionResult Theater_List()
         {
+            ViewBag.CurrentAction = "TheaterList";
             // Query to fetch all data from TRN_REGISTRATION
             var query = from tr in db.TRN_REGISTRATION
                         where tr.T_ACTIVE == true && tr.STATUS == "Approved"
@@ -754,8 +757,8 @@ namespace Amc_theater.Controllers
                             .Where(t => t.T_TENAMENT_NO == searchTerm)
                             .Select(t => new SearchViewModel
                             {
-                                T_ID = t.T_ID,
-                                T_NAME = t.T_NAME
+                                T_NAME = t.T_NAME,
+                                REG_ID = t.REG_ID
                                 // Add other properties if needed
                             })
                             .ToList();
@@ -1254,7 +1257,73 @@ namespace Amc_theater.Controllers
         {
             return View();
         }
-         public JsonResult GetTheaters(string term)
+
+        public ActionResult Seprate_Theater_Tax()
+        {
+            return View();
+        }
+        [HttpPost]
+        public ActionResult Seprate_Theater_Tax(int theater_id)
+        {
+            if (theater_id <= 0)
+            {
+                TempData["Error"] = "Please enter a valid Theater ID.";
+                return RedirectToAction("Index");
+            }
+
+            var model = new TaxPaymentViewModel
+            {
+                TheaterId = theater_id,
+                Month = DateTime.Now.ToString("MMMM"), // Default to current month
+                Year = DateTime.Now.Year // Default to current year
+            };
+
+            // ✅ Step 1: Fetch screen prices first and store in memory
+            var screenPrices = db.TRN_SCREEN_TAX_PRICE
+                .AsNoTracking() // Improves performance
+                .ToDictionary(p => p.SCREEN_TYPE, p => p.SCREEN_PRICE);
+
+            // ✅ Step 2: Fetch theater details along with associated screens
+            var theaterDetails = db.TRN_REGISTRATION
+                .Where(t => t.T_ID == theater_id)
+                .Select(t => new
+                {
+                    TheaterID = t.T_ID,
+                    OwnerName = t.T_OWNER_NAME,
+                    MobileNo = t.T_OWNER_NUMBER != null ? t.T_OWNER_NUMBER.ToString() : string.Empty,
+                    Address = t.T_ADDRESS,
+                    Email = t.T_OWNER_EMAIL,
+                    Screens = db.NO_OF_SCREENS
+                        .Where(s => s.T_ID == t.T_ID)
+                        .ToList() // ✅ Move data to memory first
+                })
+                .FirstOrDefault();
+
+            if (theaterDetails == null)
+            {
+                TempData["Error"] = "Theater ID not found.";
+                return RedirectToAction("Index");
+            }
+
+            // ✅ Step 3: Map the screens manually after fetching from DB
+            model.Screens = theaterDetails.Screens
+                .Select(s => new ScreenViewModel
+                {
+                    ScreenId = s.SCREEN_ID,
+                    AudienceCapacity = (int)s.AUDIENCE_CAPACITY,
+                    ScreenType = s.SCREEN_TYPE,
+
+                    ScreenPrice = screenPrices.ContainsKey(s.SCREEN_TYPE) ? screenPrices[s.SCREEN_TYPE].GetValueOrDefault(0) : 0
+                }).ToList();
+
+            model.OwnerName = theaterDetails.OwnerName;
+            model.MobileNo = theaterDetails.MobileNo;
+            model.Address = theaterDetails.Address;
+            model.Email = theaterDetails.Email;
+
+            return View(model);
+        }
+        public JsonResult GetTheaters(string term)
     {
         var theaters = db.TRN_REGISTRATION
                           .Where(t => t.T_NAME.Contains(term)) // Search by theater name

@@ -1,4 +1,4 @@
-﻿// T4 code generation is enabled for model 'D:\Keyur1\AMC_THEATER_1-13-2-25\AMC_THEATER_1\AMC_THEATER_1\Models\Theater_Module.edmx'. 
+﻿// T4 code generation is enabled for model 'C:\SR\AMC_THEATER_1\Models\Theater_Module.edmx'. 
 // To enable legacy code generation, change the value of the 'Code Generation Strategy' designer
 // property to 'Legacy ObjectContext'. This property is available in the Properties Window when the model
 // is open in the designer.

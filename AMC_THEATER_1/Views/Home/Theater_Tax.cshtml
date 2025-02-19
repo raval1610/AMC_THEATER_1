@@ -113,11 +113,11 @@
 
                                     <div class="row">
                                         <div class="col-md-4">
-                                            <label for="fromDate" class="form-label fw-bold">From Date</label>
+                                            <label for="fromDate" class="form-label fw-bold">From Month</label>
                                             <input type="month" id="fromDate" class="form-control">
                                         </div>
                                         <div class="col-md-4">
-                                            <label for="toDate" class="form-label fw-bold">To Date</label>
+                                            <label for="toDate" class="form-label fw-bold">To Month</label>
                                             <input type="month" id="toDate" class="form-control">
                                         </div>
                                     </div>
@@ -132,18 +132,21 @@
                             <table id="screenCapacityTable" class="table table-bordered text-center mt-3">
                                 <thead class="table-light">
                                     <tr>
-                                        <th>Month & Year</th>
-                                        <th>Screen No</th>
-                                        <th>Rate</th>
-                                        <th>Screen Type</th>
-                                        <th>Total Shows</th>
-                                        <th>Canceled Shows</th>
-                                        <th>Actual Shows</th>
-                                        <th>Amount</th>
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="col-1">Month</th>
+                                        <th class="col-1">Screen</th>
+                                        <th class="col-1">Rate</th>
+                                        <th class="col-1">Type</th>
+                                        <th class="col-1">Shows</th>
+                                        <th class="col-1">Cancel</th>
+                                        <th class="col-1">Actual</th>
+                                        <th class="col-1">Amount</th>
                                     </tr>
                                 </thead>
+
                                 <tbody id="tableBody">
-                                <tbody id="tableBody">
+
                                     @for (int i = 0; i < Model.Screens.Count; i++)
                                     {
                                         <tr>
@@ -161,38 +164,47 @@
                                             <input type="hidden" name="Screens[@i].ScreenId" value="@Model.Screens[i].ScreenId" />
 
                                             <td>
-                                                <input type="text" class="form-control screenPrice"
+                                                <input type="text" class="form-control ms-3 screenPrice "
                                                        name="Screens[@i].ScreenPrice"
-                                                       value="@Model.Screens[i].ScreenPrice" readonly />
+                                                       value="@Model.Screens[i].ScreenPrice"
+                                                       readonly
+                                                       style="width: 60px; text-align: center;" />
                                             </td>
+
 
                                             <td>@Model.Screens[i].ScreenType</td>
-
                                             <td>
-                                                <input type="number" class="form-control totalShow"
+                                                <input type="number" class="form-control text-end ms-3 totalShow"
                                                        name="Screens[@i].TotalShow"
                                                        data-index="@i"
-                                                       oninput="calculateActualShow(@i)" required />
+                                                       oninput="calculateActualShow(@i)"
+                                                       style="width: 90px;"
+                                                       required />
                                             </td>
 
                                             <td>
-                                                <input type="number" class="form-control cancelShow"
+                                                <input type="number" class="form-control text-end ms-3 cancelShow"
                                                        name="Screens[@i].CancelShow"
                                                        data-index="@i"
-                                                       oninput="calculateActualShow(@i)" required />
+                                                       oninput="calculateActualShow(@i)"
+                                                       style="width: 90px;"
+                                                       required />
                                             </td>
 
                                             <td>
-                                                <input type="number" class="form-control actualShow"
+                                                <input type="number" class="form-control text-end ms-3 actualShow"
                                                        name="Screens[@i].ActualShow"
                                                        id="actualShow_@i"
-                                                       value="0" readonly />
+                                                       value="0"
+                                                       readonly
+                                                       style="width: 90px;" />
                                             </td>
 
                                             <td>
-                                                <input type="text" class="form-control amount"
+                                                <input type="text" class="form-control ms-4 text-end amount"
                                                        name="Screens[@i].AmtPerScreen"
                                                        id="amtPerScreen_@i"
+                                                       style="width: 110px;"
                                                        value="0" readonly />
                                             </td>
                                         </tr>
@@ -254,73 +266,355 @@
                     }
 
                     let tableBody = document.getElementById("tableBody");
-                    tableBody.innerHTML = ""; // Clear previous data
+                    let originalRows = Array.from(tableBody.querySelectorAll("tr")); // Get original rows
+                    tableBody.innerHTML = ""; // Clear table before appending new rows
 
                     let current = new Date(from);
                     let months = [];
 
-                    // Generate months array
                     while (current <= to) {
-                        let monthYear = current.toLocaleString('default', { month: 'short' }) + " " + current.getFullYear();
+                        let monthYear = current.toLocaleString("default", { month: "short" }) + " " + current.getFullYear();
                         months.push(monthYear);
                         current.setMonth(current.getMonth() + 1);
                     }
 
-                    // Now dynamically generate rows based on months and screen info
                     months.forEach((month, monthIndex) => {
-                        let screenCount = 2; // You can adjust this count or fetch it dynamically from form inputs
-                        for (let screenIndex = 0; screenIndex < screenCount; screenIndex++) {
-                            let row = document.createElement("tr");
+                        let firstRowForMonth = true; // Flag to set rowspan
 
-                            // Add month cell for first screen of each month
-                            if (screenIndex === 0) {
+                        originalRows.forEach((row, screenIndex) => {
+                            let clonedRow = row.cloneNode(true); // Clone the row
+                            let inputs = clonedRow.querySelectorAll("input");
+
+                            inputs.forEach((input) => {
+                                let name = input.getAttribute("name");
+                                if (name) {
+                                    let newName = name.replace(/Screens\[\d+\]/, `Screens[${monthIndex}]`);
+                                    input.setAttribute("name", newName);
+                                }
+
+                                // ✅ Remove "0" values from input fields
+                                if ((input.name.includes("ScreenPrice") || input.name.includes("Screen")) && input.value.trim() === "0") {
+                                    input.value = "";
+                                }
+                            });
+
+                            // ✅ Insert Month column only in the first row of the month
+                            if (firstRowForMonth) {
                                 let monthCell = document.createElement("td");
-                                monthCell.setAttribute("rowspan", screenCount);
                                 monthCell.className = "fw-bold align-middle";
                                 monthCell.innerText = month;
-                                row.appendChild(monthCell);
+                                monthCell.rowSpan = originalRows.length; // Span all screens
+                                clonedRow.insertBefore(monthCell, clonedRow.firstElementChild);
+                                firstRowForMonth = false;
+                            } else {
+                                // ✅ Ensure other rows don't get a blank column
+                                let emptyMonthCell = document.createElement("td");
+                                emptyMonthCell.style.display = "none"; // Hide empty month cell
+                                clonedRow.insertBefore(emptyMonthCell, clonedRow.firstElementChild);
                             }
 
-                            // Screen Number
-                            let screenNoCell = document.createElement("td");
-                            screenNoCell.innerText = screenIndex + 1; // Dynamic screen number
-                            row.appendChild(screenNoCell);
+                            // ✅ Correct column order (Reassign classes without shifting data)
+                            if (clonedRow.children.length >= 8) {
+                                clonedRow.children[1].className = "screen-column"; // Screen
+                                clonedRow.children[2].className = "rate-column"; // Rate
+                                clonedRow.children[3].className = "type-column"; // Type
+                                clonedRow.children[4].className = "show-column"; // Shows
+                                clonedRow.children[5].className = "cancel-column"; // Cancel
+                                clonedRow.children[6].className = "actual-column"; // Actual
+                                clonedRow.children[7].className = "amt-column"; // Amount
+                            }
 
-                            // Screen Price (input field)
-                            let rateCell = document.createElement("td");
-                            rateCell.innerHTML = `<input type="text" class="form-control screenPrice" name="Screens[${monthIndex}][${screenIndex}].ScreenPrice" value="" required />`;
-                            row.appendChild(rateCell);
+                            // ✅ Remove "0" values from the screen and rate columns
+                            let screenCell = clonedRow.children[1];
+                            if (screenCell && screenCell.innerText.trim() === "0") screenCell.innerText = "";
 
-                            // Screen Type (input field)
-                            let screenTypeCell = document.createElement("td");
-                            screenTypeCell.innerHTML = `<input type="text" class="form-control screenType" name="Screens[${monthIndex}][${screenIndex}].ScreenType" value="" required />`;
-                            row.appendChild(screenTypeCell);
+                            let rateCell = clonedRow.children[2];
+                            if (rateCell && rateCell.innerText.trim() === "0") rateCell.innerText = "";
 
-                            // Total Show
-                            let totalShowCell = document.createElement("td");
-                            totalShowCell.innerHTML = `<input type="number" class="form-control totalShow" name="Screens[${monthIndex}][${screenIndex}].TotalShow" data-index="${monthIndex}-${screenIndex}" required />`;
-                            row.appendChild(totalShowCell);
-
-                            // Cancel Show
-                            let cancelShowCell = document.createElement("td");
-                            cancelShowCell.innerHTML = `<input type="number" class="form-control cancelShow" name="Screens[${monthIndex}][${screenIndex}].CancelShow" data-index="${monthIndex}-${screenIndex}" required />`;
-                            row.appendChild(cancelShowCell);
-
-                            // Actual Show (readonly)
-                            let actualShowCell = document.createElement("td");
-                            actualShowCell.innerHTML = `<input type="number" class="form-control actualShow" name="Screens[${monthIndex}][${screenIndex}].ActualShow" readonly />`;
-                            row.appendChild(actualShowCell);
-
-                            // Amount per Screen (readonly)
-                            let amountCell = document.createElement("td");
-                            amountCell.innerHTML = `<input type="text" class="form-control amount" name="Screens[${monthIndex}][${screenIndex}].AmtPerScreen" readonly />`;
-                            row.appendChild(amountCell);
-
-                            tableBody.appendChild(row);
-                        }
+                            tableBody.appendChild(clonedRow);
+                        });
                     });
                 }
+
+                //document.getElementById("generateBtn").addEventListener("click", function () {
+                //    generateTable();
+                //});
+
+                //function generateTable() {
+                //    let fromDate = document.getElementById("fromDate").value;
+                //    let toDate = document.getElementById("toDate").value;
+
+                //    if (!fromDate || !toDate) {
+                //        alert("Please select both From Date and To Date.");
+                //        return;
+                //    }
+
+                //    let from = new Date(fromDate + "-01");
+                //    let to = new Date(toDate + "-01");
+
+                //    if (from > to) {
+                //        alert("From Date cannot be greater than To Date.");
+                //        return;
+                //    }
+
+                //    let tableBody = document.getElementById("tableBody");
+                //    let originalRows = Array.from(tableBody.querySelectorAll("tr")); // Get original rows
+                //    tableBody.innerHTML = ""; // Clear table before appending new rows
+
+                //    let current = new Date(from);
+                //    let months = [];
+
+                //    while (current <= to) {
+                //        let monthYear = current.toLocaleString('default', { month: 'short' }) + " " + current.getFullYear();
+                //        months.push(monthYear);
+                //        current.setMonth(current.getMonth() + 1);
+                //    }
+
+                //    months.forEach((month, monthIndex) => {
+                //        originalRows.forEach((row, screenIndex) => {
+                //            let clonedRow = row.cloneNode(true); // Clone the row
+                //            let inputs = clonedRow.querySelectorAll("input");
+
+                //            inputs.forEach(input => {
+                //                let name = input.getAttribute("name");
+                //                if (name) {
+                //                    let newName = name.replace(/Screens\[\d+\]/, `Screens[${monthIndex}]`);
+                //                    input.setAttribute("name", newName);
+                //                }
+
+                //                // ✅ Ensure "0" is removed from Rate column
+                //                if (input.name.includes("ScreenPrice")) {
+                //                    if (input.value.trim() === "0") {
+                //                        input.value = ""; // Remove 0 by setting value to empty
+                //                    }
+                //                }
+
+                //                // ✅ Ensure "0" is removed from Screen column
+                //                if (input.name.includes("Screen")) {
+                //                    if (input.value.trim() === "0") {
+                //                        input.value = ""; // Remove 0 by setting value to empty
+                //                    }
+                //                }
+                //            });
+
+                //            // ✅ Ensure Screen column is displayed in every row without rowspan
+                //            let screenCell = clonedRow.querySelector("td:nth-child(1)"); // First column (Screen)
+                //            if (screenCell) {
+                //                let screenValue = screenCell.innerText.trim();
+                //                if (screenValue === "0") {
+                //                    screenCell.innerText = ""; // Remove 0
+                //                }
+                //                screenCell.removeAttribute("rowspan"); // Remove rowspan
+                //            }
+
+                //            // ✅ Ensure Rate column (2nd column) does not display "0"
+                //            let rateCell = clonedRow.querySelector("td:nth-child(2)"); // Second column (Rate)
+                //            if (rateCell) {
+                //                let rateValue = rateCell.innerText.trim();
+                //                if (rateValue === "0" || rateValue === "0.00") {
+                //                    rateCell.innerText = ""; // Remove 0
+                //                }
+                //            }
+
+                //            // ✅ Insert Month as a new cell in the correct position
+                //            let firstCell = clonedRow.querySelector("td:first-child"); // Get the first existing column
+                //            let monthCell = document.createElement("td");
+                //            monthCell.className = "fw-bold align-middle";
+                //            monthCell.innerText = month;
+                //            firstCell.before(monthCell); // Insert month before the first column
+
+                //            tableBody.appendChild(clonedRow);
+                //        });
+                //    });
+                //}
+
+                //document.getElementById("generateBtn").addEventListener("click", function () {
+                //    generateTable();
+                //});
+
+                //function generateTable() {
+                //    let fromDate = document.getElementById("fromDate").value;
+                //    let toDate = document.getElementById("toDate").value;
+
+                //    if (!fromDate || !toDate) {
+                //        alert("Please select both From Date and To Date.");
+                //        return;
+                //    }
+
+                //    let from = new Date(fromDate + "-01");
+                //    let to = new Date(toDate + "-01");
+
+                //    if (from > to) {
+                //        alert("From Date cannot be greater than To Date.");
+                //        return;
+                //    }
+
+                //    let tableBody = document.getElementById("tableBody");
+                //    let originalRows = Array.from(tableBody.querySelectorAll("tr")); // Get original rows
+                //    tableBody.innerHTML = ""; // Clear table before appending new rows
+
+                //    let current = new Date(from);
+                //    let months = [];
+
+                //    while (current <= to) {
+                //        let monthYear = current.toLocaleString('default', { month: 'short' }) + " " + current.getFullYear();
+                //        months.push(monthYear);
+                //        current.setMonth(current.getMonth() + 1);
+                //    }
+
+                //    months.forEach((month, monthIndex) => {
+                //        let screenCount = originalRows.length; // Keep the same number of screens
+
+                //        originalRows.forEach((row, screenIndex) => {
+                //            let clonedRow = row.cloneNode(true); // Clone the row
+                //            let inputs = clonedRow.querySelectorAll("input");
+
+                //            inputs.forEach(input => {
+                //                let name = input.getAttribute("name");
+                //                if (name) {
+                //                    let newName = name.replace(/Screens\[\d+\]/, `Screens[${monthIndex}]`);
+                //                    input.setAttribute("name", newName);
+                //                }
+                //            });
+
+                //            // Ensure the "Rate" input is not placed in the "Type" column
+                //            let rateInput = clonedRow.querySelector("input[name*='ScreenPrice']");
+                //            if (rateInput && rateInput.value === "0") {
+                //                // Remove the entire td containing the rate input if it has a value of 0
+                //                rateInput.closest('td').remove();
+                //            }
+
+                //            if (screenIndex === 0) {
+                //                let monthCell = document.createElement("td");
+                //                monthCell.className = "fw-bold align-middle";
+                //                monthCell.innerText = month;
+                //                clonedRow.insertBefore(monthCell, clonedRow.firstChild);
+                //            }
+
+                //            tableBody.appendChild(clonedRow);
+                //        });
+                //    });
+                //}
+
+
+                function calculateActualShow(input) {
+                    let index = input.getAttribute("data-index");
+                    let row = input.closest("tr");
+
+                    let totalShow = parseInt(row.querySelector(".totalShow").value) || 0;
+                    let cancelShow = parseInt(row.querySelector(".cancelShow").value) || 0;
+                    let actualShowInput = row.querySelector(".actualShow");
+                    let amountInput = row.querySelector(".amount");
+
+                    let rate = parseFloat(row.querySelector(".screenPrice").value) || 0;
+
+                    let actualShow = Math.max(totalShow - cancelShow, 0);
+                    actualShowInput.value = actualShow;
+
+                    let amount = actualShow * rate;
+                    amountInput.value = amount.toFixed(2);
+
+                    calculateTotalAmount();
+                }
+
+                function calculateTotalAmount() {
+                    let totalAmount = 0;
+                    document.querySelectorAll(".amount").forEach(input => {
+                        totalAmount += parseFloat(input.value) || 0;
+                    });
+                    document.getElementById("totalAmount").innerText = `₹${totalAmount.toFixed(2)}`;
+                }
             </script>
+            @*<script>
+            document.getElementById("generateBtn").addEventListener("click", function () {
+                generateTable();
+            });
+
+            function generateTable() {
+                let fromDate = document.getElementById("fromDate").value;
+                let toDate = document.getElementById("toDate").value;
+
+                if (!fromDate || !toDate) {
+                    alert("Please select both From Date and To Date.");
+                    return;
+                }
+
+                let from = new Date(fromDate + "-01");
+                let to = new Date(toDate + "-01");
+
+                if (from > to) {
+                    alert("From Date cannot be greater than To Date.");
+                    return;
+                }
+
+                let tableBody = document.getElementById("tableBody");
+                tableBody.innerHTML = ""; // Clear previous data
+
+                let current = new Date(from);
+                let months = [];
+
+                // Generate months array
+                while (current <= to) {
+                    let monthYear = current.toLocaleString('default', { month: 'short' }) + " " + current.getFullYear();
+                    months.push(monthYear);
+                    current.setMonth(current.getMonth() + 1);
+                }
+
+                // Now dynamically generate rows based on months and screen info
+                months.forEach((month, monthIndex) => {
+                    let screenCount = 2; // You can adjust this count or fetch it dynamically from form inputs
+                    for (let screenIndex = 0; screenIndex < screenCount; screenIndex++) {
+                        let row = document.createElement("tr");
+
+                        // Add month cell for first screen of each month
+                        if (screenIndex === 0) {
+                            let monthCell = document.createElement("td");
+                            monthCell.setAttribute("rowspan", screenCount);
+                            monthCell.className = "fw-bold align-middle";
+                            monthCell.innerText = month;
+                            row.appendChild(monthCell);
+                        }
+
+                        // Screen Number
+                        let screenNoCell = document.createElement("td");
+                        screenNoCell.innerText = screenIndex + 1; // Dynamic screen number
+                        row.appendChild(screenNoCell);
+
+                        // Screen Price (input field)
+                        let rateCell = document.createElement("td");
+                        rateCell.innerHTML = `<input type="text" class="form-control screenPrice" name="Screens[${monthIndex}][${screenIndex}].ScreenPrice" value="" required />`;
+                        row.appendChild(rateCell);
+
+                        // Screen Type (input field)
+                        let screenTypeCell = document.createElement("td");
+                        screenTypeCell.innerHTML = `<input type="text" class="form-control screenType" name="Screens[${monthIndex}][${screenIndex}].ScreenType" value="" required />`;
+                        row.appendChild(screenTypeCell);
+
+                        // Total Show
+                        let totalShowCell = document.createElement("td");
+                        totalShowCell.innerHTML = `<input type="number" class="form-control totalShow" name="Screens[${monthIndex}][${screenIndex}].TotalShow" data-index="${monthIndex}-${screenIndex}" required />`;
+                        row.appendChild(totalShowCell);
+
+                        // Cancel Show
+                        let cancelShowCell = document.createElement("td");
+                        cancelShowCell.innerHTML = `<input type="number" class="form-control cancelShow" name="Screens[${monthIndex}][${screenIndex}].CancelShow" data-index="${monthIndex}-${screenIndex}" required />`;
+                        row.appendChild(cancelShowCell);
+
+                        // Actual Show (readonly)
+                        let actualShowCell = document.createElement("td");
+                        actualShowCell.innerHTML = `<input type="number" class="form-control actualShow" name="Screens[${monthIndex}][${screenIndex}].ActualShow" readonly />`;
+                        row.appendChild(actualShowCell);
+
+                        // Amount per Screen (readonly)
+                        let amountCell = document.createElement("td");
+                        amountCell.innerHTML = `<input type="text" class="form-control amount" name="Screens[${monthIndex}][${screenIndex}].AmtPerScreen" readonly />`;
+                        row.appendChild(amountCell);
+
+                        tableBody.appendChild(row);
+                    }
+                });
+            }
+        </script>*@
 
             @*<script>
             document.getElementById("generateBtn").addEventListener("click", function () {

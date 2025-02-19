@@ -18,7 +18,6 @@ namespace AMC_THEATER_1.Models
         public NO_OF_SCREENS()
         {
             this.NO_OF_SCREENS_LOG = new HashSet<NO_OF_SCREENS_LOG>();
-            this.NO_OF_SCREENS_TAX = new HashSet<NO_OF_SCREENS_TAX>();
         }
     
         public int SCREEN_ID { get; set; }
@@ -29,7 +28,5 @@ namespace AMC_THEATER_1.Models
         public virtual TRN_REGISTRATION TRN_REGISTRATION { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<NO_OF_SCREENS_LOG> NO_OF_SCREENS_LOG { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<NO_OF_SCREENS_TAX> NO_OF_SCREENS_TAX { get; set; }
     }
 }

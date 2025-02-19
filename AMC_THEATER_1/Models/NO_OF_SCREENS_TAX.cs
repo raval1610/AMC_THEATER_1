@@ -17,14 +17,13 @@ namespace AMC_THEATER_1.Models
         public int S_TAX_ID { get; set; }
         public int T_ID { get; set; }
         public int TAX_ID { get; set; }
+        public int RATE_PER_SCREEN { get; set; }
         public string SCREEN_TYPE { get; set; }
         public decimal AMT_PER_SCREEN { get; set; }
         public int CANCEL_SHOW { get; set; }
         public Nullable<int> TOTAL_SHOW { get; set; }
-        public int RATE_PER_SCREEN { get; set; }
         public Nullable<int> ACTUAL_SHOW { get; set; }
     
-        public virtual NO_OF_SCREENS NO_OF_SCREENS { get; set; }
         public virtual THEATER_TAX_PAYMENT THEATER_TAX_PAYMENT { get; set; }
         public virtual TRN_REGISTRATION TRN_REGISTRATION { get; set; }
     }
