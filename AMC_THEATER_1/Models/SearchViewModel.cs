@@ -13,5 +13,6 @@ namespace AMC_THEATER_1.Models
         public string T_ADDRESS { get; set; }
         public string T_TENAMENT_NO { get; set; }
         public string T_OWNER_NAME { get; set; }
+        public string REG_ID { get; set; }
     }
 }

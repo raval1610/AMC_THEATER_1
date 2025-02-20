@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="THEATER_MODULEModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+      <Schema Namespace="THEATER_MODULEModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="ActionRequests">
           <Key>
             <PropertyRef Name="Id" />
@@ -691,7 +691,8 @@ warning 6002: The table/view 'THEATER_MODULE.dbo.TRN_SCREEN_TAX_PRICE' does not 
             <End Role="TRN_THEATRE_DOCS" EntitySet="TRN_THEATRE_DOCS" />
           </AssociationSet>
         </EntityContainer>
-      </Schema></edmx:StorageModels>
+      </Schema>
+    </edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="THEATER_MODULEModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -755,7 +756,6 @@ warning 6002: The table/view 'THEATER_MODULE.dbo.TRN_SCREEN_TAX_PRICE' does not 
           <Property Name="SCREEN_TYPE" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="TRN_REGISTRATION" Relationship="Self.FK__NO_OF_SCRE__T_ID__145C0A3F" FromRole="NO_OF_SCREENS" ToRole="TRN_REGISTRATION" />
           <NavigationProperty Name="NO_OF_SCREENS_LOG" Relationship="Self.FK_NO_OF_SCREENS_LOG_SCREEN_ID" FromRole="NO_OF_SCREENS" ToRole="NO_OF_SCREENS_LOG" />
-          <NavigationProperty Name="NO_OF_SCREENS_TAX" Relationship="Self.FK_SCREEN_ID" FromRole="NO_OF_SCREENS" ToRole="NO_OF_SCREENS_TAX" />
         </EntityType>
         <EntityType Name="NO_OF_SCREENS_LOG">
           <Key>
@@ -779,15 +779,14 @@ warning 6002: The table/view 'THEATER_MODULE.dbo.TRN_SCREEN_TAX_PRICE' does not 
           <Property Name="S_TAX_ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="T_ID" Type="Int32" Nullable="false" />
           <Property Name="TAX_ID" Type="Int32" Nullable="false" />
+          <Property Name="RATE_PER_SCREEN" Type="Int32" Nullable="false" />
           <Property Name="SCREEN_TYPE" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="AMT_PER_SCREEN" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
           <Property Name="CANCEL_SHOW" Type="Int32" Nullable="false" />
           <Property Name="TOTAL_SHOW" Type="Int32" />
-          <NavigationProperty Name="NO_OF_SCREENS" Relationship="Self.FK_SCREEN_ID" FromRole="NO_OF_SCREENS_TAX" ToRole="NO_OF_SCREENS" />
+          <Property Name="ACTUAL_SHOW" Type="Int32" />
           <NavigationProperty Name="THEATER_TAX_PAYMENT" Relationship="Self.FK_NO_OF_SCREENS_TAX_TAXID" FromRole="NO_OF_SCREENS_TAX" ToRole="THEATER_TAX_PAYMENT" />
           <NavigationProperty Name="TRN_REGISTRATION" Relationship="Self.FK_NO_OF_SCREENS_TAX_TID" FromRole="NO_OF_SCREENS_TAX" ToRole="TRN_REGISTRATION" />
-          <Property Name="RATE_PER_SCREEN" Type="Int32" Nullable="false" />
-          <Property Name="ACTUAL_SHOW" Type="Int32" />
         </EntityType>
         <EntityType Name="PAYMENT_HISTORY">
           <Key>
@@ -896,6 +895,7 @@ warning 6002: The table/view 'THEATER_MODULE.dbo.TRN_SCREEN_TAX_PRICE' does not 
           <Property Name="DELETE_DATE" Type="DateTime" Precision="0" />
           <Property Name="STATUS" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
           <Property Name="REJECT_REASON" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="REG_ID" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="NO_OF_SCREENS" Relationship="Self.FK__NO_OF_SCRE__T_ID__145C0A3F" FromRole="TRN_REGISTRATION" ToRole="NO_OF_SCREENS" />
           <NavigationProperty Name="NO_OF_SCREENS_LOG" Relationship="Self.FK_NO_OF_SCREENS_LOG_T_ID" FromRole="TRN_REGISTRATION" ToRole="NO_OF_SCREENS_LOG" />
           <NavigationProperty Name="NO_OF_SCREENS_TAX" Relationship="Self.FK_NO_OF_SCREENS_TAX_TID" FromRole="TRN_REGISTRATION" ToRole="NO_OF_SCREENS_TAX" />
@@ -909,7 +909,6 @@ warning 6002: The table/view 'THEATER_MODULE.dbo.TRN_SCREEN_TAX_PRICE' does not 
           <NavigationProperty Name="TRN_THEATRE_DOCS" Relationship="Self.FK_T_ID_REG" FromRole="TRN_REGISTRATION" ToRole="TRN_THEATRE_DOCS" />
           <NavigationProperty Name="TRN_REGISTRATION_LOG" Relationship="Self.FK_TRN_REGISTRATION_LOG_T_ID" FromRole="TRN_REGISTRATION" ToRole="TRN_REGISTRATION_LOG" />
           <NavigationProperty Name="TRN_THEATRE_DOCS_LOG" Relationship="Self.FK_TRN_THEATRE_DOCS_LOG_T_ID" FromRole="TRN_REGISTRATION" ToRole="TRN_THEATRE_DOCS_LOG" />
-          <Property Name="REG_ID" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="TRN_REGISTRATION_LOG">
           <Key>
@@ -1098,18 +1097,6 @@ warning 6002: The table/view 'THEATER_MODULE.dbo.TRN_SCREEN_TAX_PRICE' does not 
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_SCREEN_ID">
-          <End Role="NO_OF_SCREENS" Type="Self.NO_OF_SCREENS" Multiplicity="1" />
-          <End Role="NO_OF_SCREENS_TAX" Type="Self.NO_OF_SCREENS_TAX" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="NO_OF_SCREENS">
-              <PropertyRef Name="SCREEN_ID" />
-            </Principal>
-            <Dependent Role="NO_OF_SCREENS_TAX">
-              <PropertyRef Name="T_ID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_NO_OF_SCREENS_LOG_T_ID">
           <End Role="TRN_REGISTRATION" Type="Self.TRN_REGISTRATION" Multiplicity="1">
             <OnDelete Action="Cascade" />
@@ -1290,7 +1277,7 @@ warning 6002: The table/view 'THEATER_MODULE.dbo.TRN_SCREEN_TAX_PRICE' does not 
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityContainer Name="THEATER_MODULEEntities2" annotation:LazyLoadingEnabled="true">
+        <EntityContainer Name="THEATER_MODULEEntities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="ActionRequests" EntityType="Self.ActionRequest" />
           <EntitySet Name="DEPARTMENT_LOGIN" EntityType="Self.DEPARTMENT_LOGIN" />
           <EntitySet Name="MST_DOC_SERVICE_MPG" EntityType="Self.MST_DOC_SERVICE_MPG" />
@@ -1334,10 +1321,6 @@ warning 6002: The table/view 'THEATER_MODULE.dbo.TRN_SCREEN_TAX_PRICE' does not 
           <AssociationSet Name="FK_NO_OF_SCREENS_LOG_SCREEN_ID" Association="Self.FK_NO_OF_SCREENS_LOG_SCREEN_ID">
             <End Role="NO_OF_SCREENS" EntitySet="NO_OF_SCREENS" />
             <End Role="NO_OF_SCREENS_LOG" EntitySet="NO_OF_SCREENS_LOG" />
-          </AssociationSet>
-          <AssociationSet Name="FK_SCREEN_ID" Association="Self.FK_SCREEN_ID">
-            <End Role="NO_OF_SCREENS" EntitySet="NO_OF_SCREENS" />
-            <End Role="NO_OF_SCREENS_TAX" EntitySet="NO_OF_SCREENS_TAX" />
           </AssociationSet>
           <AssociationSet Name="FK_NO_OF_SCREENS_LOG_T_ID" Association="Self.FK_NO_OF_SCREENS_LOG_T_ID">
             <End Role="TRN_REGISTRATION" EntitySet="TRN_REGISTRATION" />
@@ -1401,7 +1384,7 @@ warning 6002: The table/view 'THEATER_MODULE.dbo.TRN_SCREEN_TAX_PRICE' does not 
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
-        <EntityContainerMapping StorageEntityContainer="THEATER_MODULEModelStoreContainer" CdmEntityContainer="THEATER_MODULEEntities2">
+        <EntityContainerMapping StorageEntityContainer="THEATER_MODULEModelStoreContainer" CdmEntityContainer="THEATER_MODULEEntities">
           <EntitySetMapping Name="ActionRequests">
             <EntityTypeMapping TypeName="THEATER_MODULEModel.ActionRequest">
               <MappingFragment StoreEntitySet="ActionRequests">
@@ -1479,15 +1462,15 @@ warning 6002: The table/view 'THEATER_MODULE.dbo.TRN_SCREEN_TAX_PRICE' does not 
           <EntitySetMapping Name="NO_OF_SCREENS_TAX">
             <EntityTypeMapping TypeName="THEATER_MODULEModel.NO_OF_SCREENS_TAX">
               <MappingFragment StoreEntitySet="NO_OF_SCREENS_TAX">
-                <ScalarProperty Name="ACTUAL_SHOW" ColumnName="ACTUAL_SHOW" />
-                <ScalarProperty Name="RATE_PER_SCREEN" ColumnName="RATE_PER_SCREEN" />
                 <ScalarProperty Name="S_TAX_ID" ColumnName="S_TAX_ID" />
                 <ScalarProperty Name="T_ID" ColumnName="T_ID" />
                 <ScalarProperty Name="TAX_ID" ColumnName="TAX_ID" />
+                <ScalarProperty Name="RATE_PER_SCREEN" ColumnName="RATE_PER_SCREEN" />
                 <ScalarProperty Name="SCREEN_TYPE" ColumnName="SCREEN_TYPE" />
                 <ScalarProperty Name="AMT_PER_SCREEN" ColumnName="AMT_PER_SCREEN" />
                 <ScalarProperty Name="CANCEL_SHOW" ColumnName="CANCEL_SHOW" />
                 <ScalarProperty Name="TOTAL_SHOW" ColumnName="TOTAL_SHOW" />
+                <ScalarProperty Name="ACTUAL_SHOW" ColumnName="ACTUAL_SHOW" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -1570,7 +1553,6 @@ warning 6002: The table/view 'THEATER_MODULE.dbo.TRN_SCREEN_TAX_PRICE' does not 
           <EntitySetMapping Name="TRN_REGISTRATION">
             <EntityTypeMapping TypeName="THEATER_MODULEModel.TRN_REGISTRATION">
               <MappingFragment StoreEntitySet="TRN_REGISTRATION">
-                <ScalarProperty Name="REG_ID" ColumnName="REG_ID" />
                 <ScalarProperty Name="T_ID" ColumnName="T_ID" />
                 <ScalarProperty Name="T_NAME" ColumnName="T_NAME" />
                 <ScalarProperty Name="T_ADDRESS" ColumnName="T_ADDRESS" />
@@ -1597,6 +1579,7 @@ warning 6002: The table/view 'THEATER_MODULE.dbo.TRN_SCREEN_TAX_PRICE' does not 
                 <ScalarProperty Name="DELETE_DATE" ColumnName="DELETE_DATE" />
                 <ScalarProperty Name="STATUS" ColumnName="STATUS" />
                 <ScalarProperty Name="REJECT_REASON" ColumnName="REJECT_REASON" />
+                <ScalarProperty Name="REG_ID" ColumnName="REG_ID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
