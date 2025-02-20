@@ -296,6 +296,7 @@ namespace Amc_theater.Controllers
                 .Select(t => new
                 {
                     TheaterID = t.T_ID,
+                    TheaterName = t.T_NAME,
                     OwnerName = t.T_OWNER_NAME,
                     MobileNo = t.T_OWNER_NUMBER != null ? t.T_OWNER_NUMBER.ToString() : string.Empty,
                     Address = t.T_ADDRESS,
@@ -327,6 +328,7 @@ namespace Amc_theater.Controllers
             model.MobileNo = theaterDetails.MobileNo;
             model.Address = theaterDetails.Address;
             model.Email = theaterDetails.Email;
+            model.TheaterName = theaterDetails.TheaterName;
 
             return View(model);
         }

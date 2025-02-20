@@ -40,26 +40,27 @@
 
     <div class="container col-md-11 ms-5 mt-3">
         <div class="card col-md-12 p-4 ms-5 shadow-sm rounded">
-            @*<h2 class="text-center mb-4">Theatre Registration</h2>*@
+            <h2 class="text-center mb-4">Theatre Registration</h2>
 
 
-            @if (ViewBag.IsEditPage == false && ViewBag.IsViewPage == false)
-            {
+            @*@if (ViewBag.IsEditPage == false && ViewBag.IsViewPage == false)
+        {
 
-                <h2 class="text-center bg-light p-3 mb-4">Theater Registration Application</h2>
-            }
-
-
-            @if (ViewBag.IsEditPage == true && ViewBag.IsViewPage == false)
-            {
-                <h2 class="text-center bg-light p-3 mb-4">Registration</h2>
-            }
+            <h2 class="text-center bg-light p-3 mb-4">Theater Registration Application</h2>
+        }
 
 
-            @if (ViewBag.IsViewPage == true)
-            {
-                <h2 class="text-center bg-light p-3 mb-4">Theater Request</h2>
-            }
+        @if ()
+        {
+            <h2 class="text-center bg-light p-3 mb-4">Registration</h2>
+        }
+
+
+        @if (ViewBag.IsViewPage == true)
+        {
+            <h2 class="text-center bg-light p-3 mb-4">Theater Request</h2>
+        }*@
+
             @using (Html.BeginForm("Registration", "TRN_REGISTRATION", FormMethod.Post, new { id = "TheaterForm", enctype = "multipart/form-data" }))
             {
                 @Html.AntiForgeryToken()
@@ -73,71 +74,110 @@
                     </div>
 
                     <div class="col-md-4 mb-3">
-                        <label for="OwnerName" class="form-label fw-bold">Owner's Name <span class="text-danger">*</span></label>
+                        <label for="OwnerName" class="form-label fw-bold">Theater License Holder Name <span class="text-danger">*</span></label>
                         @Html.TextBoxFor(m => m.T_OWNER_NAME, new { @class = "form-control readonly-field", placeholder = "Enter owner's name", required = "required" })
                     </div>
 
                     <div class="col-md-4 mb-3">
-                        <label for="RepresentativeContact" class="form-label fw-bold">Representative's Contact No. <span class="text-danger">*</span></label>
+                        <label for="RepresentativeContact" class="form-label fw-bold">Representative / Manager Contact No. <span class="text-danger">*</span></label>
                         @Html.TextBoxFor(m => m.T_OWNER_NUMBER, new { @class = "form-control readonly-field", placeholder = "Enter contact number", required = "required" })
                     </div>
+
+
                 </div>
 
                 <!-- Address, Email, Commencement Date -->
-        <div class="row ms-4">
-            <div class="col-md-4 mb-3">
-                <label for="TheaterAddress" class="form-label fw-bold required-field">Theatre Address </label>
-                @Html.TextAreaFor(m => m.T_ADDRESS, new { @class = "form-control readonly-field", rows = "3", placeholder = "Enter theater address", required = "required" })
-            </div>
-
-
-            <div class="col-md-4 mb-3">
-                <label for="EmailID" class="form-label fw-bold">Email ID <span class="text-danger">*</span></label>
-                @Html.TextBoxFor(m => m.T_OWNER_EMAIL, new { @class = "form-control readonly-field", placeholder = "Enter email ID", required = "required" })
-            </div>
-
-            <div class="col-md-4 mb-3">
-                <label for="TheaterCommencementDate" class="form-label fw-bold">Theatre Commencement Date <span class="text-danger">*</span></label>
-                @Html.TextBoxFor(m => m.T_COMMENCEMENT_DATE, "{0:yyyy-MM-dd}", new { @class = "form-control readonly-field", type = "date", required = "required" })
-
-            </div>
-        </div>
-
-                <!-- City, Zone, Ward -->
                 <div class="row ms-4">
+                    <div class="col-md-4 mb-3">
+                        <label for="RepresentativeContact" class="form-label fw-bold">Manager Name <span class="text-danger">*</span></label>
+                        @Html.TextBoxFor(m => m.T_OWNER_NUMBER, new { @class = "form-control readonly-field", placeholder = "Enter Manager Name", required = "required" })
+                    </div>
+
+
+                    <div class="col-md-4 mb-3">
+                        <label for="EmailID" class="form-label fw-bold">Email ID <span class="text-danger">*</span></label>
+                        @Html.TextBoxFor(m => m.T_OWNER_EMAIL, new { @class = "form-control readonly-field", placeholder = "Enter email ID", required = "required" })
+                    </div>
+                    @*<div class="col-md-4 mb-3">
+                    <label for="TheaterAddress" class="form-label fw-bold required-field">Theatre Address </label>
+                    @Html.TextAreaFor(m => m.T_ADDRESS, new { @class = "form-control readonly-field", rows = "3", placeholder = "Enter theater address", required = "required" })
+                </div>*@
+
+                    @*<div class="col-md-4 mb-3">
+                    <label for="TheaterCommencementDate" class="form-label fw-bold">Theatre Commencement Date <span class="text-danger">*</span></label>
+                    @Html.TextBoxFor(m => m.T_COMMENCEMENT_DATE, "{0:yyyy-MM-dd}", new { @class = "form-control readonly-field", type = "date", required = "required" })
+
+                </div>
+
+                <div class="col-md-4 mb-3">
+                    <label for="TheaterCommencementDate" class="form-label fw-bold">License Date <span class="text-danger">*</span></label>
+                    @Html.TextBoxFor(m => m.T_COMMENCEMENT_DATE, "{0:yyyy-MM-dd}", new { @class = "form-control readonly-field", type = "date", required = "required" })
+
+                </div>*@
+                </div>
+                <div class="row ms-4">
+                    <div class="col-md-8 mb-3">
+                        <label for="TheaterAddress" class="form-label fw-bold required-field">Theatre Address </label>
+                        @Html.TextAreaFor(m => m.T_ADDRESS, new { @class = "form-control readonly-field", rows = "1", style = "max-width:92%", placeholder = "Enter theater address", required = "required" })
+                    </div>
                     <div class="col-md-4 mb-3">
                         <label for="City" class="form-label fw-bold">City <span class="text-danger">*</span></label>
                         @Html.TextBoxFor(m => m.T_CITY, new { @class = "form-control readonly-field ddrread", placeholder = "Enter city", required = "required" })
                     </div>
+                </div>
+                <div class="row ms-4">
+                    <div class="col-md-4 mb-3">
+                        <label for="TheaterCommencementDate" class="form-label fw-bold">Theatre Commencement Date <span class="text-danger">*</span></label>
+                        @Html.TextBoxFor(m => m.T_COMMENCEMENT_DATE, "{0:yyyy-MM-dd}", new { @class = "form-control readonly-field", type = "date", required = "required" })
 
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label for="TheaterCommencementDate" class="form-label fw-bold">License Date <span class="text-danger">*</span></label>
+                        @Html.TextBoxFor(m => m.T_COMMENCEMENT_DATE, "{0:yyyy-MM-dd}", new { @class = "form-control readonly-field", type = "date", required = "required" })
+
+                    </div>
+                </div>
+
+
+                <!-- City, Zone, Ward -->
+                <div class="row ms-4">
+                    @*<div class="col-md-4 mb-3">
+                    <label for="City" class="form-label fw-bold">City <span class="text-danger">*</span></label>
+                    @Html.TextBoxFor(m => m.T_CITY, new { @class = "form-control readonly-field ddrread", placeholder = "Enter city", required = "required" })
+                </div>*@
+                    <div class="col-md-4 mb-3">
+                        <label for="AMCPropertyTaxTenementNo" class="form-label fw-bold">AMC Property Tax Tenement No <span class="text-danger">*</span></label>
+                        @Html.TextBoxFor(m => m.T_TENAMENT_NO, new { @class = "form-control readonly-field", placeholder = "Tenement No", required = "required" })
+                    </div>
                     <div class="col-md-4 mb-3">
                         <label for="Zone" class="form-label fw-bold">Zone <span class="text-danger">*</span></label>
                         @Html.DropDownListFor(m => m.T_ZONE, new SelectList(new[] { "Zone1", "Zone2", "Zone3", "Zone4" }), "-- Select Zone --",
-                     new { @class = "form-control readonly-field ddrread", required = "required" })
+                     new { @class = "form-control readonly-field ddrread" })
                     </div>
 
                     <div class="col-md-4 mb-3">
                         <label for="WardZone" class="form-label fw-bold">Ward <span class="text-danger">*</span></label>
                         @Html.DropDownListFor(m => m.T_WARD, new SelectList(new[] { "Ward1", "Ward2", "Ward3", "Ward4" }), "-- Select Ward Zone --",
-                     new { @class = "form-control readonly-field", required = "required" })
+                     new { @class = "form-control readonly-field" })
                     </div>
                 </div>
 
                 <!-- Tax Details -->
                 <div class="row ms-4">
+                    @*<div class="col-md-4 mb-3">
+                    <label for="AMCPropertyTaxTenementNo" class="form-label fw-bold">AMC Property Tax Tenement No <span class="text-danger">*</span></label>
+                    @Html.TextBoxFor(m => m.T_TENAMENT_NO, new { @class = "form-control readonly-field", placeholder = "Tenement No", required = "required" })
+                </div>*@
+
                     <div class="col-md-4 mb-3">
-                        <label for="AMCPropertyTaxTenementNo" class="form-label fw-bold">AMC Property Tax Tenement No <span class="text-danger">*</span></label>
-                        @Html.TextBoxFor(m => m.T_TENAMENT_NO, new { @class = "form-control readonly-field", placeholder = "Tenement No", required = "required" })
+                        <label for="AMCProfessionalTaxPECNo" class="form-label fw-bold">AMC Professional Tax PEC No </label>
+                        @Html.TextBoxFor(m => m.T_PEC_NO, new { @class = "form-control readonly-field", placeholder = "PEC No" })
                     </div>
 
                     <div class="col-md-4 mb-3">
-                        <label for="AMCProfessionalTaxPECNo" class="form-label fw-bold">AMC Professional Tax PEC No <span class="text-danger">*</span></label>
-                        @Html.TextBoxFor(m => m.T_PEC_NO, new { @class = "form-control readonly-field", placeholder = "PEC No", required = "required" })
-                    </div>
-
-                    <div class="col-md-4 mb-3">
-                        <label for="PRCNo" class="form-label fw-bold">PRC No <span class="text-danger">*</span></label>
-                        @Html.TextBoxFor(m => m.T_PRC_NO, new { @class = "form-control readonly-field", placeholder = "PRC No", required = "required" })
+                        <label for="PRCNo" class="form-label fw-bold">PRC No</label>
+                        @Html.TextBoxFor(m => m.T_PRC_NO, new { @class = "form-control readonly-field", placeholder = "PRC No" })
                     </div>
                 </div>
 
@@ -157,7 +197,8 @@
                 <div id="offlineTaxDetails" class="ms-4" style="display: none;">
                     <div class="row">
                         <div class="col-md-4 d-inline-block fw-bold">
-                            <p>OFFLINE_TAX_PAYMENT: @*@Model?.OFFLINE_TAX_PAYMENT*@</p> <!-- Debug Output -->
+                            <label for="offlineTaxPaidDate" class="form-label ms-2">Offline Tax Payment</label>
+                            <!--<p>Offline Tax Payment:--> @*@Model?.OFFLINE_TAX_PAYMENT*@<!--</p>--> <!-- Debug Output -->
                             <input type="text" id="offlineTaxPayment" name="OFFLINE_TAX_PAYMENT"
                                    placeholder="Offline Tax Payment"
                                    class="form-control ms-3 readonly-field"
@@ -345,7 +386,7 @@
                             ViewBag.Login1 = false;
                             ViewBag.ModuleDept = true;
                             @Html.HiddenFor(m => m.T_ID)
-                                ViewBag.IsViewPAge = true;
+                            ViewBag.IsViewPAge = true;
                             <input type="hidden" id="actionType" name="actionType" />
                             <input type="hidden" id="rejectReasonInput" name="rejectReason" />
 
@@ -380,7 +421,7 @@
                         {
                             <button type="button" class="btn btn-secondary" onclick="window.history.back()">Back</button>
                         }
-                       
+
                     </form>
 
 
