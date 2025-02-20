@@ -28,6 +28,26 @@ namespace Amc_theater.Controllers
         private string connectionString = "Server=localhost\\SQLEXPRESS;Database=THEATER_MODULE;Integrated Security=True;";
 
 
+        public JsonResult GetTheaterSuggestions(string theaterId)
+        {
+            if (string.IsNullOrEmpty(theaterId))
+            {
+                return Json(null, JsonRequestBehavior.AllowGet);
+            }
+
+            var theater = db.TRN_REGISTRATION
+                 .Where(t => t.T_ID.ToString().StartsWith(theaterId))
+                 .Select(t => new { T_Name = t.T_NAME ?? "", T_Owner = t.T_OWNER_NAME ?? "" }) // Ensure values are not null
+                 .ToList();
+
+
+            return Json(theater, JsonRequestBehavior.AllowGet);
+        }
+
+
+
+
+
         public ActionResult ActionRequests()
         {
             ViewBag.CurrentAction = "ActionRequests"; // This is important!
@@ -268,7 +288,8 @@ namespace Amc_theater.Controllers
             // Redirect back to the ActionRequests page
             return RedirectToAction("ActionRequests");
         }
-       
+      
+
         [HttpPost]
         public ActionResult Theater_Tax(int theater_id)
         {
@@ -281,8 +302,8 @@ namespace Amc_theater.Controllers
             var model = new TaxPaymentViewModel
             {
                 TheaterId = theater_id,
-                Month = DateTime.Now.ToString("MMMM"), // Default to current month
-                Year = DateTime.Now.Year // Default to current year
+                FromDate = DateTime.Now.ToString("MMMM"), // Default to current month
+                ToDate = DateTime.Now.Year // Default to current year
             };
 
             // ✅ Step 1: Fetch screen prices first and store in memory
@@ -370,8 +391,8 @@ namespace Amc_theater.Controllers
                         var taxPayment = new THEATER_TAX_PAYMENT
                     {
                         T_ID = model.TheaterId,
-                        PAYMENT_MONTH = model.Month,
-                        PAYMENT_YEAR = model.Year,
+                        PAYMENT_MONTH = model.FromDate,
+                        PAYMENT_YEAR = model.ToDate,
                         TAX_AMOUNT = model.Screens.Sum(s => s.AmtPerScreen),
                         SHOW_STATEMENT = filePath,
                         CREATE_USER = "System",
