@@ -286,7 +286,7 @@ namespace Amc_theater.Controllers
             // Redirect back to the ActionRequests page
             return RedirectToAction("ActionRequests");
         }
-      
+
 
         [HttpPost]
         public ActionResult Theater_Tax(int theater_id)
@@ -297,19 +297,29 @@ namespace Amc_theater.Controllers
                 return RedirectToAction("Index");
             }
 
+            // Get the "fromDate" and "toDate" values from the form
+            string fromDateString = Request.Form["fromDate"];
+            string toDateString = Request.Form["toDate"];
+
+            DateTime fromDate, toDate;
+
+            // ✅ Ensure correct parsing of "YYYY-MM" format
+            fromDate = ParseMonthYear(fromDateString) ?? new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+            toDate = ParseMonthYear(toDateString) ?? new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+
             var model = new TaxPaymentViewModel
             {
                 TheaterId = theater_id,
-                FromDate = DateTime.Now.ToString("MMMM"), // Default to current month
-                ToDate = DateTime.Now.Year // Default to current year
+                Month = fromDate.ToString("MMMM"), // Extract month name
+                Year = fromDate.Year // Extract year
             };
 
-            // ✅ Step 1: Fetch screen prices first and store in memory
+            // ✅ Fetch screen prices first and store in memory
             var screenPrices = db.TRN_SCREEN_TAX_PRICE
-                .AsNoTracking() // Improves performance
+                .AsNoTracking()
                 .ToDictionary(p => p.SCREEN_TYPE, p => p.SCREEN_PRICE);
 
-            // ✅ Step 2: Fetch theater details along with associated screens
+            // ✅ Fetch theater details along with associated screens
             var theaterDetails = db.TRN_REGISTRATION
                 .Where(t => t.T_ID == theater_id)
                 .Select(t => new
@@ -321,7 +331,7 @@ namespace Amc_theater.Controllers
                     Email = t.T_OWNER_EMAIL,
                     Screens = db.NO_OF_SCREENS
                         .Where(s => s.T_ID == t.T_ID)
-                        .ToList() // ✅ Move data to memory first
+                        .ToList()
                 })
                 .FirstOrDefault();
 
@@ -331,14 +341,13 @@ namespace Amc_theater.Controllers
                 return RedirectToAction("Index");
             }
 
-            // ✅ Step 3: Map the screens manually after fetching from DB
+            // ✅ Map screens manually
             model.Screens = theaterDetails.Screens
                 .Select(s => new ScreenViewModel
                 {
                     ScreenId = s.SCREEN_ID,
                     AudienceCapacity = (int)s.AUDIENCE_CAPACITY,
                     ScreenType = s.SCREEN_TYPE,
-                  
                     ScreenPrice = screenPrices.ContainsKey(s.SCREEN_TYPE) ? screenPrices[s.SCREEN_TYPE].GetValueOrDefault(0) : 0
                 }).ToList();
 
@@ -349,6 +358,22 @@ namespace Amc_theater.Controllers
 
             return View(model);
         }
+
+        /* ✅ Utility function for safe parsing */
+        private DateTime? ParseMonthYear(string input)
+        {
+            if (!string.IsNullOrEmpty(input) && input.Length == 7 && input.Contains("-"))
+            {
+                string[] parts = input.Split('-');
+                if (parts.Length == 2 && int.TryParse(parts[0], out int year) && int.TryParse(parts[1], out int month))
+                {
+                    return new DateTime(year, month, 1);
+                }
+            }
+            return null; // Return null if parsing fails
+        }
+
+
         public ActionResult ProcessTaxPayment(TaxPaymentViewModel model, HttpPostedFileBase DocumentPath)
         {
             if (model == null || model.Screens == null || model.Screens.Count == 0)
@@ -387,8 +412,8 @@ namespace Amc_theater.Controllers
                         var taxPayment = new THEATER_TAX_PAYMENT
                     {
                         T_ID = model.TheaterId,
-                        PAYMENT_MONTH = model.FromDate,
-                        PAYMENT_YEAR = model.ToDate,
+                        PAYMENT_MONTH = model.Month,
+                        PAYMENT_YEAR = model.Year,
                         TAX_AMOUNT = model.Screens.Sum(s => s.AmtPerScreen),
                         SHOW_STATEMENT = filePath,
                         CREATE_USER = "System",
@@ -497,7 +522,7 @@ namespace Amc_theater.Controllers
                         where tr.T_ACTIVE == true && tr.STATUS == "Approved"
                         select new
                         {
-                            tr.T_ID,
+                            tr.REG_ID,
                             tr.T_NAME,
                             tr.T_CITY,
                             tr.T_ADDRESS,
@@ -505,8 +530,12 @@ namespace Amc_theater.Controllers
                             tr.T_ZONE,
                             tr.T_WARD,
                             tr.STATUS,
-                            tr.REG_ID
-
+                            tr.REJECT_REASON,
+                            tr.UPDATE_DATE,
+                            tr.T_OWNER_NAME,
+                            tr.T_COMMENCEMENT_DATE,
+                            TheaterScreenCount = db.NO_OF_SCREENS.Count(s => s.T_ID == tr.T_ID && s.SCREEN_TYPE == "Theater"),
+                            VideoTheaterScreenCount = db.NO_OF_SCREENS.Count(s => s.T_ID == tr.T_ID && s.SCREEN_TYPE == "Video")
                         };
 
 
@@ -517,7 +546,7 @@ namespace Amc_theater.Controllers
             // Convert the result to a list of ViewModel objects
             var theaterList = result.Select(tr => new TheaterViewModel
             {
-                T_ID = tr.T_ID,
+                REG_ID = tr.REG_ID,
                 T_NAME = tr.T_NAME,
                 T_CITY = tr.T_CITY,
                 T_ADDRESS = tr.T_ADDRESS,
@@ -525,7 +554,13 @@ namespace Amc_theater.Controllers
                 T_ZONE = tr.T_ZONE,
                 T_WARD = tr.T_WARD,
                 STATUS = tr.STATUS,
-                REG_ID = tr.REG_ID
+                T_OWNER_NAME = tr.T_OWNER_NAME,
+                REJECTREASON = tr.REJECT_REASON,
+                T_COMMENCEMENT_DATE = (DateTime)tr.T_COMMENCEMENT_DATE,
+                UPDATE_DATE = tr.UPDATE_DATE ?? DateTime.MinValue,
+                SCREEN_COUNT = tr.TheaterScreenCount + tr.VideoTheaterScreenCount,
+                THEATER_SCREEN_COUNT = tr.TheaterScreenCount,
+                VIDEO_THEATER_SCREEN_COUNT = tr.VideoTheaterScreenCount
 
             }).ToList();
 

@@ -20,7 +20,7 @@ namespace AMC_THEATER_1.Models
         {
             get
             {
-                return RCPT_GEN_DATE.HasValue ? RCPT_GEN_DATE.Value.ToString("dd-MM-yyyy") : "";
+                return RCPT_GEN_DATE.HasValue ? RCPT_GEN_DATE.Value.ToString("dd-MMM-yyyy") : "";
             }
         }
         

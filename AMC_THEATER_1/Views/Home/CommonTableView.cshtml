@@ -50,17 +50,17 @@
         <div class="col-md-12">
             <div class="table-responsive" style="max-height: 500px; overflow: auto;">
                 <table class="table table-bordered text-left mt-1 table-striped">
-                    <thead class="bg-dark text-white sticky-header">
+                    <thead class=" text-white sticky-header">
                         <tr>
                             <th class="fw-bold sticky-column-left">Appli No.</th>
                             <th class="fw-bold">Theater Name</th>
-                            <th class="fw-bold">Zone & Ward</th>
+                            <th class="fw-bold">Zone Ward</th>
                             <th class="fw-bold">Owner Name</th>
                             <th class="fw-bold">Address</th>
                             <th class="fw-bold">Theater Screens</th>
-                            <th class="fw-bold">Video Theater Screens</th>
-                            <th class="fw-bold">Total No. of Screens</th>
-                            <th class="fw-bold">Theater Commencement Date</th>
+                            <th class="fw-bold">Video Screens</th>
+                            <th class="fw-bold">Total Screens</th>
+                            <th class="fw-bold">Commencement Date</th>
                             <th class="fw-bold">Status</th>
                             <th class="fw-bold">Reject Reason</th>
                             <th class="fw-bold" style="white-space: nowrap;">Status Date</th>
@@ -75,26 +75,26 @@
                                 <tr>
                                     <td class="sticky-column-left">@count</td>
                                     <td>@theater.T_NAME</td>
-                                    <td>@theater.T_ZONE - @theater.T_WARD</td>
+                                    <td>@theater.T_ZONE @theater.T_WARD</td>
                                     <td class="text-end">@theater.T_OWNER_NAME</td>
                                     <td>@theater.T_ADDRESS</td>
                                     <td class="text-center">@theater.THEATER_SCREEN_COUNT</td>
                                     <td class="text-center">@theater.VIDEO_THEATER_SCREEN_COUNT</td>
                                     <td class="text-center">@(@theater.THEATER_SCREEN_COUNT + @theater.VIDEO_THEATER_SCREEN_COUNT)</td>
-                                    <td style="white-space: nowrap;">@theater.THEATER_COMMENCEMENT_DATE.ToString("dd-MM-yyyy")</td>
+                                    <td style="white-space: nowrap;">@theater.T_COMMENCEMENT_DATE.ToString("dd-MMM-yyyy")</td>
                                     <td class="@(theater.STATUS == "Approved" ? "text-success" : (theater.STATUS == "Rejected" ? "text-danger" : "text-warning"))">
                                         @(theater.STATUS == "Approved" ? "Approved" : theater.STATUS == "Rejected" ? "Rejected" : "Pending")
                                     </td>
                                     <td>@(theater.STATUS == "Rejected" ? theater.REJECTREASON : "-")</td>
                                     <td style="white-space: nowrap;">
-                                        @(theater.STATUS == "Pending" ? "-" : theater.UPDATE_DATE.ToString("dd-MM-yyyy"))
+                                        @(theater.STATUS == "Pending" ? "-" : theater.UPDATE_DATE.ToString("dd-MMM-yyyy"))
                                     </td>
                                     <td class="sticky-column-right">
                                         @if (isActionRequests)
                                         {
                                             <a href="@Url.Action("Registration", "TRN_REGISTRATION", new { id = theater.T_ID, isViewPage = true })"
                                                class="btn btn-secondary btn-sm" title="View">
-                                                <i class="fa fa-eye"></i> View Application
+                                                <i class="fa fa-eye"></i> 
                                             </a>
                                         }
                                         else

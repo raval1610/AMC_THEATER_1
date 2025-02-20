@@ -105,7 +105,12 @@
                                         @payment.STATUS
                                     </td>
                                     <td>@payment.AMOUNT</td>
-                                    <td>@payment.PAYMENT_DATE</td> @* ✅ Now shows only dd-MM-yyyy *@
+                                    <td>
+                                        @(DateTime.TryParse(payment.PAYMENT_DATE, out DateTime parsedDate)
+                                    ? parsedDate.ToString("dd-MMM-yyyy")
+                                    : payment.PAYMENT_DATE)
+                                    </td>
+
 
                                 </tr>
                             }

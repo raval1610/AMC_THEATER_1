@@ -131,8 +131,8 @@
                                         <td>@item.T_ID</td>
                                         <td>@item.T_NAME</td>
                                         <td>@item.OWNER_NAME</td>
-                                        <td>@item.STARTDATE.ToString("MM/dd/yyyy")</td>
-                                        <td>@item.ENDDATE.ToString("MM/dd/yyyy")</td>
+                                        <td>@item.STARTDATE.ToString("dd/MMM/yyyy")</td>
+                                        <td>@item.ENDDATE.ToString("dd/MMM/yyyy")</td>
                                         <td class="status-cell @(item.STATUS_PAYMENT == "Paid" ? "text-success" : "text-danger")">@item.STATUS_PAYMENT</td>
                                         <td>@item.AMOUNT</td>
                                     </tr>
