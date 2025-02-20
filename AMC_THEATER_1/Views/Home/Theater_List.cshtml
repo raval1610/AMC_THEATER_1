@@ -36,6 +36,51 @@
             display: none;
         }
     </style>
+    <style>
+        /* Sticky Appli No. (first column) */
+        .sticky-column-left {
+            position: sticky;
+            left: 0;
+            background-color: white !important;
+            z-index: 12; /* Ensures it stays above other content */
+        }
+
+        /* Sticky Actions (last column) */
+        .sticky-column-right {
+            position: sticky;
+            right: 0;
+            background-color: white !important;
+            z-index: 12;
+        }
+
+        /* Sticky Appli No. (first column) in the header */
+        .sticky-header th.sticky-column-left {
+            position: sticky;
+            left: 0;
+            background-color: #343a40 !important; /* Gray background */
+            color: white;
+            z-index: 13;
+        }
+
+        /* Sticky Actions (last column) in the header */
+        .sticky-header th.sticky-column-right {
+            position: sticky;
+            right: 0;
+            background-color: #343a40 !important; /* Gray background */
+            color: white;
+            z-index: 13;
+        }
+
+        /* Ensure the entire header remains sticky */
+        .sticky-header th {
+            position: sticky;
+            top: 0;
+            background-color: #343a40 !important; /* Gray background */
+            color: white;
+            z-index: 11;
+        }
+    </style>
+
 </head>
 <body class="ms-5 container">
     <div class="fw-bold">
@@ -160,52 +205,68 @@
     <!-- Theater List Table -->
     <div class="row">
         <div class="col-md-12">
-            <table class="table table-bordered mt-5 ">
-                <thead class="text-start">
-                    <tr class="text-center bg-dark text-white">
-                        <th class="fw-bold">Theater ID</th>
-                        <th class="fw-bold">Theater Name</th>
-                        <th class="fw-bold">City</th>
-                        <th class="fw-bold">Ward</th>
-                        <th class="fw-bold">Zone</th>
-                        <th class="fw-bold">Address</th>
-                        <th class="fw-bold">Tenament Number</th>
-                        <th class="fw-bold">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if (Model != null && Model.Any())
-                    {
-                        foreach (var theater in Model)
+            <div class="table-responsive" style="max-height: 500px; overflow: auto;">
+                <table class="table table-bordered text-left mt-1">
+                    <thead class="bg-dark text-white sticky-header">
+                        <tr>
+                            <th class="fw-bold sticky-column-left">Appli No.</th>
+                            <th class="fw-bold">Theater ID</th>
+                            <th class="fw-bold">Theater Name</th>
+                            <th class="fw-bold">Zone Ward</th>
+                            <th class="fw-bold">Owner Name</th>
+                            <th class="fw-bold">Address</th>
+                            <th class="fw-bold">Tenament Number</th>
+                            <th class="fw-bold">Theater Screens</th>
+                            <th class="fw-bold">Video Screens</th>
+                            <th class="fw-bold">Total Screens</th>
+                            <th class="fw-bold">Commencement Date</th>
+                            <th class="fw-bold" style="white-space: nowrap;">Status Date</th>
+                            <th class="fw-bold sticky-column-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
                         {
-                            <tr id="theater-@theater.T_ID">
-                                <td>@theater.REG_ID</td>
-                                <td>@theater.T_NAME</td>
-                                <td>@theater.T_CITY</td>
-                                <td>@theater.T_WARD</td>
-                                <td>@theater.T_ZONE</td>
-                                <td>@theater.T_ADDRESS</td>
-                                <td>@theater.T_TENAMENT_NO</td>
-                                <td><a href="@Url.Action("Registration", "TRN_REGISTRATION", new { id = theater.T_ID, mode= "back" })"
-   class="btn btn-primary btn-sm" title="View">
-   View
-</a></td>
-                                
-
-
+                            int count = 1;
+                            foreach (var theater in Model)
+                            {
+                                <tr id="theater-@theater.T_ID">
+                                    <td class="sticky-column-left">@count</td>
+                                    <td>@theater.REG_ID</td>
+                                    <td>@theater.T_NAME</td>
+                                    <td>@($"{theater.T_ZONE}  {theater.T_WARD}")</td>
+                                    <td class="text-end">@theater.T_OWNER_NAME</td>
+                                    <td>@theater.T_ADDRESS</td>
+                                    <td>@theater.T_TENAMENT_NO</td>
+                                    <td class="text-center">@theater.THEATER_SCREEN_COUNT</td>
+                                    <td class="text-center">@theater.VIDEO_THEATER_SCREEN_COUNT</td>
+                                    <td class="text-center">@(@theater.THEATER_SCREEN_COUNT + @theater.VIDEO_THEATER_SCREEN_COUNT)</td>
+                                    <td style="white-space: nowrap;">@theater.T_COMMENCEMENT_DATE.ToString("dd-MMM-yyyy")</td>
+                                    <td style="white-space: nowrap;">
+                                        @(theater.STATUS == "Pending" ? "-" : theater.UPDATE_DATE.ToString("dd-MMM-yyyy"))
+                                    </td>
+                                    <td class="sticky-column-right">
+                                        <a href="@Url.Action("Registration", "TRN_REGISTRATION", new { id = theater.T_ID, mode="view" })"
+                                           class="btn btn-primary btn-sm" title="View">
+                                            <i class="fa fa-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                count++;
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="15" class="text-center">No theater data available.</td>
                             </tr>
                         }
-                    }
-                    else
-                    {
-                        <tr>
-                            <td colspan="9" class="text-center">No theater data available.</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
+
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>

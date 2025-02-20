@@ -302,8 +302,8 @@ namespace Amc_theater.Controllers
             var model = new TaxPaymentViewModel
             {
                 TheaterId = theater_id,
-                FromDate = DateTime.Now.ToString("MMMM"), // Default to current month
-                ToDate = DateTime.Now.Year // Default to current year
+                FromMonth = DateTime.Now.ToString("MMMM"), // Default to current month
+                ToMonth = DateTime.Now.Year // Default to current year
             };
 
             // ✅ Step 1: Fetch screen prices first and store in memory
@@ -391,8 +391,8 @@ namespace Amc_theater.Controllers
                         var taxPayment = new THEATER_TAX_PAYMENT
                     {
                         T_ID = model.TheaterId,
-                        PAYMENT_MONTH = model.FromDate,
-                        PAYMENT_YEAR = model.ToDate,
+                        PAYMENT_MONTH = model.FromMonth,
+                        PAYMENT_YEAR = model.ToMonth,
                         TAX_AMOUNT = model.Screens.Sum(s => s.AmtPerScreen),
                         SHOW_STATEMENT = filePath,
                         CREATE_USER = "System",
@@ -503,6 +503,7 @@ namespace Amc_theater.Controllers
                         select new
                         {
                             tr.T_ID,
+                            tr.REG_ID,
                             tr.T_NAME,
                             tr.T_CITY,
                             tr.T_ADDRESS,
@@ -510,8 +511,12 @@ namespace Amc_theater.Controllers
                             tr.T_ZONE,
                             tr.T_WARD,
                             tr.STATUS,
-                            tr.REG_ID
-
+                            tr.REJECT_REASON,
+                            tr.UPDATE_DATE,
+                            tr.T_OWNER_NAME,
+                            tr.T_COMMENCEMENT_DATE,
+                            TheaterScreenCount = db.NO_OF_SCREENS.Count(s => s.T_ID == tr.T_ID && s.SCREEN_TYPE == "Theater"),
+                            VideoTheaterScreenCount = db.NO_OF_SCREENS.Count(s => s.T_ID == tr.T_ID && s.SCREEN_TYPE == "Video")
                         };
 
 
@@ -523,6 +528,7 @@ namespace Amc_theater.Controllers
             var theaterList = result.Select(tr => new TheaterViewModel
             {
                 T_ID = tr.T_ID,
+                REG_ID = tr.REG_ID,
                 T_NAME = tr.T_NAME,
                 T_CITY = tr.T_CITY,
                 T_ADDRESS = tr.T_ADDRESS,
@@ -530,12 +536,19 @@ namespace Amc_theater.Controllers
                 T_ZONE = tr.T_ZONE,
                 T_WARD = tr.T_WARD,
                 STATUS = tr.STATUS,
-                REG_ID = tr.REG_ID
+                T_OWNER_NAME = tr.T_OWNER_NAME,
+                REJECT_REASON = tr.REJECT_REASON,
+                T_COMMENCEMENT_DATE = (DateTime)tr.T_COMMENCEMENT_DATE,
+                UPDATE_DATE = tr.UPDATE_DATE ?? DateTime.MinValue,
+                SCREEN_COUNT = tr.TheaterScreenCount + tr.VideoTheaterScreenCount,
+                THEATER_SCREEN_COUNT = tr.TheaterScreenCount,
+                VIDEO_THEATER_SCREEN_COUNT = tr.VideoTheaterScreenCount
 
             }).ToList();
 
             return View(theaterList);
         }
+
 
         public ActionResult Theater_List(string theaterId, DateTime? fromDate, DateTime? toDate,
                                 string statusFilter, string cityFilter,
@@ -1297,8 +1310,8 @@ namespace Amc_theater.Controllers
             var model = new TaxPaymentViewModel
             {
                 TheaterId = theater_id,
-                Month = DateTime.Now.ToString("MMMM"), // Default to current month
-                Year = DateTime.Now.Year // Default to current year
+                FromMonth = DateTime.Now.ToString("MMMM"), // Default to current month
+                ToMonth = DateTime.Now.Year // Default to current year
             };
 
             // ✅ Step 1: Fetch screen prices first and store in memory
