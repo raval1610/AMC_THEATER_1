@@ -4,9 +4,10 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="e8bf86bf7b3e42968e1a23a209cdc6e9" Name="Diagram1">
-        <EntityTypeShape EntityType="THEATER_MODULEModel.ActionRequest" Width="1.5" PointX="0.75" PointY="0.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="THEATER_MODULEModel.DEPARTMENT_LOGIN" Width="1.5" PointX="2.75" PointY="0.75" IsExpanded="true" />
+      <Diagram DiagramId="2a054b987cd8431eb8b87fc196c08823" Name="Diagram1">
+        <EntityTypeShape EntityType="THEATER_MODULEModel.ActionRequest" Width="1.5" PointX="2.75" PointY="3.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="THEATER_MODULEModel.DEPARTMENT_LOGIN" Width="1.5" PointX="4.75" PointY="3.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="THEATER_MODULEModel.Facility" Width="1.5" PointX="0.75" PointY="1.125" IsExpanded="true" />
         <EntityTypeShape EntityType="THEATER_MODULEModel.MST_DOC_SERVICE_MPG" Width="1.5" PointX="8" PointY="18.625" IsExpanded="true" />
         <EntityTypeShape EntityType="THEATER_MODULEModel.MST_DOCS" Width="1.5" PointX="5.75" PointY="21.375" IsExpanded="true" />
         <EntityTypeShape EntityType="THEATER_MODULEModel.MST_SERVICE" Width="1.5" PointX="5.75" PointY="13.75" IsExpanded="true" />
@@ -18,17 +19,20 @@
         <EntityTypeShape EntityType="THEATER_MODULEModel.PENDINGDUEADMIN" Width="1.5" PointX="3" PointY="21" IsExpanded="true" />
         <EntityTypeShape EntityType="THEATER_MODULEModel.RECEIPT_FILTER" Width="1.5" PointX="3" PointY="23.5" IsExpanded="true" />
         <EntityTypeShape EntityType="THEATER_MODULEModel.T_RECEIPT" Width="1.5" PointX="3" PointY="26.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="THEATER_MODULEModel.Tenement" Width="1.5" PointX="0.75" PointY="4" IsExpanded="true" />
+        <EntityTypeShape EntityType="THEATER_MODULEModel.TenementFacility" Width="1.5" PointX="3" PointY="0.875" IsExpanded="true" />
         <EntityTypeShape EntityType="THEATER_MODULEModel.THEATER_TAX_PAYMENT" Width="1.5" PointX="3" PointY="30.5" IsExpanded="true" />
         <EntityTypeShape EntityType="THEATER_MODULEModel.TRN_REGISTRATION" Width="1.5" PointX="0.75" PointY="19.375" IsExpanded="true" />
         <EntityTypeShape EntityType="THEATER_MODULEModel.TRN_REGISTRATION_LOG" Width="1.5" PointX="3" PointY="38.625" IsExpanded="true" />
         <EntityTypeShape EntityType="THEATER_MODULEModel.TRN_THEATRE_DOCS" Width="1.5" PointX="8" PointY="21.875" IsExpanded="true" />
         <EntityTypeShape EntityType="THEATER_MODULEModel.TRN_THEATRE_DOCS_LOG" Width="1.5" PointX="10.25" PointY="21.5" IsExpanded="true" />
-        <EntityTypeShape EntityType="THEATER_MODULEModel.USER_LOGIN" Width="1.5" PointX="0.75" PointY="3.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="THEATER_MODULEModel.DEPT_LOGIN_DETAILS" Width="1.5" PointX="2.75" PointY="3.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="THEATER_MODULEModel.LOGIN_DETAILS" Width="1.5" PointX="4.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="THEATER_MODULEModel.USER_LOGIN" Width="1.5" PointX="5.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="THEATER_MODULEModel.DEPT_LOGIN_DETAILS" Width="1.5" PointX="6.75" PointY="3.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="THEATER_MODULEModel.LOGIN_DETAILS" Width="1.5" PointX="5.75" PointY="6.75" IsExpanded="true" />
         <EntityTypeShape EntityType="THEATER_MODULEModel.MST_STATUS" Width="1.5" PointX="3" PointY="46.25" IsExpanded="true" />
-        <EntityTypeShape EntityType="THEATER_MODULEModel.PENDING_DUES" Width="1.5" PointX="4.75" PointY="3.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="THEATER_MODULEModel.TRN_SCREEN_TAX_PRICE" Width="1.5" PointX="6.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="THEATER_MODULEModel.PENDING_DUES" Width="1.5" PointX="7.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="THEATER_MODULEModel.TRN_SCREEN_TAX_PRICE" Width="1.5" PointX="7.75" PointY="6.75" IsExpanded="true" />
+        <AssociationConnector Association="THEATER_MODULEModel.FK__TenementF__Facil__2057CCD0" ManuallyRouted="false" />
         <AssociationConnector Association="THEATER_MODULEModel.FK_DOC_ID" ManuallyRouted="false" />
         <AssociationConnector Association="THEATER_MODULEModel.FK_S_SERVICE_ID" ManuallyRouted="false" />
         <AssociationConnector Association="THEATER_MODULEModel.FK_TRN_THEATRE_DOCS_MST_DOCS" ManuallyRouted="false" />
@@ -42,6 +46,7 @@
         <AssociationConnector Association="THEATER_MODULEModel.FK_PENDINGDUEADMIN_TRN_REGISTRATION" ManuallyRouted="false" />
         <AssociationConnector Association="THEATER_MODULEModel.FK_T_ID" ManuallyRouted="false" />
         <AssociationConnector Association="THEATER_MODULEModel.FK_TReceipt_TRNRegistration" ManuallyRouted="false" />
+        <AssociationConnector Association="THEATER_MODULEModel.FK__TenementF__Tenem__1F63A897" ManuallyRouted="false" />
         <AssociationConnector Association="THEATER_MODULEModel.FK_TAX_TID" ManuallyRouted="false" />
         <AssociationConnector Association="THEATER_MODULEModel.FK_Status_TRN_Registration" ManuallyRouted="false" />
         <AssociationConnector Association="THEATER_MODULEModel.FK_T_ID_REG" ManuallyRouted="false" />

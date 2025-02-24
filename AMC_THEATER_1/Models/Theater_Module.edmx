@@ -32,6 +32,13 @@ warning 6002: The table/view 'THEATER_MODULE.dbo.DEPT_LOGIN_DETAILS' does not ha
           <Property Name="DEPT_USERNAME" Type="varchar" MaxLength="10" />
           <Property Name="DEPT_PASS" Type="varchar" MaxLength="10" />
         </EntityType>
+        <EntityType Name="Facility">
+          <Key>
+            <PropertyRef Name="FacilityID" />
+          </Key>
+          <Property Name="FacilityID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="FacilityName" Type="varchar" MaxLength="100" />
+        </EntityType>
         <!--Errors Found During Generation:
 warning 6002: The table/view 'THEATER_MODULE.dbo.LOGIN_DETAILS' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="LOGIN_DETAILS">
@@ -183,6 +190,22 @@ warning 6002: The table/view 'THEATER_MODULE.dbo.PENDING_DUES' does not have a p
           <Property Name="Amount" Type="decimal" Precision="18" Scale="2" />
           <Property Name="PaymentMode" Type="nvarchar" MaxLength="50" />
           <Property Name="T_ID" Type="int" />
+        </EntityType>
+        <EntityType Name="Tenement">
+          <Key>
+            <PropertyRef Name="TenementID" />
+          </Key>
+          <Property Name="TenementID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="TenementNumber" Type="varchar" MaxLength="50" />
+          <Property Name="Zone" Type="varchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="TenementFacility">
+          <Key>
+            <PropertyRef Name="TenementFacilityID" />
+          </Key>
+          <Property Name="TenementFacilityID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="TenementID" Type="int" />
+          <Property Name="FacilityID" Type="int" />
         </EntityType>
         <EntityType Name="THEATER_TAX_PAYMENT">
           <Key>
@@ -337,6 +360,30 @@ warning 6002: The table/view 'THEATER_MODULE.dbo.TRN_SCREEN_TAX_PRICE' does not 
             </Principal>
             <Dependent Role="PAYMENT_HISTORY">
               <PropertyRef Name="T_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__TenementF__Facil__2057CCD0">
+          <End Role="Facility" Type="Self.Facility" Multiplicity="0..1" />
+          <End Role="TenementFacility" Type="Self.TenementFacility" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Facility">
+              <PropertyRef Name="FacilityID" />
+            </Principal>
+            <Dependent Role="TenementFacility">
+              <PropertyRef Name="FacilityID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__TenementF__Tenem__1F63A897">
+          <End Role="Tenement" Type="Self.Tenement" Multiplicity="0..1" />
+          <End Role="TenementFacility" Type="Self.TenementFacility" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Tenement">
+              <PropertyRef Name="TenementID" />
+            </Principal>
+            <Dependent Role="TenementFacility">
+              <PropertyRef Name="TenementID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -561,6 +608,7 @@ warning 6002: The table/view 'THEATER_MODULE.dbo.TRN_SCREEN_TAX_PRICE' does not 
         <EntityContainer Name="THEATER_MODULEModelStoreContainer">
           <EntitySet Name="ActionRequests" EntityType="Self.ActionRequests" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DEPARTMENT_LOGIN" EntityType="Self.DEPARTMENT_LOGIN" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Facility" EntityType="Self.Facility" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MST_DOC_SERVICE_MPG" EntityType="Self.MST_DOC_SERVICE_MPG" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MST_DOCS" EntityType="Self.MST_DOCS" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MST_SERVICE" EntityType="Self.MST_SERVICE" Schema="dbo" store:Type="Tables" />
@@ -572,6 +620,8 @@ warning 6002: The table/view 'THEATER_MODULE.dbo.TRN_SCREEN_TAX_PRICE' does not 
           <EntitySet Name="PENDINGDUEADMIN" EntityType="Self.PENDINGDUEADMIN" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RECEIPT_FILTER" EntityType="Self.RECEIPT_FILTER" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="T_RECEIPT" EntityType="Self.T_RECEIPT" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Tenement" EntityType="Self.Tenement" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="TenementFacility" EntityType="Self.TenementFacility" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="THEATER_TAX_PAYMENT" EntityType="Self.THEATER_TAX_PAYMENT" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TRN_REGISTRATION" EntityType="Self.TRN_REGISTRATION" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TRN_REGISTRATION_LOG" EntityType="Self.TRN_REGISTRATION_LOG" Schema="dbo" store:Type="Tables" />
@@ -621,6 +671,14 @@ warning 6002: The table/view 'THEATER_MODULE.dbo.TRN_SCREEN_TAX_PRICE' does not 
           <AssociationSet Name="FK__PAYMENT_HI__T_ID__75A278F5" Association="Self.FK__PAYMENT_HI__T_ID__75A278F5">
             <End Role="TRN_REGISTRATION" EntitySet="TRN_REGISTRATION" />
             <End Role="PAYMENT_HISTORY" EntitySet="PAYMENT_HISTORY" />
+          </AssociationSet>
+          <AssociationSet Name="FK__TenementF__Facil__2057CCD0" Association="Self.FK__TenementF__Facil__2057CCD0">
+            <End Role="Facility" EntitySet="Facility" />
+            <End Role="TenementFacility" EntitySet="TenementFacility" />
+          </AssociationSet>
+          <AssociationSet Name="FK__TenementF__Tenem__1F63A897" Association="Self.FK__TenementF__Tenem__1F63A897">
+            <End Role="Tenement" EntitySet="Tenement" />
+            <End Role="TenementFacility" EntitySet="TenementFacility" />
           </AssociationSet>
           <AssociationSet Name="FK_DOC_ID" Association="Self.FK_DOC_ID">
             <End Role="MST_DOCS" EntitySet="MST_DOCS" />
@@ -712,6 +770,14 @@ warning 6002: The table/view 'THEATER_MODULE.dbo.TRN_SCREEN_TAX_PRICE' does not 
           <Property Name="D_ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="USERNAME" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="PASSWORD" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Facility">
+          <Key>
+            <PropertyRef Name="FacilityID" />
+          </Key>
+          <Property Name="FacilityID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="FacilityName" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="TenementFacilities" Relationship="Self.FK__TenementF__Facil__2057CCD0" FromRole="Facility" ToRole="TenementFacility" />
         </EntityType>
         <EntityType Name="MST_DOC_SERVICE_MPG">
           <Key>
@@ -849,6 +915,25 @@ warning 6002: The table/view 'THEATER_MODULE.dbo.TRN_SCREEN_TAX_PRICE' does not 
           <Property Name="PaymentMode" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="T_ID" Type="Int32" />
           <NavigationProperty Name="TRN_REGISTRATION" Relationship="Self.FK_TReceipt_TRNRegistration" FromRole="T_RECEIPT" ToRole="TRN_REGISTRATION" />
+        </EntityType>
+        <EntityType Name="Tenement">
+          <Key>
+            <PropertyRef Name="TenementID" />
+          </Key>
+          <Property Name="TenementID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="TenementNumber" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Zone" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="TenementFacilities" Relationship="Self.FK__TenementF__Tenem__1F63A897" FromRole="Tenement" ToRole="TenementFacility" />
+        </EntityType>
+        <EntityType Name="TenementFacility">
+          <Key>
+            <PropertyRef Name="TenementFacilityID" />
+          </Key>
+          <Property Name="TenementFacilityID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="TenementID" Type="Int32" />
+          <Property Name="FacilityID" Type="Int32" />
+          <NavigationProperty Name="Facility" Relationship="Self.FK__TenementF__Facil__2057CCD0" FromRole="TenementFacility" ToRole="Facility" />
+          <NavigationProperty Name="Tenement" Relationship="Self.FK__TenementF__Tenem__1F63A897" FromRole="TenementFacility" ToRole="Tenement" />
         </EntityType>
         <EntityType Name="THEATER_TAX_PAYMENT">
           <Key>
@@ -1035,6 +1120,18 @@ warning 6002: The table/view 'THEATER_MODULE.dbo.TRN_SCREEN_TAX_PRICE' does not 
           <Property Name="SCREEN_TYPE" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="SCREEN_PRICE" Type="Int32" />
         </EntityType>
+        <Association Name="FK__TenementF__Facil__2057CCD0">
+          <End Role="Facility" Type="Self.Facility" Multiplicity="0..1" />
+          <End Role="TenementFacility" Type="Self.TenementFacility" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Facility">
+              <PropertyRef Name="FacilityID" />
+            </Principal>
+            <Dependent Role="TenementFacility">
+              <PropertyRef Name="FacilityID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_DOC_ID">
           <End Role="MST_DOCS" Type="Self.MST_DOCS" Multiplicity="0..1" />
           <End Role="MST_DOC_SERVICE_MPG" Type="Self.MST_DOC_SERVICE_MPG" Multiplicity="*" />
@@ -1199,6 +1296,18 @@ warning 6002: The table/view 'THEATER_MODULE.dbo.TRN_SCREEN_TAX_PRICE' does not 
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK__TenementF__Tenem__1F63A897">
+          <End Role="Tenement" Type="Self.Tenement" Multiplicity="0..1" />
+          <End Role="TenementFacility" Type="Self.TenementFacility" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Tenement">
+              <PropertyRef Name="TenementID" />
+            </Principal>
+            <Dependent Role="TenementFacility">
+              <PropertyRef Name="TenementID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_TAX_TID">
           <End Role="TRN_REGISTRATION" Type="Self.TRN_REGISTRATION" Multiplicity="1" />
           <End Role="THEATER_TAX_PAYMENT" Type="Self.THEATER_TAX_PAYMENT" Multiplicity="*" />
@@ -1277,9 +1386,10 @@ warning 6002: The table/view 'THEATER_MODULE.dbo.TRN_SCREEN_TAX_PRICE' does not 
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityContainer Name="THEATER_MODULEEntities" annotation:LazyLoadingEnabled="true">
+        <EntityContainer Name="THEATER_MODULEEntities1" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="ActionRequests" EntityType="Self.ActionRequest" />
           <EntitySet Name="DEPARTMENT_LOGIN" EntityType="Self.DEPARTMENT_LOGIN" />
+          <EntitySet Name="Facilities" EntityType="Self.Facility" />
           <EntitySet Name="MST_DOC_SERVICE_MPG" EntityType="Self.MST_DOC_SERVICE_MPG" />
           <EntitySet Name="MST_DOCS" EntityType="Self.MST_DOCS" />
           <EntitySet Name="MST_SERVICE" EntityType="Self.MST_SERVICE" />
@@ -1291,6 +1401,8 @@ warning 6002: The table/view 'THEATER_MODULE.dbo.TRN_SCREEN_TAX_PRICE' does not 
           <EntitySet Name="PENDINGDUEADMINs" EntityType="Self.PENDINGDUEADMIN" />
           <EntitySet Name="RECEIPT_FILTER" EntityType="Self.RECEIPT_FILTER" />
           <EntitySet Name="T_RECEIPT" EntityType="Self.T_RECEIPT" />
+          <EntitySet Name="Tenements" EntityType="Self.Tenement" />
+          <EntitySet Name="TenementFacilities" EntityType="Self.TenementFacility" />
           <EntitySet Name="THEATER_TAX_PAYMENT" EntityType="Self.THEATER_TAX_PAYMENT" />
           <EntitySet Name="TRN_REGISTRATION" EntityType="Self.TRN_REGISTRATION" />
           <EntitySet Name="TRN_REGISTRATION_LOG" EntityType="Self.TRN_REGISTRATION_LOG" />
@@ -1302,6 +1414,10 @@ warning 6002: The table/view 'THEATER_MODULE.dbo.TRN_SCREEN_TAX_PRICE' does not 
           <EntitySet Name="MST_STATUS" EntityType="Self.MST_STATUS" />
           <EntitySet Name="PENDING_DUES" EntityType="Self.PENDING_DUES" />
           <EntitySet Name="TRN_SCREEN_TAX_PRICE" EntityType="Self.TRN_SCREEN_TAX_PRICE" />
+          <AssociationSet Name="FK__TenementF__Facil__2057CCD0" Association="Self.FK__TenementF__Facil__2057CCD0">
+            <End Role="Facility" EntitySet="Facilities" />
+            <End Role="TenementFacility" EntitySet="TenementFacilities" />
+          </AssociationSet>
           <AssociationSet Name="FK_DOC_ID" Association="Self.FK_DOC_ID">
             <End Role="MST_DOCS" EntitySet="MST_DOCS" />
             <End Role="MST_DOC_SERVICE_MPG" EntitySet="MST_DOC_SERVICE_MPG" />
@@ -1354,6 +1470,10 @@ warning 6002: The table/view 'THEATER_MODULE.dbo.TRN_SCREEN_TAX_PRICE' does not 
             <End Role="TRN_REGISTRATION" EntitySet="TRN_REGISTRATION" />
             <End Role="T_RECEIPT" EntitySet="T_RECEIPT" />
           </AssociationSet>
+          <AssociationSet Name="FK__TenementF__Tenem__1F63A897" Association="Self.FK__TenementF__Tenem__1F63A897">
+            <End Role="Tenement" EntitySet="Tenements" />
+            <End Role="TenementFacility" EntitySet="TenementFacilities" />
+          </AssociationSet>
           <AssociationSet Name="FK_TAX_TID" Association="Self.FK_TAX_TID">
             <End Role="TRN_REGISTRATION" EntitySet="TRN_REGISTRATION" />
             <End Role="THEATER_TAX_PAYMENT" EntitySet="THEATER_TAX_PAYMENT" />
@@ -1384,7 +1504,7 @@ warning 6002: The table/view 'THEATER_MODULE.dbo.TRN_SCREEN_TAX_PRICE' does not 
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
-        <EntityContainerMapping StorageEntityContainer="THEATER_MODULEModelStoreContainer" CdmEntityContainer="THEATER_MODULEEntities">
+        <EntityContainerMapping StorageEntityContainer="THEATER_MODULEModelStoreContainer" CdmEntityContainer="THEATER_MODULEEntities1">
           <EntitySetMapping Name="ActionRequests">
             <EntityTypeMapping TypeName="THEATER_MODULEModel.ActionRequest">
               <MappingFragment StoreEntitySet="ActionRequests">
@@ -1401,6 +1521,14 @@ warning 6002: The table/view 'THEATER_MODULE.dbo.TRN_SCREEN_TAX_PRICE' does not 
                 <ScalarProperty Name="D_ID" ColumnName="D_ID" />
                 <ScalarProperty Name="USERNAME" ColumnName="USERNAME" />
                 <ScalarProperty Name="PASSWORD" ColumnName="PASSWORD" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Facilities">
+            <EntityTypeMapping TypeName="THEATER_MODULEModel.Facility">
+              <MappingFragment StoreEntitySet="Facility">
+                <ScalarProperty Name="FacilityID" ColumnName="FacilityID" />
+                <ScalarProperty Name="FacilityName" ColumnName="FacilityName" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -1533,6 +1661,24 @@ warning 6002: The table/view 'THEATER_MODULE.dbo.TRN_SCREEN_TAX_PRICE' does not 
                 <ScalarProperty Name="Amount" ColumnName="Amount" />
                 <ScalarProperty Name="PaymentMode" ColumnName="PaymentMode" />
                 <ScalarProperty Name="T_ID" ColumnName="T_ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Tenements">
+            <EntityTypeMapping TypeName="THEATER_MODULEModel.Tenement">
+              <MappingFragment StoreEntitySet="Tenement">
+                <ScalarProperty Name="TenementID" ColumnName="TenementID" />
+                <ScalarProperty Name="TenementNumber" ColumnName="TenementNumber" />
+                <ScalarProperty Name="Zone" ColumnName="Zone" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TenementFacilities">
+            <EntityTypeMapping TypeName="THEATER_MODULEModel.TenementFacility">
+              <MappingFragment StoreEntitySet="TenementFacility">
+                <ScalarProperty Name="TenementFacilityID" ColumnName="TenementFacilityID" />
+                <ScalarProperty Name="TenementID" ColumnName="TenementID" />
+                <ScalarProperty Name="FacilityID" ColumnName="FacilityID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

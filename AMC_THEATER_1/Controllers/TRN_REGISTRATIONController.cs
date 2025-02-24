@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Security.Cryptography;
 using System.Web;
 using System.Web.Mvc;
 using AMC_THEATER_1.Models;
@@ -16,75 +18,157 @@ namespace AMC_THEATER_1.Controllers
 {
     public class TRN_REGISTRATIONController : Controller
     {
-        private THEATER_MODULEEntities db = new THEATER_MODULEEntities();
+        private THEATER_MODULEEntities1 db = new THEATER_MODULEEntities1();
 
-        //public ActionResult Registration(int? id, string mode = "create")
-        //{
-        //    ViewBag.PageTitle = "Theater Registration";
-        //    ViewBag.Mode = mode; // ✅ Mode is now always set
+        public ActionResult Edit(int id, string mode = "edit")
+        {
+            var model = db.TRN_REGISTRATION
+                          .Include(r => r.NO_OF_SCREENS)
+                          .FirstOrDefault(r => r.T_ID == id);
 
-        //    ViewBag.Documents = GetActiveDocuments();
+            if (model == null)
+            {
+                TempData["ErrorMessage"] = "No record found!";
+                return RedirectToAction("List_of_Application", "Home");
+            }
 
-        //    if (id.HasValue)
-        //    {
-        //        var registrationData = GetRegistrationData(id.Value);
-        //        if (registrationData == null)
-        //        {
-        //            TempData["ErrorMessage"] = "No registration data found for the provided ID.";
-        //            return RedirectToAction("Index");
-        //        }
+            // ✅ Ensure lists are initialized
+            model.NO_OF_SCREENS = model.NO_OF_SCREENS ?? new List<NO_OF_SCREENS>();
+            model.TRN_THEATRE_DOCS = model.TRN_THEATRE_DOCS ?? new List<TRN_THEATRE_DOCS>();
 
-        //        ViewBag.Screens = GetScreens(id.Value);
-        //        ViewBag.UploadedDocs = GetUploadedDocs(id.Value);
-        //    }
+            // ✅ Fetch active documents
+            ViewBag.Documents = GetActiveDocuments() ?? new List<MST_DOCS>();
 
-        //    return View();
-        //}
+            // ✅ Fetch uploaded documents
+            ViewBag.UploadedDocs = GetUploadedDocs(id);
+
+            // ✅ Ensure ViewBag.Mode is properly set
+            ViewBag.Mode = mode;
+            model.IsEditMode = (mode == "edit");
+
+            return View("Registration", model);
+        }
+
         public ActionResult Registration(int? id, bool isViewPage = false, string mode = "create")
         {
             ViewBag.PageTitle = "Theater Registration";
-            ViewBag.Mode = mode; // ✅ Mode is now always set
-            ViewBag.IsViewPage = isViewPage;
+            ViewBag.Mode = mode; // ✅ Set mode initially
 
-            // Fetch active documents
-            ViewBag.Documents = GetActiveDocuments();
+            ViewBag.Documents = GetActiveDocuments() ?? new List<MST_DOCS>();
+
+            var model = new TRN_REGISTRATION
+            {
+                NO_OF_SCREENS = new List<NO_OF_SCREENS> { new NO_OF_SCREENS { SCREEN_ID = 1 } },
+                TRN_THEATRE_DOCS = new List<TRN_THEATRE_DOCS>()
+            };
 
             if (id.HasValue)
             {
                 var registrationData = GetRegistrationData(id.Value);
-                if (registrationData == null)
+                if (registrationData == null || registrationData.T_ID == 0)
                 {
                     TempData["ErrorMessage"] = "No registration data found for the provided ID.";
                     return RedirectToAction("Index");
                 }
 
-                ViewBag.Screens = GetScreens(id.Value);
-                ViewBag.UploadedDocs = GetUploadedDocs(id.Value);
-                ViewBag.IsEditPage = true;
+                ViewBag.Screens = registrationData.NO_OF_SCREENS ?? new List<NO_OF_SCREENS>();
 
-                return View(registrationData);
+                // ✅ Fetch Uploaded Documents
+                ViewBag.UploadedDocs = GetUploadedDocs(id.Value);
+
+                // 🔥 Debugging: Print uploaded docs in Output Window
+
+                model = registrationData;
+
+                //if (mode == "create")
+                //{
+                //    mode = isViewPage ? "view" : "edit";
+                //}
             }
 
-            return View();
+            ViewBag.Mode = mode; // ✅ Correctly assign mode
+            return View(model);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Registration(TRN_REGISTRATION model, HttpPostedFileBase[] documents, string actionType, string rejectReason = null)
+        {
+            try
+            {
+
+                if (model.T_ID == 0)
+                {
+                    // ✅ Set default values before inserting
+                    model.T_ACTIVE = true;
+                    model.STATUS = "Pending";
+                    // Insert new record into TRN_REGISTRATION
+                    db.TRN_REGISTRATION.Add(model);
+
+
+                    db.SaveChanges(); // ✅ Save first to generate T_ID
+                }
+                else
+                {
+                    // Fetch existing entity from the database
+                    var existingEntity = db.TRN_REGISTRATION.Find(model.T_ID);
+                    if (existingEntity == null)
+                    {
+                        TempData["ErrorMessage"] = "No record found for the provided ID.";
+                        return View(model);
+                    }
+
+                    // ✅ Update existing entity with new values
+                    db.Entry(existingEntity).CurrentValues.SetValues(model);
+
+                    // 🧹 Clear existing child records before adding new ones
+                    db.NO_OF_SCREENS.RemoveRange(db.NO_OF_SCREENS.Where(d => d.T_ID == model.T_ID));
+
+                    // 🆕 Add new child records if available
+                    if (model.NO_OF_SCREENS != null && model.NO_OF_SCREENS.Any())
+                    {
+                        db.NO_OF_SCREENS.AddRange(model.NO_OF_SCREENS);
+                    }
+
+
+                    UpdateTheaterStatus(existingEntity, actionType, rejectReason);
+
+                    // ✅ Mark existing entity as modified
+                    db.Entry(existingEntity).State = EntityState.Modified;
+                    db.SaveChanges();
+                }
+
+                // ✅ Ensure documents are handled **after** T_ID is saved
+                if (documents != null && documents.Length > 0)
+                {
+                    HandleDocuments(model.T_ID, documents);
+                }
+                // **Redirect based on action type**
+                if (actionType == "Approve" || actionType == "Reject")
+                {
+                    return RedirectToAction("ActionRequests", "Home");
+                }
+                else
+                {
+                    return RedirectToAction("List_of_Application", "Home");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "An error occurred: " + ex.Message;
+                Console.WriteLine(ex);
+                return View(model);
+            }
         }
 
         private TRN_REGISTRATION GetRegistrationData(int id)
         {
-            db.Configuration.ProxyCreationEnabled = false;
-            db.Configuration.LazyLoadingEnabled = false;
-
-            return db.TRN_REGISTRATION
-                .Where(r => r.T_ID == id)
-                .AsNoTracking()
-                .FirstOrDefault();
+            return db.TRN_REGISTRATION.Include(r => r.NO_OF_SCREENS).FirstOrDefault(r => r.T_ID == id) ?? new TRN_REGISTRATION { NO_OF_SCREENS = new List<NO_OF_SCREENS>(), TRN_THEATRE_DOCS = new List<TRN_THEATRE_DOCS>() };
         }
 
         private List<NO_OF_SCREENS> GetScreens(int id)
         {
-            return db.NO_OF_SCREENS
-                .Where(s => s.T_ID == id)
-                .AsNoTracking()
-                .ToList();
+            return db.NO_OF_SCREENS.Where(s => s.T_ID == id).ToList() ?? new List<NO_OF_SCREENS>();
         }
 
         private List<TRN_THEATRE_DOCS> GetUploadedDocs(int id)
@@ -98,188 +182,140 @@ namespace AMC_THEATER_1.Controllers
         private List<MST_DOCS> GetActiveDocuments()
         {
             return db.MST_DOCS
-                .Where(doc => doc.DOC_ACTIVE == true)
+                .Where(doc => doc.DOC_ACTIVE == true)  // ✅ Fetch only active documents
                 .AsNoTracking()
                 .ToList();
         }
 
-
-
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Registration(TRN_REGISTRATION model, string[] seatCapacity, string[] screenType, string actionType, string rejectReason = null)
+        private void HandleDocuments(int tId, HttpPostedFileBase[] documents)
         {
-            try
+            if (documents == null || documents.Length == 0)
             {
-                int theaterId;
-
-                // Check if theater already exists
-                TRN_REGISTRATION existingRegistration = db.TRN_REGISTRATION.Find(model.T_ID);
-
-                if (existingRegistration != null)
-                {
-                    LogOldValues(existingRegistration);
-                    UpdateRegistration(existingRegistration, model);
-                    theaterId = model.T_ID; // Keep the same T_ID
-                }
-                else
-                {
-                    // Create new theater and get T_ID
-                    theaterId = CreateNewRegistration(model);
-                }
-
-                // Update status (Approve, Reject, Edit)
-                UpdateTheaterStatus(theaterId, actionType, rejectReason);
-
-                // Process screens and documents after updating the status
-                HandleScreens(theaterId, seatCapacity, screenType);
-                HandleDocuments(theaterId);
-
-                db.SaveChanges(); // Save all updates
-
-                TempData["SuccessMessage"] = "Theater saved successfully!";
-
-                // **Redirect based on action type**
-                if (actionType == "Approve" || actionType == "Reject")
-                {
-                    return RedirectToAction("ActionRequests", "Home");
-                }
-                else
-                {
-                    return RedirectToAction("List_of_Application", "Home");
-                }
-            }
-            catch (Exception ex)
-            {
-                TempData["ErrorMessage"] = "An error occurred: " + ex.Message;
-                Console.WriteLine(ex);
+                Console.WriteLine("No documents uploaded.");
+                return; // Prevent NullReferenceException
             }
 
-            ViewBag.Documents = db.MST_DOCS.Where(d => d.DOC_ACTIVE == true).ToList();
-            return View(model);
+            // ✅ Step 1: Verify that tId exists in TRN_REGISTRATION
+            bool tIdExists = db.TRN_REGISTRATION.Any(r => r.T_ID == tId);
+            if (!tIdExists)
+            {
+                Console.WriteLine($"Error: T_ID {tId} does not exist in TRN_REGISTRATION.");
+                return; // Prevent foreign key violation
+            }
+
+            using (var transaction = db.Database.BeginTransaction())
+            {
+                try
+                {
+                    string uploadPath = Server.MapPath("~/UploadedFiles");
+                    if (!Directory.Exists(uploadPath))
+                    {
+                        Directory.CreateDirectory(uploadPath);
+                    }
+
+                    var docList = db.MST_DOCS.Where(d => d.DOC_ACTIVE == true).ToList();
+                    if (docList.Count == 0)
+                    {
+                        Console.WriteLine("Document list is empty in the database.");
+                        return;
+                    }
+
+                    var existingDocs = db.TRN_THEATRE_DOCS.Where(d => d.T_ID == tId).ToList();
+
+                    for (int i = 0; i < documents.Length; i++)
+                    {
+                        var uploadedFile = documents[i];
+                        if (uploadedFile == null || uploadedFile.ContentLength <= 0)
+                        {
+                            Console.WriteLine($"Skipping file at index {i} - Null or empty.");
+                            continue;
+                        }
+
+                        if (i >= docList.Count)
+                        {
+                            Console.WriteLine($"Skipping file at index {i} - No matching document in MST_DOCS.");
+                            continue;
+                        }
+
+                        var doc = docList[i];
+
+                        string fileExtension = Path.GetExtension(uploadedFile.FileName);
+                        string formattedFileName = $"TT_{doc.DOC_NAME}_{tId}{fileExtension}";
+                        formattedFileName = SanitizeFileName(formattedFileName);
+                        string path = Path.Combine(uploadPath, formattedFileName);
+                        uploadedFile.SaveAs(path);
+
+                        var existingDoc = existingDocs.FirstOrDefault(d => d.DOC_ID == doc.DOC_ID);
+                        if (existingDoc != null)
+                        {
+                            db.TRN_THEATRE_DOCS.Remove(existingDoc);
+                            db.SaveChanges();
+                        }
+
+                        db.TRN_THEATRE_DOCS.Add(new TRN_THEATRE_DOCS
+                        {
+                            T_ID = tId,
+                            DOC_ID = doc.DOC_ID,
+                            DOC_FILEPATH = path,
+                            CREATE_USER = "System",
+                            CREATE_DATE = DateTime.Now,
+                            ACTIVE = true
+                        });
+
+                        db.SaveChanges();
+                    }
+
+                    transaction.Commit();
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    Console.WriteLine("Error in HandleDocuments: " + ex.Message);
+                    throw;
+                }
+            }
         }
 
-        private void HandleScreens(int tId, string[] seatCapacity, string[] screenType)
+        private void HandleScreens(int tId, string[] seatCapacity = null, string[] screenType = null)
         {
             using (var transaction = db.Database.BeginTransaction())
             {
                 try
                 {
-                    // 🔹 Fetch existing screens
                     var existingScreens = db.NO_OF_SCREENS.Where(s => s.T_ID == tId).ToList();
 
-                    // 🔹 Log old records before deletion
-                    foreach (var screen in existingScreens)
+                    if (existingScreens.Any())
                     {
-                        db.NO_OF_SCREENS_LOG.Add(new NO_OF_SCREENS_LOG
-                        {
-                            T_ID = screen.T_ID,
-                            SCREEN_ID = screen.SCREEN_ID,
-                            AUDIENCE_CAPACITY = screen.AUDIENCE_CAPACITY,
-                            SCREEN_TYPE = screen.SCREEN_TYPE,
-                            ACTION_TYPE = "DELETE",
-                            CHANGED_BY = "System",
-                            CHANGED_ON = DateTime.Now
-                        });
+                        db.NO_OF_SCREENS.RemoveRange(existingScreens);
+                        db.SaveChanges();
                     }
 
-                    db.SaveChanges(); // ✅ Save logs before deleting old records
-
-                    // 🔹 Remove existing records
-                    db.NO_OF_SCREENS.RemoveRange(existingScreens);
-                    db.SaveChanges(); // ✅ Ensure deletion before inserting new screens
-
-                    // 🔹 Insert new screens
-                    List<NO_OF_SCREENS> newScreens = new List<NO_OF_SCREENS>();
-
-                    for (int i = 0; i < seatCapacity.Length; i++)
+                    if (seatCapacity != null && screenType != null && seatCapacity.Length == screenType.Length)
                     {
-                        if (!string.IsNullOrEmpty(seatCapacity[i]) && !string.IsNullOrEmpty(screenType[i]))
+                        for (int i = 0; i < seatCapacity.Length; i++)
                         {
-                            var screen = new NO_OF_SCREENS
+                            if (!string.IsNullOrEmpty(seatCapacity[i]) && !string.IsNullOrEmpty(screenType[i]))
                             {
-                                T_ID = tId,
-                                AUDIENCE_CAPACITY = int.Parse(seatCapacity[i]),
-                                SCREEN_TYPE = screenType[i]
-                            };
-                            newScreens.Add(screen);
+                                db.NO_OF_SCREENS.Add(new NO_OF_SCREENS
+                                {
+                                    T_ID = tId,
+                                    AUDIENCE_CAPACITY = int.Parse(seatCapacity[i]),
+                                    SCREEN_TYPE = screenType[i]
+                                });
+                            }
                         }
                     }
 
-                    db.NO_OF_SCREENS.AddRange(newScreens);
-                    db.SaveChanges(); // ✅ Save NO_OF_SCREENS first to get SCREEN_IDs
-
-                    // 🔹 Insert logs for newly inserted screens
-                    foreach (var screen in newScreens)
-                    {
-                        db.NO_OF_SCREENS_LOG.Add(new NO_OF_SCREENS_LOG
-                        {
-                            T_ID = tId,
-                            SCREEN_ID = screen.SCREEN_ID, // ✅ Now valid because SaveChanges() was called
-                            AUDIENCE_CAPACITY = screen.AUDIENCE_CAPACITY,
-                            SCREEN_TYPE = screen.SCREEN_TYPE,
-                            ACTION_TYPE = "INSERT",
-                            CHANGED_BY = "System",
-                            CHANGED_ON = DateTime.Now
-                        });
-                    }
-
-                    db.SaveChanges(); // ✅ Save logs after inserting new screens
-
-                    transaction.Commit(); // ✅ Commit transaction if all steps succeed
+                    db.SaveChanges();
+                    transaction.Commit();
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-                    transaction.Rollback(); // 🔥 Rollback on error to maintain consistency
-                    throw; // 🔍 Debug to find root cause
+                    transaction.Rollback();
+                    throw;
                 }
             }
         }
-
-
-
-        private void UpdateTheaterStatus(int tId, string actionType, string rejectReason)
-        {
-            var existingRegistration = db.TRN_REGISTRATION.Find(tId);
-            if (existingRegistration != null)
-            {
-                if (actionType == "Edit")
-                {
-                    existingRegistration.STATUS = "Pending"; // Ensure "Edit" sets status to Pending
-                }
-                else if (actionType == "Approve")
-                {
-                    existingRegistration.STATUS = "Approved";
-                    existingRegistration.REJECT_REASON = null; // Clear any previous rejection reason
-                                                               // Assign REG_ID if not already assigned
-                    if (string.IsNullOrEmpty(existingRegistration.REG_ID))
-                    {
-                        existingRegistration.REG_ID = GenerateNextRegId();
-                    }
-
-                }
-                else if (actionType == "Reject")
-                {
-                    existingRegistration.STATUS = "Rejected";
-                    existingRegistration.REJECT_REASON = rejectReason; // Store the rejection reason
-                    if (!string.IsNullOrEmpty(existingRegistration.REG_ID))
-                    {
-                        existingRegistration.REG_ID =null;
-                    }
-                }
-
-                existingRegistration.UPDATE_USER = "System";
-                existingRegistration.UPDATE_DATE = DateTime.Now;
-
-                db.Entry(existingRegistration).State = EntityState.Modified;
-                db.SaveChanges();
-            }
-
-        }
-
-
-
         // Method to generate the next REG_ID
         private string GenerateNextRegId()
         {
@@ -303,159 +339,59 @@ namespace AMC_THEATER_1.Controllers
             return $"T{nextNumber:D4}"; // Format as T0001, T0002, etc.
         }
 
-
-
-
-
-
-        private void UpdateRegistration(TRN_REGISTRATION existingRegistration, TRN_REGISTRATION model)
+        private void UpdateTheaterStatus(TRN_REGISTRATION existingRegistration, string actionType, string rejectReason)
         {
-            existingRegistration.T_NAME = model.T_NAME;
-            existingRegistration.T_ADDRESS = model.T_ADDRESS;
-            existingRegistration.T_OWNER_NAME = model.T_OWNER_NAME;
-            existingRegistration.T_OWNER_NUMBER = model.T_OWNER_NUMBER;
-            existingRegistration.T_OWNER_EMAIL = model.T_OWNER_EMAIL;
-            existingRegistration.T_COMMENCEMENT_DATE = model.T_COMMENCEMENT_DATE;
-            existingRegistration.T_CITY = model.T_CITY;
-            existingRegistration.T_ZONE = model.T_ZONE;
-            existingRegistration.T_WARD = model.T_WARD;
-            existingRegistration.T_TENAMENT_NO = model.T_TENAMENT_NO;
-            existingRegistration.T_PEC_NO = model.T_PEC_NO;
-            existingRegistration.T_PRC_NO = model.T_PRC_NO;
-            existingRegistration.T_TAX_PAYING_OFFLINE = model.T_TAX_PAYING_OFFLINE;
-            existingRegistration.OFFLINE_TAX_PAYMENT = model.OFFLINE_TAX_PAYMENT;
-            existingRegistration.OFFLINE_TAX_PAID_DATE = model.OFFLINE_TAX_PAID_DATE;
-            existingRegistration.OFFLINE_DUE_DATE = model.OFFLINE_DUE_DATE;
+            var dbEntity = db.TRN_REGISTRATION.SingleOrDefault(r => r.T_ID == existingRegistration.T_ID);
 
-            // Set STATUS to Pending when any update occurs
-            existingRegistration.STATUS = "Pending";
-
-            existingRegistration.UPDATE_USER = "System";
-            existingRegistration.UPDATE_DATE = DateTime.Now;
-
-            db.Entry(existingRegistration).State = EntityState.Modified;
-        }
-
-
-        private int CreateNewRegistration(TRN_REGISTRATION model)
-        {
-            var registration = new TRN_REGISTRATION
+            if (dbEntity == null)
             {
-                T_NAME = model.T_NAME,
-                T_ADDRESS = model.T_ADDRESS,
-                T_OWNER_NAME = model.T_OWNER_NAME,
-                T_OWNER_NUMBER = model.T_OWNER_NUMBER,
-                T_OWNER_EMAIL = model.T_OWNER_EMAIL,
-                T_COMMENCEMENT_DATE = model.T_COMMENCEMENT_DATE,
-                T_CITY = model.T_CITY,
-                T_ZONE = model.T_ZONE,
-                T_WARD = model.T_WARD,
-                T_TENAMENT_NO = model.T_TENAMENT_NO,
-                T_PEC_NO = model.T_PEC_NO,
-                T_PRC_NO = model.T_PRC_NO,
-                T_TAX_PAYING_OFFLINE = model.T_TAX_PAYING_OFFLINE,
-                OFFLINE_TAX_PAYMENT = model.OFFLINE_TAX_PAYMENT,
-                OFFLINE_TAX_PAID_DATE = model.OFFLINE_TAX_PAID_DATE,
-                OFFLINE_DUE_DATE = model.OFFLINE_DUE_DATE,
-                CREATE_USER = "System",
-                CREATE_DATE = DateTime.Now,
-                T_ACTIVE = true,
-                STATUS = "Pending"
-            };
+                throw new Exception($"❌ Error: Record with T_ID = {existingRegistration.T_ID} not found. It may have been deleted.");
+            }
 
-            db.TRN_REGISTRATION.Add(registration);
-            db.SaveChanges();
+            db.Entry(dbEntity).Reload(); // ✅ Reload entity to avoid concurrency conflicts
 
-            return registration.T_ID;
-        }
-
-
-        private void HandleDocuments(int tId)
-        {
-            using (var transaction = db.Database.BeginTransaction())
+            if (actionType == "Edit")
             {
-                try
+                dbEntity.STATUS = "Pending";
+            }
+            else if (actionType == "Approve")
+            {
+                dbEntity.T_ACTIVE = true;
+                dbEntity.STATUS = "Approved";
+                dbEntity.REJECT_REASON = null;
+              
+                if (string.IsNullOrEmpty(dbEntity.REG_ID))
                 {
-                    string uploadPath = Server.MapPath("~/UploadedFiles");
-                    if (!Directory.Exists(uploadPath))
-                    {
-                        Directory.CreateDirectory(uploadPath);
-                    }
-
-                    foreach (var doc in db.MST_DOCS.Where(d => d.DOC_ACTIVE == true))
-                    {
-                        var uploadedFile = Request.Files[doc.DOC_ID.ToString()];
-                        if (uploadedFile != null && uploadedFile.ContentLength > 0)
-                        {
-                            string fileExtension = Path.GetExtension(uploadedFile.FileName);
-
-                            // Generate unique filename
-                            int fileCount = db.TRN_THEATRE_DOCS.Count(d => d.T_ID == tId && d.DOC_ID == doc.DOC_ID) + 1;
-                            string formattedFileName = $"TT_{doc.DOC_NAME}_{tId}_{fileCount}{fileExtension}";
-
-                            formattedFileName = SanitizeFileName(formattedFileName);
-                            string path = Path.Combine(uploadPath, formattedFileName);
-                            uploadedFile.SaveAs(path);
-
-                            // Fetch existing document to log and delete it before inserting the new one
-                            var existingDoc = db.TRN_THEATRE_DOCS
-                                .FirstOrDefault(d => d.T_ID == tId && d.DOC_ID == doc.DOC_ID);
-
-                            if (existingDoc != null)
-                            {
-                                // Log OLD record before deletion
-                                db.TRN_THEATRE_DOCS_LOG.Add(new TRN_THEATRE_DOCS_LOG
-                                {
-                                    T_ID = tId,
-                                    TH_DOC_ID = existingDoc.TH_DOC_ID,
-                                    DOC_FILEPATH = existingDoc.DOC_FILEPATH,
-                                    CREATE_DATE = DateTime.Now,
-                                    CREATE_USER = "System",
-                                    ACTION_TYPE = "OLD_VALUE",
-                                    CHANGED_BY = "System",
-                                    CHANGED_ON = DateTime.Now
-                                });
-
-                                db.SaveChanges(); // Save log before deleting old file
-
-                                // Remove old record from MAIN table
-                                db.TRN_THEATRE_DOCS.Remove(existingDoc);
-                                db.SaveChanges();
-                            }
-
-                            // Insert new document into MAIN table
-                            var theatreDoc = new TRN_THEATRE_DOCS
-                            {
-                                T_ID = tId,
-                                DOC_ID = doc.DOC_ID,
-                                DOC_FILEPATH = path,
-                                CREATE_USER = "System",
-                                CREATE_DATE = DateTime.Now,
-                                ACTIVE = true
-                            };
-                            db.TRN_THEATRE_DOCS.Add(theatreDoc);
-                            db.SaveChanges(); // Generate TH_DOC_ID
-                        }
-                        else
-                        {
-                            ModelState.AddModelError(doc.DOC_NAME, $"Please upload the {doc.DOC_NAME} document.");
-                        }
-                    }
-
-                    db.SaveChanges(); // Save all logs
-                    transaction.Commit(); // Commit transaction
+                    dbEntity.REG_ID = GenerateNextRegId();
                 }
-                catch (Exception ex)
-                {
-                    transaction.Rollback(); // Rollback if any error occurs
-                    throw;
-                }
+
+            }
+            else if (actionType == "Reject")
+            {
+                dbEntity.T_ACTIVE = true;
+                dbEntity.STATUS = "Rejected";
+                dbEntity.REJECT_REASON = rejectReason;
+            }
+
+            dbEntity.UPDATE_USER = "System";
+            dbEntity.UPDATE_DATE = DateTime.Now;
+
+            db.Entry(dbEntity).State = EntityState.Modified;
+
+            try
+            {
+                db.SaveChanges();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                System.Diagnostics.Debug.WriteLine($"⚠️ Concurrency issue detected for T_ID: {existingRegistration.T_ID}. Retrying update...");
+
+                // ✅ Reload entity and retry
+                db.Entry(dbEntity).Reload();
+                db.SaveChanges();
             }
         }
 
-
-
-        // Helper function to sanitize filenames
         private string SanitizeFileName(string fileName)
         {
             foreach (char c in Path.GetInvalidFileNameChars())
@@ -463,271 +399,6 @@ namespace AMC_THEATER_1.Controllers
                 fileName = fileName.Replace(c, '_');
             }
             return fileName;
-        }
-
-        private void LogOldValues(TRN_REGISTRATION oldRegistration)
-        {
-            db.TRN_REGISTRATION_LOG.Add(new TRN_REGISTRATION_LOG
-            {
-                T_ID = oldRegistration.T_ID,
-                ACTION_TYPE = "UPDATE",
-                T_NAME = oldRegistration.T_NAME,
-                T_ADDRESS = oldRegistration.T_ADDRESS,
-                T_OWNER_NAME = oldRegistration.T_OWNER_NAME,
-                T_OWNER_NUMBER = oldRegistration.T_OWNER_NUMBER,
-                T_OWNER_EMAIL = oldRegistration.T_OWNER_EMAIL,
-                T_COMMENCEMENT_DATE = oldRegistration.T_COMMENCEMENT_DATE,
-                T_CITY = oldRegistration.T_CITY,
-                T_ZONE = oldRegistration.T_ZONE,
-                T_WARD = oldRegistration.T_WARD,
-                T_TENAMENT_NO = oldRegistration.T_TENAMENT_NO,
-                T_PEC_NO = oldRegistration.T_PEC_NO,
-                T_PRC_NO = oldRegistration.T_PRC_NO,
-                T_TAX_PAYING_OFFLINE = oldRegistration.T_TAX_PAYING_OFFLINE,
-                OFFLINE_TAX_PAYMENT = oldRegistration.OFFLINE_TAX_PAYMENT,
-                OFFLINE_TAX_PAID_DATE = oldRegistration.OFFLINE_TAX_PAID_DATE,
-                OFFLINE_DUE_DATE = oldRegistration.OFFLINE_DUE_DATE,
-                UPDATE_DATE = DateTime.Now,
-                UPDATE_USER = "System",
-                LOG_TIMESTAMP = DateTime.Now,
-                T_ACTIVE = oldRegistration.T_ACTIVE,
-                STATUS = "Pending"
-            });
-        }
-
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public ActionResult Create(TRN_REGISTRATION model, string[] seatCapacity, string[] screenType, string action, string rejectReason)
-        //{
-        //    try
-        //    {
-        //        // Declare the registration variable
-        //        TRN_REGISTRATION registration = null;
-
-        //        // Check if T_ID exists
-        //        TRN_REGISTRATION existingRegistration = db.TRN_REGISTRATION.Find(model.T_ID);
-
-        //        if (existingRegistration != null) // If T_ID exists, update the existing registration
-        //        {
-        //            // If the action is Approve, set the status to Approved
-        //            if (action == "Approve")
-        //            {
-        //                existingRegistration.STATUS = "Approved";
-        //                existingRegistration.REJECTREASON = null;
-        //            }
-        //            else if (action == "Reject")
-        //            {
-        //                existingRegistration.STATUS = "Rejected";
-        //                existingRegistration.REJECTREASON = rejectReason;
-        //            }
-
-        //            db.SaveChanges(); // Save to DBng
-        //            //LogOldValues(existingRegistration);
-
-        //            // Update the existing registration
-        //            existingRegistration.T_NAME = model.T_NAME;
-        //            existingRegistration.T_ADDRESS = model.T_ADDRESS;
-        //            existingRegistration.T_OWNER_NAME = model.T_OWNER_NAME;
-        //            existingRegistration.T_OWNER_NUMBER = model.T_OWNER_NUMBER;
-        //            existingRegistration.T_OWNER_EMAIL = model.T_OWNER_EMAIL;
-        //            existingRegistration.T_COMMENCEMENT_DATE = model.T_COMMENCEMENT_DATE;
-        //            existingRegistration.T_CITY = model.T_CITY;
-        //            existingRegistration.T_ZONE = model.T_ZONE;
-        //            existingRegistration.T_WARD = model.T_WARD;
-        //            existingRegistration.T_TENAMENT_NO = model.T_TENAMENT_NO;
-        //            existingRegistration.T_PEC_NO = model.T_PEC_NO;
-        //            existingRegistration.T_PRC_NO = model.T_PRC_NO;
-        //            existingRegistration.T_TAX_PAYING_OFFLINE = model.T_TAX_PAYING_OFFLINE;
-        //            existingRegistration.OFFLINE_TAX_PAYMENT = model.OFFLINE_TAX_PAYMENT;
-        //            existingRegistration.OFFLINE_TAX_PAID_DATE = model.OFFLINE_TAX_PAID_DATE;
-        //            existingRegistration.OFFLINE_DUE_DATE = model.OFFLINE_DUE_DATE;
-        //            existingRegistration.UPDATE_USER = "System";
-        //            existingRegistration.UPDATE_DATE = DateTime.Now;
-
-        //            // Update the registration in the database
-        //            db.Entry(existingRegistration).State = EntityState.Modified;
-
-
-        //        }
-        //        else // If T_ID does not exist, create a new registration
-        //        {
-        //            registration = new TRN_REGISTRATION
-        //            {
-        //                T_NAME = model.T_NAME,
-        //                T_ADDRESS = model.T_ADDRESS,
-        //                T_OWNER_NAME = model.T_OWNER_NAME,
-        //                T_OWNER_NUMBER = model.T_OWNER_NUMBER,
-        //                T_OWNER_EMAIL = model.T_OWNER_EMAIL,
-        //                T_COMMENCEMENT_DATE = model.T_COMMENCEMENT_DATE,
-        //                T_CITY = model.T_CITY,
-        //                T_ZONE = model.T_ZONE,
-        //                T_WARD = model.T_WARD,
-        //                T_TENAMENT_NO = model.T_TENAMENT_NO,
-        //                T_PEC_NO = model.T_PEC_NO,
-        //                T_PRC_NO = model.T_PRC_NO,
-        //                T_TAX_PAYING_OFFLINE = model.T_TAX_PAYING_OFFLINE,
-        //                OFFLINE_TAX_PAYMENT = model.OFFLINE_TAX_PAYMENT,
-        //                OFFLINE_TAX_PAID_DATE = model.OFFLINE_TAX_PAID_DATE,
-        //                OFFLINE_DUE_DATE = model.OFFLINE_DUE_DATE,
-        //                CREATE_USER = "System",
-        //                CREATE_DATE = DateTime.Now,
-        //                T_ACTIVE = true
-        //            };
-
-        //            // Add new registration to the database
-        //            db.TRN_REGISTRATION.Add(registration);
-        //            db.SaveChanges(); // Save changes to get the T_ID
-
-
-        //            int tId = existingRegistration?.T_ID ?? registration?.T_ID ?? 0; // Ensure registration is not null
-
-        //            // Handle Screens and insert logs
-        //            var existingScreens = db.NO_OF_SCREENS.Where(s => s.T_ID == tId).ToList();
-        //            db.NO_OF_SCREENS.RemoveRange(existingScreens);
-
-        //            for (int i = 0; i < seatCapacity.Length; i++)
-        //            {
-        //                if (!string.IsNullOrEmpty(seatCapacity[i]) && !string.IsNullOrEmpty(screenType[i]))
-        //                {
-        //                    var screen = new NO_OF_SCREENS
-        //                    {
-        //                        T_ID = tId,
-        //                        AUDIENCE_CAPACITY = int.Parse(seatCapacity[i]),
-        //                        SCREEN_TYPE = screenType[i]
-        //                    };
-        //                    db.NO_OF_SCREENS.Add(screen);
-
-        //                    // Insert log for screen insertion
-
-        //                }
-        //            }
-
-        //            // Handle Documents and insert logs
-        //            foreach (var doc in db.MST_DOCS.Where(d => d.DOC_ACTIVE == true))
-        //            {
-        //                var uploadedFile = Request.Files[doc.DOC_ID.ToString()];
-        //                if (uploadedFile != null && uploadedFile.ContentLength > 0)
-        //                {
-        //                    string fileExtension = Path.GetExtension(uploadedFile.FileName);
-        //                    string formattedFileName = $"TT_{doc.DOC_NAME}_{tId}{fileExtension}";
-        //                    string uploadPath = Server.MapPath("~/UploadedFiles");
-
-        //                    if (!Directory.Exists(uploadPath))
-        //                    {
-        //                        Directory.CreateDirectory(uploadPath);
-        //                    }
-
-        //                    formattedFileName = SanitizeFileName(formattedFileName);
-        //                    string path = Path.Combine(uploadPath, formattedFileName);
-        //                    uploadedFile.SaveAs(path);
-
-        //                    db.TRN_THEATRE_DOCS.Add(new TRN_THEATRE_DOCS
-        //                    {
-        //                        T_ID = tId,
-        //                        DOC_ID = doc.DOC_ID,
-        //                        DOC_FILEPATH = path,
-        //                        CREATE_USER = "System",
-        //                        CREATE_DATE = DateTime.Now,
-        //                        ACTIVE = true
-        //                    });
-
-        //                    // Insert log for document insertion
-        //                    db.TRN_THEATRE_DOCS_LOG.Add(new TRN_THEATRE_DOCS_LOG
-        //                    {
-        //                        T_ID = tId,
-        //                        TH_DOC_ID = db.TRN_THEATRE_DOCS.Max(d => d.TH_DOC_ID),
-        //                        DOC_FILEPATH = path,
-        //                        CREATE_DATE = DateTime.Now,
-        //                        CREATE_USER = "System",
-        //                        ACTION_TYPE = "INSERT",
-        //                        CHANGED_BY = "System",
-        //                        CHANGED_ON = DateTime.Now
-        //                    });
-        //                }
-        //                else
-        //                {
-        //                    ModelState.AddModelError(doc.DOC_NAME, $"Please upload the {doc.DOC_NAME} document.");
-        //                }
-        //            }
-
-        //            db.SaveChanges();
-        //            TempData["SuccessMessage"] = "Theatre registered successfully!";
-        //            return RedirectToAction("SecondPage", "Home");
-
-
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        TempData["ErrorMessage"] = "An error occurred: " + ex.Message;
-        //        Console.WriteLine(ex);
-        //    }
-
-        //    ViewBag.Documents = db.MST_DOCS.Where(d => d.DOC_ACTIVE == true).ToList();
-        //    return View(model);
-        //}
-
-        //private void LogOldValues(TRN_REGISTRATION oldRegistration)
-        //{
-        //    db.TRN_REGISTRATION_LOG.Add(new TRN_REGISTRATION_LOG
-        //    {
-        //        T_ID = oldRegistration.T_ID,
-        //        ACTION_TYPE = "UPDATE",
-        //        T_NAME = oldRegistration.T_NAME,
-        //        T_ADDRESS = oldRegistration.T_ADDRESS,
-        //        T_OWNER_NAME = oldRegistration.T_OWNER_NAME,
-        //        T_OWNER_NUMBER = oldRegistration.T_OWNER_NUMBER,
-        //        T_OWNER_EMAIL = oldRegistration.T_OWNER_EMAIL,
-        //        T_COMMENCEMENT_DATE = oldRegistration.T_COMMENCEMENT_DATE,
-        //        T_CITY = oldRegistration.T_CITY,
-        //        T_ZONE = oldRegistration.T_ZONE,
-        //        T_WARD = oldRegistration.T_WARD,
-        //        T_TENAMENT_NO = oldRegistration.T_TENAMENT_NO,
-        //        T_PEC_NO = oldRegistration.T_PEC_NO,
-        //        T_PRC_NO = oldRegistration.T_PRC_NO,
-        //        T_TAX_PAYING_OFFLINE = oldRegistration.T_TAX_PAYING_OFFLINE,
-        //        OFFLINE_TAX_PAYMENT = oldRegistration.OFFLINE_TAX_PAYMENT,
-        //        OFFLINE_TAX_PAID_DATE = oldRegistration.OFFLINE_TAX_PAID_DATE,
-        //        OFFLINE_DUE_DATE = oldRegistration.OFFLINE_DUE_DATE,
-        //        UPDATE_DATE = DateTime.Now,
-        //        UPDATE_USER = "System",
-        //        LOG_TIMESTAMP = DateTime.Now,
-        //        T_ACTIVE = oldRegistration.T_ACTIVE,
-        //        STATUS = "Pending"
-        //    });
-        //}
-
-
-        // GET: TRN_REGISTRATION
-        public ActionResult Index()
-        {
-            return View(db.TRN_REGISTRATION.ToList());
-        }
-
-        // GET: TRN_REGISTRATION/Details/5
-        public ActionResult Details(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            TRN_REGISTRATION tRN_REGISTRATION = db.TRN_REGISTRATION.Find(id);
-            if (tRN_REGISTRATION == null)
-            {
-                return HttpNotFound();
-            }
-            return View(tRN_REGISTRATION);
-        }
-
-        // POST: TRN_REGISTRATION/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
-        {
-            TRN_REGISTRATION tRN_REGISTRATION = db.TRN_REGISTRATION.Find(id);
-            db.TRN_REGISTRATION.Remove(tRN_REGISTRATION);
-            db.SaveChanges();
-            return RedirectToAction("Index");
         }
 
         protected override void Dispose(bool disposing)
@@ -738,11 +409,6 @@ namespace AMC_THEATER_1.Controllers
             }
             base.Dispose(disposing);
         }
-    
-
-
-
-
 
     }
 }

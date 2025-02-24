@@ -11,7 +11,8 @@ namespace AMC_THEATER_1.Models
 {
     using System;
     using System.Collections.Generic;
-    
+    using System.ComponentModel.DataAnnotations;
+
     public partial class MST_DOCS
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
@@ -20,7 +21,7 @@ namespace AMC_THEATER_1.Models
             this.MST_DOC_SERVICE_MPG = new HashSet<MST_DOC_SERVICE_MPG>();
             this.TRN_THEATRE_DOCS = new HashSet<TRN_THEATRE_DOCS>();
         }
-    
+        [Key]
         public int DOC_ID { get; set; }
         public string DOC_NAME { get; set; }
         public Nullable<bool> DOC_ACTIVE { get; set; }

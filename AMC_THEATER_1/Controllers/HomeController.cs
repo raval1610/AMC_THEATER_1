@@ -18,7 +18,7 @@ namespace Amc_theater.Controllers
     public class HomeController : Controller
     {
 
-        private THEATER_MODULEEntities2 db = new THEATER_MODULEEntities2();
+        private THEATER_MODULEEntities1 db = new THEATER_MODULEEntities1();
 
         private ApplicationDbContext db1 = new ApplicationDbContext(); // Database context
         private readonly ApplicationDbContext _context = new ApplicationDbContext(); // Ass
@@ -44,16 +44,12 @@ namespace Amc_theater.Controllers
             return Json(theater, JsonRequestBehavior.AllowGet);
         }
 
-
-
-
-
         public ActionResult ActionRequests()
         {
             ViewBag.CurrentAction = "ActionRequests"; // This is important!
 
             var query = from tr in db.TRN_REGISTRATION
-                        where tr.T_ACTIVE == true
+                        where tr.T_ACTIVE == true 
                         select new
 
                         {
@@ -96,6 +92,8 @@ namespace Amc_theater.Controllers
             return View(theaterList);
         }
 
+
+
         public ActionResult List_of_Application()
         {
             ViewBag.CurrentAction = "List of Application"; // This is important!
@@ -116,6 +114,7 @@ namespace Amc_theater.Controllers
                             tr.REJECT_REASON,
                             tr.UPDATE_DATE,
                             tr.T_OWNER_NAME,
+                            tr.T_COMMENCEMENT_DATE,
 
                             TheaterScreenCount = db.NO_OF_SCREENS.Count(s => s.T_ID == tr.T_ID && s.SCREEN_TYPE == "Theater"),
                             VideoTheaterScreenCount = db.NO_OF_SCREENS.Count(s => s.T_ID == tr.T_ID && s.SCREEN_TYPE == "Video")
@@ -134,6 +133,7 @@ namespace Amc_theater.Controllers
                 T_WARD = tr.T_WARD,
                 STATUS = tr.STATUS,
                 T_OWNER_NAME = tr.T_OWNER_NAME,
+                T_COMMENCEMENT_DATE = (DateTime)tr.T_COMMENCEMENT_DATE,
                 REJECTREASON = tr.REJECT_REASON,
                 UPDATE_DATE = tr.UPDATE_DATE ?? DateTime.MinValue,
                 SCREEN_COUNT = tr.TheaterScreenCount + tr.VideoTheaterScreenCount,
@@ -286,7 +286,7 @@ namespace Amc_theater.Controllers
             // Redirect back to the ActionRequests page
             return RedirectToAction("ActionRequests");
         }
-
+      
 
         [HttpPost]
         public ActionResult Theater_Tax(int theater_id)
@@ -297,41 +297,32 @@ namespace Amc_theater.Controllers
                 return RedirectToAction("Index");
             }
 
-            // Get the "fromDate" and "toDate" values from the form
-            string fromDateString = Request.Form["fromDate"];
-            string toDateString = Request.Form["toDate"];
-
-            DateTime fromDate, toDate;
-
-            // ✅ Ensure correct parsing of "YYYY-MM" format
-            fromDate = ParseMonthYear(fromDateString) ?? new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
-            toDate = ParseMonthYear(toDateString) ?? new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
-
             var model = new TaxPaymentViewModel
             {
                 TheaterId = theater_id,
-                Month = fromDate.ToString("MMMM"), // Extract month name
-                Year = fromDate.Year // Extract year
+                FromMonth = DateTime.Now.ToString("MMMM"), // Default to current month
+                ToMonth = DateTime.Now.Year // Default to current year
             };
 
-            // ✅ Fetch screen prices first and store in memory
-            var screenPrices = db.TRN_SCREEN_TAX_PRICE
-                .AsNoTracking()
+            // ✅ Step 1: Fetch screen prices first and store in memory
+          var screenPrices = db.TRN_SCREEN_TAX_PRICE
+                .AsNoTracking() // Improves performance
                 .ToDictionary(p => p.SCREEN_TYPE, p => p.SCREEN_PRICE);
 
-            // ✅ Fetch theater details along with associated screens
+            // ✅ Step 2: Fetch theater details along with associated screens
             var theaterDetails = db.TRN_REGISTRATION
                 .Where(t => t.T_ID == theater_id)
                 .Select(t => new
                 {
                     TheaterID = t.T_ID,
+                    TheaterName = t.T_NAME,
                     OwnerName = t.T_OWNER_NAME,
                     MobileNo = t.T_OWNER_NUMBER != null ? t.T_OWNER_NUMBER.ToString() : string.Empty,
                     Address = t.T_ADDRESS,
                     Email = t.T_OWNER_EMAIL,
                     Screens = db.NO_OF_SCREENS
                         .Where(s => s.T_ID == t.T_ID)
-                        .ToList()
+                        .ToList() // ✅ Move data to memory first
                 })
                 .FirstOrDefault();
 
@@ -341,13 +332,14 @@ namespace Amc_theater.Controllers
                 return RedirectToAction("Index");
             }
 
-            // ✅ Map screens manually
+            // ✅ Step 3: Map the screens manually after fetching from DB
             model.Screens = theaterDetails.Screens
                 .Select(s => new ScreenViewModel
                 {
                     ScreenId = s.SCREEN_ID,
                     AudienceCapacity = (int)s.AUDIENCE_CAPACITY,
                     ScreenType = s.SCREEN_TYPE,
+                  
                     ScreenPrice = screenPrices.ContainsKey(s.SCREEN_TYPE) ? screenPrices[s.SCREEN_TYPE].GetValueOrDefault(0) : 0
                 }).ToList();
 
@@ -355,25 +347,10 @@ namespace Amc_theater.Controllers
             model.MobileNo = theaterDetails.MobileNo;
             model.Address = theaterDetails.Address;
             model.Email = theaterDetails.Email;
+            model.TheaterName = theaterDetails.TheaterName;
 
             return View(model);
         }
-
-        /* ✅ Utility function for safe parsing */
-        private DateTime? ParseMonthYear(string input)
-        {
-            if (!string.IsNullOrEmpty(input) && input.Length == 7 && input.Contains("-"))
-            {
-                string[] parts = input.Split('-');
-                if (parts.Length == 2 && int.TryParse(parts[0], out int year) && int.TryParse(parts[1], out int month))
-                {
-                    return new DateTime(year, month, 1);
-                }
-            }
-            return null; // Return null if parsing fails
-        }
-
-
         public ActionResult ProcessTaxPayment(TaxPaymentViewModel model, HttpPostedFileBase DocumentPath)
         {
             if (model == null || model.Screens == null || model.Screens.Count == 0)
@@ -412,8 +389,8 @@ namespace Amc_theater.Controllers
                         var taxPayment = new THEATER_TAX_PAYMENT
                     {
                         T_ID = model.TheaterId,
-                        PAYMENT_MONTH = model.Month,
-                        PAYMENT_YEAR = model.Year,
+                        PAYMENT_MONTH = model.FromMonth,
+                        PAYMENT_YEAR = model.ToMonth,
                         TAX_AMOUNT = model.Screens.Sum(s => s.AmtPerScreen),
                         SHOW_STATEMENT = filePath,
                         CREATE_USER = "System",
@@ -517,11 +494,13 @@ namespace Amc_theater.Controllers
         [HttpGet]
         public ActionResult Theater_List()
         {
+            ViewBag.CurrentAction = "TheaterList";
             // Query to fetch all data from TRN_REGISTRATION
             var query = from tr in db.TRN_REGISTRATION
                         where tr.T_ACTIVE == true && tr.STATUS == "Approved"
                         select new
                         {
+                            tr.T_ID,
                             tr.REG_ID,
                             tr.T_NAME,
                             tr.T_CITY,
@@ -546,6 +525,7 @@ namespace Amc_theater.Controllers
             // Convert the result to a list of ViewModel objects
             var theaterList = result.Select(tr => new TheaterViewModel
             {
+                T_ID = tr.T_ID,
                 REG_ID = tr.REG_ID,
                 T_NAME = tr.T_NAME,
                 T_CITY = tr.T_CITY,
@@ -566,6 +546,7 @@ namespace Amc_theater.Controllers
 
             return View(theaterList);
         }
+
 
         public ActionResult Theater_List(string theaterId, DateTime? fromDate, DateTime? toDate,
                                 string statusFilter, string cityFilter,
@@ -810,8 +791,8 @@ namespace Amc_theater.Controllers
                             .Where(t => t.T_TENAMENT_NO == searchTerm)
                             .Select(t => new SearchViewModel
                             {
-                                T_ID = t.T_ID,
-                                T_NAME = t.T_NAME
+                                T_NAME = t.T_NAME,
+                                REG_ID = t.REG_ID
                                 // Add other properties if needed
                             })
                             .ToList();
@@ -1310,7 +1291,73 @@ namespace Amc_theater.Controllers
         {
             return View();
         }
-         public JsonResult GetTheaters(string term)
+
+        public ActionResult Seprate_Theater_Tax()
+        {
+            return View();
+        }
+        [HttpPost]
+        public ActionResult Seprate_Theater_Tax(int theater_id)
+        {
+            if (theater_id <= 0)
+            {
+                TempData["Error"] = "Please enter a valid Theater ID.";
+                return RedirectToAction("Index");
+            }
+
+            var model = new TaxPaymentViewModel
+            {
+                TheaterId = theater_id,
+                FromMonth = DateTime.Now.ToString("MMMM"), // Default to current month
+                ToMonth = DateTime.Now.Year // Default to current year
+            };
+
+            // ✅ Step 1: Fetch screen prices first and store in memory
+            var screenPrices = db.TRN_SCREEN_TAX_PRICE
+                .AsNoTracking() // Improves performance
+                .ToDictionary(p => p.SCREEN_TYPE, p => p.SCREEN_PRICE);
+
+            // ✅ Step 2: Fetch theater details along with associated screens
+            var theaterDetails = db.TRN_REGISTRATION
+                .Where(t => t.T_ID == theater_id)
+                .Select(t => new
+                {
+                    TheaterID = t.T_ID,
+                    OwnerName = t.T_OWNER_NAME,
+                    MobileNo = t.T_OWNER_NUMBER != null ? t.T_OWNER_NUMBER.ToString() : string.Empty,
+                    Address = t.T_ADDRESS,
+                    Email = t.T_OWNER_EMAIL,
+                    Screens = db.NO_OF_SCREENS
+                        .Where(s => s.T_ID == t.T_ID)
+                        .ToList() // ✅ Move data to memory first
+                })
+                .FirstOrDefault();
+
+            if (theaterDetails == null)
+            {
+                TempData["Error"] = "Theater ID not found.";
+                return RedirectToAction("Index");
+            }
+
+            // ✅ Step 3: Map the screens manually after fetching from DB
+            model.Screens = theaterDetails.Screens
+                .Select(s => new ScreenViewModel
+                {
+                    ScreenId = s.SCREEN_ID,
+                    AudienceCapacity = (int)s.AUDIENCE_CAPACITY,
+                    ScreenType = s.SCREEN_TYPE,
+
+                    ScreenPrice = screenPrices.ContainsKey(s.SCREEN_TYPE) ? screenPrices[s.SCREEN_TYPE].GetValueOrDefault(0) : 0
+                }).ToList();
+
+            model.OwnerName = theaterDetails.OwnerName;
+            model.MobileNo = theaterDetails.MobileNo;
+            model.Address = theaterDetails.Address;
+            model.Email = theaterDetails.Email;
+
+            return View(model);
+        }
+        public JsonResult GetTheaters(string term)
     {
         var theaters = db.TRN_REGISTRATION
                           .Where(t => t.T_NAME.Contains(term)) // Search by theater name

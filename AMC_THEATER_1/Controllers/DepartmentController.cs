@@ -23,26 +23,12 @@ namespace AMC_THEATER_1.Controllers
         {
             return View();
         }
-       
-
-
-        // GET: Department
-
-
-
         public ActionResult DeptHomePage()
         {
 
 
             return View();
         }
-
-        //public ActionResult ViewApplication()
-        //{
-
-
-        //    return View();
-        //}
         public ActionResult ViewApplication(int? id)
         {
             string pageTitle = "Theater Registration";
@@ -170,61 +156,6 @@ namespace AMC_THEATER_1.Controllers
 
             ViewBag.Documents = db.MST_DOCS.Where(d => d.DOC_ACTIVE == true).ToList();
             return View(model);
-        }
-        //public ActionResult ActionRequest()
-        //{
-        //    return View();
-        //}
-
-        //public ActionResult ActionRequests()
-        //{
-        //    // Query to fetch all data from TRN_REGISTRATION
-        //    var query = from tr in db.TRN_REGISTRATION
-        //                where tr.T_ACTIVE == true
-        //                select new
-        //                {
-        //                    tr.T_ID,
-        //                    tr.T_NAME,
-        //                    tr.T_OWNER_NAME
-        //                };
-
-        //    // Execute the query and convert to a list
-        //    var result = query.ToList();
-        //    Console.WriteLine("Total Theaters Found: " + result.Count);
-
-        //    // Convert the result to a list of ViewModel objects
-        //    var theaterList = result.Select(tr => new TRN_REGISTRATION
-        //    {
-        //        T_ID = tr.T_ID,
-        //        T_NAME = tr.T_NAME,
-        //        T_OWNER_NAME = tr.T_OWNER_NAME,
-        //    }).ToList();
-
-        //    return View(theaterList);  // Return the data to the view
-        //}
-
-        //public ActionResult PendingDuesDept()
-        //{
-
-        //    var theaters = (from tr in db.TRN_REGISTRATION
-        //                    join pd in db.PENDINGDUEADMIN
-        //                    on tr.T_ID equals pd.T_ID
-        //                    select new TheaterDueViewModel
-        //                    {
-        //                        T_ID = tr.T_ID,
-        //                        T_NAME = tr.T_NAME,
-        //                        T_CITY = tr.T_CITY,
-        //                        T_WARD = tr.T_WARD,
-        //                        T_ZONE = tr.T_ZONE,
-        //                        T_ADDRESS = tr.T_ADDRESS,
-        //                        T_TENAMENT_NO = tr.T_TENAMENT_NO,
-        //                        P_STATUS = pd.P_STATUS
-        //                    }).ToList();
-
-        //    return View(theaters);
-
-        //}        
-        
-      
+        }        
     }
 }

@@ -13,10 +13,10 @@ namespace AMC_THEATER_1.Models
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
     
-    public partial class THEATER_MODULEEntities : DbContext
+    public partial class THEATER_MODULEEntities1 : DbContext
     {
-        public THEATER_MODULEEntities()
-            : base("name=THEATER_MODULEEntities")
+        public THEATER_MODULEEntities1()
+            : base("name=THEATER_MODULEEntities1")
         {
         }
     
@@ -27,6 +27,7 @@ namespace AMC_THEATER_1.Models
     
         public virtual DbSet<ActionRequest> ActionRequests { get; set; }
         public virtual DbSet<DEPARTMENT_LOGIN> DEPARTMENT_LOGIN { get; set; }
+        public virtual DbSet<Facility> Facilities { get; set; }
         public virtual DbSet<MST_DOC_SERVICE_MPG> MST_DOC_SERVICE_MPG { get; set; }
         public virtual DbSet<MST_DOCS> MST_DOCS { get; set; }
         public virtual DbSet<MST_SERVICE> MST_SERVICE { get; set; }
@@ -38,6 +39,8 @@ namespace AMC_THEATER_1.Models
         public virtual DbSet<PENDINGDUEADMIN> PENDINGDUEADMINs { get; set; }
         public virtual DbSet<RECEIPT_FILTER> RECEIPT_FILTER { get; set; }
         public virtual DbSet<T_RECEIPT> T_RECEIPT { get; set; }
+        public virtual DbSet<Tenement> Tenements { get; set; }
+        public virtual DbSet<TenementFacility> TenementFacilities { get; set; }
         public virtual DbSet<THEATER_TAX_PAYMENT> THEATER_TAX_PAYMENT { get; set; }
         public virtual DbSet<TRN_REGISTRATION> TRN_REGISTRATION { get; set; }
         public virtual DbSet<TRN_REGISTRATION_LOG> TRN_REGISTRATION_LOG { get; set; }

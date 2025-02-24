@@ -11,7 +11,8 @@ namespace AMC_THEATER_1.Models
 {
     using System;
     using System.Collections.Generic;
-    
+    using System.ComponentModel.DataAnnotations.Schema;
+
     public partial class TRN_REGISTRATION
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
@@ -86,5 +87,8 @@ namespace AMC_THEATER_1.Models
         public virtual ICollection<TRN_REGISTRATION_LOG> TRN_REGISTRATION_LOG { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<TRN_THEATRE_DOCS_LOG> TRN_THEATRE_DOCS_LOG { get; set; }
+
+        [NotMapped]  // This ensures it's not stored in the database
+        public bool IsEditMode { get; set; }
     }
 }

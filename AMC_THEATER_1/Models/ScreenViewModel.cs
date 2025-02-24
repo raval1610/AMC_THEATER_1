@@ -17,7 +17,7 @@ namespace AMC_THEATER_1.Models
         public int ScreenPrice { get; set; }  // Store price from TRN_SCREEN_TAX_PRICE
         public int SEQUENTIAL_SCREEN_NO { get; set; }  // Store price from TRN_SCREEN_TAX_PRICE
 
-        
+        public int ActualShow { get; set; } // This will be populated from user input
         public int TotalShow { get; set; } // This will be populated from user input
         public int CancelShow { get; set; } // This will be populated from user input
         public decimal AmtPerScreen { get; set; } // This can be calculated based on your logic

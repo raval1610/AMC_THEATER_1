@@ -144,6 +144,9 @@
     </Compile>
     <Compile Include="Models\DocumentModel.cs" />
     <Compile Include="Models\DueViewModel.cs" />
+    <Compile Include="Models\Facility.cs">
+      <DependentUpon>Theater_Module.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\LoginViewModel.cs" />
     <Compile Include="Models\LOGIN_DETAILS.cs">
       <DependentUpon>Theater_Module.tt</DependentUpon>
@@ -194,6 +197,12 @@
     <Compile Include="Models\SearchViewModel.cs" />
     <Compile Include="Models\TaxPayment.cs" />
     <Compile Include="Models\TaxPaymentViewModel.cs" />
+    <Compile Include="Models\Tenement.cs">
+      <DependentUpon>Theater_Module.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\TenementFacility.cs">
+      <DependentUpon>Theater_Module.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\TheaterDueViewModel.cs" />
     <Compile Include="Models\TheaterTaxViewModel.cs" />
     <Compile Include="Models\TheaterViewModel.cs" />
@@ -305,25 +314,15 @@
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
-    <Content Include="Views\Home\About.cshtml" />
-    <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
-    <Content Include="Views\TRN_REGISTRATION\Delete.cshtml" />
-    <Content Include="Views\TRN_REGISTRATION\Details.cshtml" />
-    <Content Include="Views\TRN_REGISTRATION\Edit.cshtml" />
-    <Content Include="Views\TRN_REGISTRATION\Index.cshtml" />
     <Content Include="Views\TRN_REGISTRATION\Registration.cshtml" />
     <Content Include="Views\Shared\_Deptpage.cshtml" />
-    <Content Include="Views\SecondPage.cshtml" />
     <Content Include="Views\Home\SearchID.cshtml" />
     <Content Include="Views\Home\Receipt.cshtml" />
     <Content Include="Views\Home\PaymentHistoryFilter.cshtml" />
     <Content Include="Views\Home\Payment_Receipt.cshtml" />
     <Content Include="Views\Home\Make_Payment.cshtml" />
-    <Content Include="Views\Login.cshtml" />
     <Content Include="Views\Home\Home_Page.cshtml" />
-    <Content Include="Views\Home\Filter.cshtml" />
-    <Content Include="Views\Home\Edit_Registration.cshtml" />
     <Content Include="Views\Home\Dues.cshtml" />
     <Content Include="Views\Home\AllReceipt.cshtml" />
     <Content Include="Views\Department\DeptHomePage.cshtml" />
@@ -335,7 +334,6 @@
     <Content Include="Views\Home\Theater_Tax.cshtml" />
     <Content Include="Views\Home\PendingDuesDept.cshtml" />
     <Content Include="Views\Home\List_of_Application.cshtml" />
-    <Content Include="Views\Department\ViewApplication.cshtml" />
     <Content Include="Views\Shared\_HomeSideBar.cshtml" />
     <Content Include="Views\Home\CommonTableView.cshtml" />
     <Content Include="Views\Home\Tax_Hold.cshtml" />

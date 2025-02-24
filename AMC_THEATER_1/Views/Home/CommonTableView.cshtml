@@ -2,19 +2,12 @@
 @model IEnumerable<AMC_THEATER_1.Models.TheaterViewModel>
 
 @{
-    //ViewBag.Title = "All Theaters";
-    //ViewBag.ShowBasicNavbar = false;
-    //ViewBag.ShowNavbar = true;
-    //ViewBag.ShowSideBar = true;
-    //ViewBag.Login = false;
-    //  ViewBag.ShowHomeIcon = true;
+   
     int count = 1; // Counter for numbering
     var currentAction = ViewBag.CurrentAction as string;
     var isActionRequests = currentAction == "ActionRequests";
 
 }
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -36,222 +29,8 @@
         .filter-container {
             display: none;
         }
-    </style>
-</head>
-<body class="ms-5 container">
-    <div class="fw-bold">
-        <h1 class="text-center bg-light p-3 pe-5 w-100">List of Application</h1>
-    </div>
-    @if (ViewBag.Message != null)
-    {
-        <div class="alert alert-warning">@ViewBag.Message</div>
-    }
-    <div class="row">
-        <div class="col-md-12">
-            <div class="table-responsive" style="max-height: 500px; overflow: auto;">
-                <table class="table table-bordered text-left mt-1 table-striped">
-                    <thead class=" text-white sticky-header">
-                        <tr>
-                            <th class="fw-bold sticky-column-left">Appli No.</th>
-                            <th class="fw-bold">Theater Name</th>
-                            <th class="fw-bold">Zone Ward</th>
-                            <th class="fw-bold">Owner Name</th>
-                            <th class="fw-bold">Address</th>
-                            <th class="fw-bold">Theater Screens</th>
-                            <th class="fw-bold">Video Screens</th>
-                            <th class="fw-bold">Total Screens</th>
-                            <th class="fw-bold">Commencement Date</th>
-                            <th class="fw-bold">Status</th>
-                            <th class="fw-bold">Reject Reason</th>
-                            <th class="fw-bold" style="white-space: nowrap;">Status Date</th>
-                            <th class="fw-bold sticky-column-right">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @if (Model != null && Model.Any())
-                        {
-                            foreach (var theater in Model)
-                            {
-                                <tr>
-                                    <td class="sticky-column-left">@count</td>
-                                    <td>@theater.T_NAME</td>
-                                    <td>@theater.T_ZONE @theater.T_WARD</td>
-                                    <td class="text-end">@theater.T_OWNER_NAME</td>
-                                    <td>@theater.T_ADDRESS</td>
-                                    <td class="text-center">@theater.THEATER_SCREEN_COUNT</td>
-                                    <td class="text-center">@theater.VIDEO_THEATER_SCREEN_COUNT</td>
-                                    <td class="text-center">@(@theater.THEATER_SCREEN_COUNT + @theater.VIDEO_THEATER_SCREEN_COUNT)</td>
-                                    <td style="white-space: nowrap;">@theater.T_COMMENCEMENT_DATE.ToString("dd-MMM-yyyy")</td>
-                                    <td class="@(theater.STATUS == "Approved" ? "text-success" : (theater.STATUS == "Rejected" ? "text-danger" : "text-warning"))">
-                                        @(theater.STATUS == "Approved" ? "Approved" : theater.STATUS == "Rejected" ? "Rejected" : "Pending")
-                                    </td>
-                                    <td>@(theater.STATUS == "Rejected" ? theater.REJECTREASON : "-")</td>
-                                    <td style="white-space: nowrap;">
-                                        @(theater.STATUS == "Pending" ? "-" : theater.UPDATE_DATE.ToString("dd-MMM-yyyy"))
-                                    </td>
-                                    <td class="sticky-column-right">
-                                        @if (isActionRequests)
-                                        {
-                                            <a href="@Url.Action("Registration", "TRN_REGISTRATION", new { id = theater.T_ID, isViewPage = true })"
-                                               class="btn btn-secondary btn-sm" title="View">
-                                                <i class="fa fa-eye"></i> 
-                                            </a>
-                                        }
-                                        else
-                                        {
-                                            if (theater.STATUS == "Pending")
-                                            {
-                                                <a href="@Url.Action("Registration", "TRN_REGISTRATION", new { id = theater.T_ID })"
-                                                   class="btn btn-primary btn-sm mb-2 w-100">Edit</a>
-                                                <button type="button" onclick="confirmSoftDelete('@theater.T_ID')"
-                                                        class="btn btn-danger btn-sm">
-                                                    Delete
-                                                </button>
-                                            }
-                                            else
-                                            {
-                                                <button class="btn btn-secondary btn-sm  mb-2 w-100 d-block d-inline-block" disabled>Edit</button>
-                                                <button type="button" onclick="confirmSoftDelete('@theater.T_ID')" class="btn btn-danger btn-sm" disabled>
-                                                    Delete
-                                                </button>
-                                            }
-                                        }
-                                    </td>
-                                </tr>
-                                count++;
-                            }
-                        }
-                        else
-                        {
-                            <tr>
-                                <td colspan="13" class="text-center">No theater data available.</td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
+        @*colum position stick css *@
 
-    
-
-
-
-
-
-
-<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                Are you sure you want to delete this theater with <strong id="theaterIdText"></strong>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <a href="#" id="confirmDelete" class="btn btn-danger">Yes, Delete</a>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script>
-    function confirmSoftDelete(tid) {
-        console.log("Delete button clicked. Theater ID:", tid); // Debugging step
-
-        // Ensure the modal element exists
-        var deleteModal = document.getElementById("deleteModal");
-        if (!deleteModal) {
-            console.error("Modal element not found!");
-            return;
-        }
-
-        // Set the theater ID in the modal text
-        document.getElementById("theaterIdText").textContent = tid;
-
-        // Set up the delete button action inside the modal
-        document.getElementById("confirmDelete").onclick = function () {
-            var form = document.createElement("form");
-            form.method = "POST";
-            form.action = "/Home/Theater_List";
-
-            var input = document.createElement("input");
-            input.type = "hidden";
-            input.name = "deleteId";
-            input.value = tid;
-
-            form.appendChild(input);
-            document.body.appendChild(form);
-            form.submit();
-        };
-
-        // Show the Bootstrap modal
-        var modalInstance = new bootstrap.Modal(deleteModal);
-        modalInstance.show();
-    }
-</script>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const filterToggle = document.getElementById('filterToggle');
-        const advancedFilters = document.getElementById('advancedFilters');
-
-        filterToggle.addEventListener('click', function () {
-            advancedFilters.style.display = advancedFilters.style.display === 'none' ? 'block' : 'none';
-        });
-    });
-
-    function resetForm() {
-        // Clear input fields
-        document.getElementById('filterForm').reset();
-
-        // Hide all rows in the table body except the header
-        let tableBody = document.querySelector("tbody");
-        let rows = tableBody.querySelectorAll("tr");
-
-        rows.forEach(row => {
-            row.style.display = "none"; // Hide all rows
-        });
-    }
-
-
-</script>
-
-
-
-<script>
-    function showDeleteModal(tid, deleteUrl) {
-        document.getElementById('theaterIdText').textContent = (Theater ID: ${ tid }); // Display T_ID in modal
-        document.getElementById('confirmDelete').href = deleteUrl; // Set delete URL dynamically
-        var deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
-        deleteModal.show();
-    }
-</script>
-
-
-
-
-<script src="https://cdn.jsdelivr.net/npm/popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
-
-<script>
-    function showDeleteModal(tid, deleteUrl) {
-        document.getElementById('theaterIdText').textContent = Theater ID:${ tid };
-        document.getElementById('confirmDelete').href = deleteUrl;
-        var deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
-        deleteModal.show();
-    }
-</script>
-
-</body>
-</html>
-
-@*colum position stick css *@
-<style>
     .table-responsive {
         position: relative;
         overflow-x: auto; /* Ensures horizontal scroll */
@@ -276,12 +55,12 @@
     }
 
     /* Ensuring the header sticks */
-    thead .sticky-column-left,
-    thead .sticky-column-right {
-        background-color: #343a40 !important; /* Dark background for header */
-        color: white;
-        z-index: 15;
-    }
+        thead .sticky-column-left,
+        thead .sticky-column-right {
+            background-color: #212529 !important; /* Dark background for header */
+            color: white;
+            z-index: 15;
+        }
 
     /* Sticky Header */
     .sticky-header {
@@ -314,6 +93,211 @@
     table td.sticky-column-right {
         box-shadow: -2px 0px 5px rgba(0, 0, 0, 0.1);
     }
-</style>
+
+
+
+    </style>
+</head>
+<body class="ms-5 container">
+
+    @if (ViewBag.Message != null)
+    {
+        <div class="alert alert-warning">@ViewBag.Message</div>
+    }
+    <div class="row">
+        <div class="col-md-12">
+            <div class="table-responsive" style="max-height: 500px; overflow: auto;">
+                <table class="table table-bordered text-left mt-1 table-striped">
+                    <thead class="bg-dark text-white sticky-header">
+                        <tr>
+                            <th class="fw-bold sticky-column-left">Appli No.</th>
+                            <th class="fw-bold">Theater Name</th>
+                            <th class="fw-bold">Zone  Ward</th>
+                            <th class="fw-bold">Owner Name</th>
+                            <th class="fw-bold">Address</th>
+                            <th class="fw-bold">Theater Screens</th>
+                            <th class="fw-bold">Video  Screens</th>
+                            <th class="fw-bold">Total Screens</th>
+                            <th class="fw-bold"> Commencement Date</th>
+                            <th class="fw-bold">Status</th>
+                            <th class="fw-bold">Reject Reason</th>
+                            <th class="fw-bold" style="white-space: nowrap;">Status Date</th>
+                            <th class="fw-bold sticky-column-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var theater in Model)
+                            {
+                                <tr>
+                                    <td class="sticky-column-left">@count</td>
+                                    <td>@theater.T_NAME</td>
+                                    <td>@theater.T_ZONE  @theater.T_WARD</td>
+                                    <td>@theater.T_OWNER_NAME</td>
+                                    <td>@theater.T_ADDRESS</td>
+                                    <td class="text-center">@theater.THEATER_SCREEN_COUNT</td>
+                                    <td class="text-center">@theater.VIDEO_THEATER_SCREEN_COUNT</td>
+                                    <td class="text-center">@(@theater.THEATER_SCREEN_COUNT + @theater.VIDEO_THEATER_SCREEN_COUNT)</td>
+                                    <td style="white-space: nowrap;">@theater.T_COMMENCEMENT_DATE.ToString("dd-MMM-yyyy")</td>
+                                    <td class="@(theater.STATUS == "Approved" ? "text-success" : (theater.STATUS == "Rejected" ? "text-danger" : "text-warning"))">
+                                        @(theater.STATUS == "Approved" ? "Approved" : theater.STATUS == "Rejected" ? "Rejected" : "Pending")
+                                    </td>
+                                    <td>@(theater.STATUS == "Rejected" ? theater.REJECTREASON : "-")</td>
+                                    <td style="white-space: nowrap;">
+                                        @(theater.STATUS == "Pending" ? "-" : theater.UPDATE_DATE.ToString("dd-MMM-yyyy"))
+                                    </td>
+                                    <td class="sticky-column-right">
+                                        @if (isActionRequests)
+                                        {
+                                            <a href="@Url.Action("Registration", "TRN_REGISTRATION", new { id = theater.T_ID, mode="approve" })"
+                                               class="btn btn-secondary btn-sm" title="View">
+                                                <i class="fa fa-eye"></i>
+                                            </a>
+                                        }
+
+                                        else
+                                        {
+                                            if (theater.STATUS == "Pending")
+                                            {
+                                                <a href="@Url.Action("Registration", "TRN_REGISTRATION", new { id = theater.T_ID,mode="edit" })"
+                                                   class="btn btn-primary btn-sm mb-2 w-100">Edit</a>
+                                                <button type="button" onclick="confirmSoftDelete('@theater.T_ID')"
+                                                        class="btn btn-danger btn-sm">
+                                                    Delete
+                                                </button>
+                                            }
+                                            else
+                                            {
+                                                <button class="btn btn-secondary btn-sm  mb-2 w-100 d-block d-inline-block" disabled>Edit</button>
+                                                <button type="button" onclick="confirmSoftDelete('@theater.T_ID')" class="btn btn-danger btn-sm" disabled>
+                                                    Delete
+                                                </button>
+                                            }
+                                        }
+                                    </td>
+                                </tr>
+                                count++;
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="13" class="text-center">No theater data available.</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to delete this theater with <strong id="theaterIdText"></strong>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <a href="#" id="confirmDelete" class="btn btn-danger">Yes, Delete</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    @*SCRIPTS*@
+    <script>
+        function confirmSoftDelete(tid) {
+            console.log("Delete button clicked. Theater ID:", tid); // Debugging step
+
+            // Ensure the modal element exists
+            var deleteModal = document.getElementById("deleteModal");
+            if (!deleteModal) {
+                console.error("Modal element not found!");
+                return;
+            }
+
+            // Set the theater ID in the modal text
+            document.getElementById("theaterIdText").textContent = tid;
+
+            // Set up the delete button action inside the modal
+            document.getElementById("confirmDelete").onclick = function () {
+                var form = document.createElement("form");
+                form.method = "POST";
+                form.action = "/Home/Theater_List";
+
+                var input = document.createElement("input");
+                input.type = "hidden";
+                input.name = "deleteId";
+                input.value = tid;
+
+                form.appendChild(input);
+                document.body.appendChild(form);
+                form.submit();
+            };
+
+            // Show the Bootstrap modal
+            var modalInstance = new bootstrap.Modal(deleteModal);
+            modalInstance.show();
+        }
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const filterToggle = document.getElementById('filterToggle');
+            const advancedFilters = document.getElementById('advancedFilters');
+
+            filterToggle.addEventListener('click', function () {
+                advancedFilters.style.display = advancedFilters.style.display === 'none' ? 'block' : 'none';
+            });
+        });
+
+        function resetForm() {
+            // Clear input fields
+            document.getElementById('filterForm').reset();
+
+            // Hide all rows in the table body except the header
+            let tableBody = document.querySelector("tbody");
+            let rows = tableBody.querySelectorAll("tr");
+
+            rows.forEach(row => {
+                row.style.display = "none"; // Hide all rows
+            });
+        }
+
+
+    </script>
+    <script>
+        function showDeleteModal(tid, deleteUrl) {
+            document.getElementById('theaterIdText').textContent = ("Theater ID: ${ tid }"); // Display T_ID in modal
+            document.getElementById('confirmDelete').href = deleteUrl; // Set delete URL dynamically
+            var deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+            deleteModal.show();
+        }
+    </script>
+    <script>
+        function showDeleteModal(tid, deleteUrl) {
+            document.getElementById('theaterIdText').textContent = "Theater ID:${ tid }";
+            document.getElementById('confirmDelete').href = deleteUrl;
+            var deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+            deleteModal.show();
+        }
+    </script>
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+
+
+</body>
+</html>
 
 
