@@ -123,9 +123,7 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
-    <Compile Include="Controllers\DepartmentController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="Controllers\TaxController.cs" />
     <Compile Include="Controllers\TRN_REGISTRATIONController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -324,7 +322,7 @@
     <Content Include="Views\Home\Home_Page.cshtml" />
     <Content Include="Views\Home\Dues.cshtml" />
     <Content Include="Views\Home\AllReceipt.cshtml" />
-    <Content Include="Views\Department\DeptHomePage.cshtml" />
+    <Content Include="Views\Home\DeptHomePage.cshtml" />
     <Content Include="Views\Home\Department_Login.cshtml" />
     <Content Include="Views\Home\ActionRequests.cshtml" />
     <Content Include="Views\Home\PaymentList.cshtml" />

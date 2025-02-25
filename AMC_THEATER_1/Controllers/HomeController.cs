@@ -27,7 +27,12 @@ namespace Amc_theater.Controllers
 
         private string connectionString = "Server=localhost\\SQLEXPRESS;Database=THEATER_MODULE;Integrated Security=True;";
 
+        public ActionResult DeptHomePage()
+        {
 
+
+            return View();
+        }
         public JsonResult GetTheaterSuggestions(string theaterId)
         {
             if (string.IsNullOrEmpty(theaterId))
@@ -487,7 +492,7 @@ namespace Amc_theater.Controllers
                 ModelState.AddModelError("UN", "User not found.");
                 return View(model);
             }
-            return RedirectToAction("DeptHomePage", "Department");
+            return RedirectToAction("DeptHomePage", "Home");
 
         }
         // GET: Department
@@ -645,11 +650,6 @@ namespace Amc_theater.Controllers
             return View(theaterList);
         }
 
-
-        //public ActionResult Index()
-        //{
-        //    return View();
-        //}
 
         public ActionResult Dues()
         {
