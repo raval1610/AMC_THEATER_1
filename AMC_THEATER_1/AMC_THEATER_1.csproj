@@ -316,7 +316,6 @@
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\TRN_REGISTRATION\Registration.cshtml" />
-    <Content Include="Views\Shared\_Deptpage.cshtml" />
     <Content Include="Views\Home\SearchID.cshtml" />
     <Content Include="Views\Home\Receipt.cshtml" />
     <Content Include="Views\Home\PaymentHistoryFilter.cshtml" />
@@ -334,7 +333,6 @@
     <Content Include="Views\Home\Theater_Tax.cshtml" />
     <Content Include="Views\Home\PendingDuesDept.cshtml" />
     <Content Include="Views\Home\List_of_Application.cshtml" />
-    <Content Include="Views\Shared\_HomeSideBar.cshtml" />
     <Content Include="Views\Home\CommonTableView.cshtml" />
     <Content Include="Views\Home\Tax_Hold.cshtml" />
     <Content Include="Views\Home\Seprate_Theater_Tax.cshtml" />

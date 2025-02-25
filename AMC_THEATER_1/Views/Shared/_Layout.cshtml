@@ -93,7 +93,7 @@
         </nav>
     }
 
-    @if (ViewBag.ShowSideBar == true && (Session["HideMenu"] == null || !(bool)Session["HideMenu"]))
+    @if (ViewBag.ShowSideBar == true)
     {
         <!-- Sidebar Menu -->
         <div class="sidebar show" id="sidebar">
@@ -117,7 +117,22 @@
             </div>
         </div>
     }
+    else if (ViewBag.ShowSideBar1 == true)
+    {
+        <div class="sidebar show" id="sidebar">
+            <div class="mt-4">
+                <a href="@Url.Action("ActionRequests","Home")">Actions Requests</a>
 
+                <a href="@Url.Action("PaymentList", "Home")">Payment List</a>
+                <a href="@Url.Action("PendingDuesDept", "Home")">Pending Dues</a>
+
+
+                @*<a href="@Url.Action("History", "Home")">History</a>
+                    <a href="@Url.Action("Dues", "Home")">Dues</a>
+                    <a href="@Url.Action("AllReceipt", "Home")">Receipt</a>*@
+            </div>
+        </div>
+    }
     <script type="text/javascript">
  function handleForgotIdClick() {
      var currentUrl = window.location.href;
