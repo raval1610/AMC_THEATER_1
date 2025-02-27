@@ -120,21 +120,22 @@
                                     <input type="email" id="email" name="email" class="form-control" value="@Model.Email" readonly required>
                                 </div>
                                 <div class="row mt-5">
+                                    <form action="@Url.Action("ProcessTaxPayment", "Home")" method="post" enctype="multipart/form-data">
+                                        <input type="hidden" name="TheaterId" value="@Model.TheaterId">
 
-
-                                    <div class="row align-items-end">
-                                        <div class="col-md-4">
-                                            <label for="fromDate" class="form-label fw-bold">From Month</label>
-                                            <input type="month" id="fromDate" class="form-control">
+                                        <div class="row align-items-end">
+                                            <div class="col-md-4">
+                                                <label for="fromDate" class="form-label fw-bold">From Month</label>
+                                                <input type="month" id="fromDate" name="FromMonth" class="form-control">
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label for="toDate" class="form-label ms-3 fw-bold">To Month</label>
+                                                <input type="month" id="toDate"  name="ToMonth" class="form-control ms-2">
+                                            </div>
+                                            <div class="col-md-4">
+                                                <button type="button" class="btn btn-primary ms-5 w-75" id="generateBtn">Generate Table</button>
+                                            </div>
                                         </div>
-                                        <div class="col-md-4">
-                                            <label for="toDate" class="form-label ms-3 fw-bold">To Month</label>
-                                            <input type="month" id="toDate" class="form-control ms-2">
-                                        </div>
-                                        <div class="col-md-4">
-                                            <button type="button" class="btn btn-primary ms-5 w-75" id="generateBtn">Generate Table</button>
-                                        </div>
-                                    </div>
 
 
 

@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using AMC_THEATER_1.Models;
+using Microsoft.Ajax.Utilities;
 using static System.Web.Razor.Parser.SyntaxConstants;
 
 namespace Amc_theater.Controllers
@@ -26,6 +27,168 @@ namespace Amc_theater.Controllers
 
 
         private string connectionString = "Server=localhost\\SQLEXPRESS;Database=THEATER_MODULE;Integrated Security=True;";
+
+        [HttpPost]
+        public ActionResult Theater_Tax(int theater_id)
+        {
+            if (theater_id <= 0)
+            {
+                TempData["Error"] = "Please enter a valid Theater ID.";
+                return RedirectToAction("Index");
+            }
+
+            var model = new TaxPaymentViewModel
+            {
+                TheaterId = theater_id,
+                FromMonth = DateTime.Now.ToString("MMMM"), // Default to current month
+                ToMonth = DateTime.Now.Year.ToString()// ✅ Convert int to string
+            };
+
+            // ✅ Step 1: Fetch screen prices first and store in memory
+            var screenPrices = db.TRN_SCREEN_TAX_PRICE
+                  .AsNoTracking() // Improves performance
+                  .ToDictionary(p => p.SCREEN_TYPE, p => p.SCREEN_PRICE);
+
+            // ✅ Step 2: Fetch theater details along with associated screens
+            var theaterDetails = db.TRN_REGISTRATION
+                .Where(t => t.T_ID == theater_id)
+                .Select(t => new
+                {
+                    TheaterID = t.T_ID,
+                    TheaterName = t.T_NAME,
+                    OwnerName = t.T_OWNER_NAME,
+                    MobileNo = t.T_OWNER_NUMBER != null ? t.T_OWNER_NUMBER.ToString() : string.Empty,
+                    Address = t.T_ADDRESS,
+                    Email = t.T_OWNER_EMAIL,
+                    Screens = db.NO_OF_SCREENS
+                        .Where(s => s.T_ID == t.T_ID)
+                        .ToList() // ✅ Move data to memory first
+                })
+                .FirstOrDefault();
+
+            if (theaterDetails == null)
+            {
+                TempData["Error"] = "Theater ID not found.";
+                return RedirectToAction("Index");
+            }
+
+            // ✅ Step 3: Map the screens manually after fetching from DB
+            model.Screens = theaterDetails.Screens
+                .Select(s => new ScreenViewModel
+                {
+                    ScreenId = s.SCREEN_ID,
+                    AudienceCapacity = (int)s.AUDIENCE_CAPACITY,
+                    ScreenType = s.SCREEN_TYPE,
+
+                    ScreenPrice = screenPrices.ContainsKey(s.SCREEN_TYPE) ? screenPrices[s.SCREEN_TYPE].GetValueOrDefault(0) : 0
+                }).ToList();
+
+            model.OwnerName = theaterDetails.OwnerName;
+            model.MobileNo = theaterDetails.MobileNo;
+            model.Address = theaterDetails.Address;
+            model.Email = theaterDetails.Email;
+            model.TheaterName = theaterDetails.TheaterName;
+
+            return View(model);
+        }
+        public ActionResult ProcessTaxPayment(TaxPaymentViewModel model, HttpPostedFileBase DocumentPath)
+        {
+            if (model == null || model.Screens == null || model.Screens.Count == 0)
+            {
+                TempData["Error"] = "Invalid data. Please check your input.";
+                return RedirectToAction("Index");
+            }
+
+            using (var transaction = db.Database.BeginTransaction())
+            {
+                try
+                {
+                    string filePath = "Generated Automatically"; // Default value
+
+                    // ✅ **Step 1: Handle File Upload**
+                    if (DocumentPath != null && DocumentPath.ContentLength > 0)
+                    {
+                        string fileName = Path.GetFileName(DocumentPath.FileName);
+                        string uploadPath = Path.Combine(Server.MapPath("~/UploadedDoc/"), fileName);
+
+                        if (!Directory.Exists(Server.MapPath("~/UploadedDoc/")))
+                        {
+                            Directory.CreateDirectory(Server.MapPath("~/UploadedDoc/"));
+                        }
+
+                        DocumentPath.SaveAs(uploadPath);
+                        filePath = "/UploadedDoc/" + fileName;
+                    }
+
+                    // ✅ **Step 2: Fetch and Validate FromMonth & ToMonth**
+                    if (string.IsNullOrWhiteSpace(model.FromMonth) || string.IsNullOrWhiteSpace(model.ToMonth))
+                    {
+                        TempData["Error"] = "From Month and To Month cannot be empty.";
+                        return RedirectToAction("Index");
+                    }
+
+                    DateTime fromDate, toDate;
+                    bool isFromValid = DateTime.TryParseExact(model.FromMonth + "-01", "yyyy-MM-dd", null, System.Globalization.DateTimeStyles.None, out fromDate);
+                    bool isToValid = DateTime.TryParseExact(model.ToMonth + "-01", "yyyy-MM-dd", null, System.Globalization.DateTimeStyles.None, out toDate);
+
+                    if (!isFromValid || !isToValid)
+                    {
+                        TempData["Error"] = "Invalid date format. Please select valid From and To months.";
+                        return RedirectToAction("Index");
+                    }
+
+                    // ✅ **Step 3: Insert into THEATER_TAX_PAYMENT (Main Table)**
+
+                    // ✅ **Step 4: Iterate through the months and insert into NO_OF_SCREENS_TAX**
+                    for (DateTime currentDate = fromDate; currentDate <= toDate; currentDate = currentDate.AddMonths(1))
+                    {
+                        var taxPayment = new THEATER_TAX_PAYMENT
+                        {
+                            T_ID = model.TheaterId,
+                            PAYMENT_MONTH = currentDate.ToString("MMMM"), // Store the correct month name dynamically
+                            PAYMENT_YEAR = currentDate.Year, // Ensure the correct year is stored
+                            TAX_AMOUNT = model.Screens.Sum(s => s.AmtPerScreen),
+                            SHOW_STATEMENT = filePath,
+                            CREATE_USER = "System",
+                            CREATE_DATE = DateTime.Now
+                        };
+                        db.THEATER_TAX_PAYMENT.Add(taxPayment);
+                        db.SaveChanges();
+
+                        foreach (var screen in model.Screens)
+                        {
+                            var screenTax = new NO_OF_SCREENS_TAX
+                            {
+                                T_ID = model.TheaterId,
+                                TAX_ID = taxPayment.TAX_ID,
+                                SCREEN_TYPE = screen.ScreenType,
+                                TOTAL_SHOW = screen.TotalShow,
+                                CANCEL_SHOW = screen.CancelShow,
+                                ACTUAL_SHOW = screen.TotalShow - screen.CancelShow,
+                                RATE_PER_SCREEN = (screen.ScreenType == "Theater") ? 75 : 25,
+                                AMT_PER_SCREEN = screen.AmtPerScreen
+                            };
+
+                            db.NO_OF_SCREENS_TAX.Add(screenTax);
+                        }
+                    }
+
+
+                    db.SaveChanges();
+                    transaction.Commit();
+                    TempData["Success"] = "Tax payment saved successfully!";
+                    return RedirectToAction("Theater_Tax");
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    TempData["Error"] = "An error occurred while processing your request: " + ex.Message;
+                    return RedirectToAction("Index");
+                }
+            }
+        }
+
+
 
         public ActionResult DeptHomePage()
         {
@@ -258,194 +421,7 @@ namespace Amc_theater.Controllers
             ViewBag.StatusFilterOptions = new SelectList(new List<string> { "Paid", "Pending", "Overdue" });
             return View(payments.ToList());
         }
-        [HttpPost]
-        public ActionResult ApproveReject(int theaterId, string action)
-        {
-            var theater = _context.TRN_REGISTRATION.SingleOrDefault(t => t.T_ID == theaterId);
-            if (theater == null)
-            {
-                return HttpNotFound();
-            }
-
-            // Only update if the status is Pending
-            if (theater.STATUS == "Pending")
-            {
-                if (action == "Approve")
-                {
-                    theater.STATUS = "Approved";
-                }
-                else if (action == "Reject")
-                {
-                    theater.STATUS = "Rejected";
-                }
-
-                // Save the changes to the database
-                _context.SaveChanges();
-            }
-            else
-            {
-                // If the status is not Pending, we can show a message or handle as needed
-                ViewBag.Message = "This request has already been processed.";
-            }
-
-            // Redirect back to the ActionRequests page
-            return RedirectToAction("ActionRequests");
-        }
-      
-
-        [HttpPost]
-        public ActionResult Theater_Tax(int theater_id)
-        {
-            if (theater_id <= 0)
-            {
-                TempData["Error"] = "Please enter a valid Theater ID.";
-                return RedirectToAction("Index");
-            }
-
-            var model = new TaxPaymentViewModel
-            {
-                TheaterId = theater_id,
-                FromMonth = DateTime.Now.ToString("MMMM"), // Default to current month
-                ToMonth = DateTime.Now.Year // Default to current year
-            };
-
-            // ✅ Step 1: Fetch screen prices first and store in memory
-          var screenPrices = db.TRN_SCREEN_TAX_PRICE
-                .AsNoTracking() // Improves performance
-                .ToDictionary(p => p.SCREEN_TYPE, p => p.SCREEN_PRICE);
-
-            // ✅ Step 2: Fetch theater details along with associated screens
-            var theaterDetails = db.TRN_REGISTRATION
-                .Where(t => t.T_ID == theater_id)
-                .Select(t => new
-                {
-                    TheaterID = t.T_ID,
-                    TheaterName = t.T_NAME,
-                    OwnerName = t.T_OWNER_NAME,
-                    MobileNo = t.T_OWNER_NUMBER != null ? t.T_OWNER_NUMBER.ToString() : string.Empty,
-                    Address = t.T_ADDRESS,
-                    Email = t.T_OWNER_EMAIL,
-                    Screens = db.NO_OF_SCREENS
-                        .Where(s => s.T_ID == t.T_ID)
-                        .ToList() // ✅ Move data to memory first
-                })
-                .FirstOrDefault();
-
-            if (theaterDetails == null)
-            {
-                TempData["Error"] = "Theater ID not found.";
-                return RedirectToAction("Index");
-            }
-
-            // ✅ Step 3: Map the screens manually after fetching from DB
-            model.Screens = theaterDetails.Screens
-                .Select(s => new ScreenViewModel
-                {
-                    ScreenId = s.SCREEN_ID,
-                    AudienceCapacity = (int)s.AUDIENCE_CAPACITY,
-                    ScreenType = s.SCREEN_TYPE,
-                  
-                    ScreenPrice = screenPrices.ContainsKey(s.SCREEN_TYPE) ? screenPrices[s.SCREEN_TYPE].GetValueOrDefault(0) : 0
-                }).ToList();
-
-            model.OwnerName = theaterDetails.OwnerName;
-            model.MobileNo = theaterDetails.MobileNo;
-            model.Address = theaterDetails.Address;
-            model.Email = theaterDetails.Email;
-            model.TheaterName = theaterDetails.TheaterName;
-
-            return View(model);
-        }
-        public ActionResult ProcessTaxPayment(TaxPaymentViewModel model, HttpPostedFileBase DocumentPath)
-        {
-            if (model == null || model.Screens == null || model.Screens.Count == 0)
-            {
-                TempData["Error"] = "Invalid data. Please check your input.";
-                return RedirectToAction("Index");
-            }
-
-            using (var transaction = db.Database.BeginTransaction())
-            {
-                try
-                {
-                   
-                        string filePath = "Generated Automatically"; // Default value
-
-                        // ✅ Step 1: Handle file upload
-                        if (DocumentPath != null && DocumentPath.ContentLength > 0)
-                        {
-                            string fileName = Path.GetFileName(DocumentPath.FileName);
-                            string uploadPath = Path.Combine(Server.MapPath("~/UploadedDoc/"), fileName);
-
-                            // Ensure directory exists
-                            if (!Directory.Exists(Server.MapPath("~/UploadedDoc/")))
-                            {
-                                Directory.CreateDirectory(Server.MapPath("~/UploadedDoc/"));
-                            }
-
-                            // Save file
-                            DocumentPath.SaveAs(uploadPath);
-
-                            // Store relative file path in DB
-                            filePath = "/UploadedDoc/" + fileName;
-                        }
-
-                        // Step 1: Insert into THEATER_TAX_PAYMENT (Main Table)
-                        var taxPayment = new THEATER_TAX_PAYMENT
-                    {
-                        T_ID = model.TheaterId,
-                        PAYMENT_MONTH = model.FromMonth,
-                        PAYMENT_YEAR = model.ToMonth,
-                        TAX_AMOUNT = model.Screens.Sum(s => s.AmtPerScreen),
-                        SHOW_STATEMENT = filePath,
-                        CREATE_USER = "System",
-                        CREATE_DATE = DateTime.Now
-                      
-                    };
-                    db.THEATER_TAX_PAYMENT.Add(taxPayment);
-                    db.SaveChanges();
-
-                    // ✅ Step 2: Fetch NO_OF_SCREENS details from DB for correct mapping
-                    var screenDetails = db.NO_OF_SCREENS
-                        .Where(s => s.T_ID == model.TheaterId)
-                        .ToList(); // Fetching list for iteration
-
-                    // ✅ Step 3: Insert into NO_OF_SCREENS_TAX (Child Table)
-                    foreach (var screen in model.Screens)
-                    {
-                        var masterScreen = screenDetails.FirstOrDefault(s => s.SCREEN_ID == screen.ScreenId);
-
-                        if (masterScreen != null) // Ensure the screen exists in master table
-                        {
-                            var screenTax = new NO_OF_SCREENS_TAX
-                            {
-                                T_ID = model.TheaterId,
-                                TAX_ID = taxPayment.TAX_ID,
-                                SCREEN_TYPE = masterScreen.SCREEN_TYPE, // Fetched from Master Table
-                                TOTAL_SHOW = screen.TotalShow, // Fetched from View
-                                CANCEL_SHOW = screen.CancelShow, // Fetched from View
-                                ACTUAL_SHOW = screen.TotalShow - screen.CancelShow, // ✅ Store Actual Show
-                               RATE_PER_SCREEN = (masterScreen.SCREEN_TYPE == "Theater") ? 75 : 25, // ✅ Store 75 or 25 based on Screen Type
-                                AMT_PER_SCREEN = screen.AmtPerScreen // Fetched from View
-                            };
-                            db.NO_OF_SCREENS_TAX.Add(screenTax);
-                        }
-                    }
-
-                    db.SaveChanges();
-                    transaction.Commit();
-                    TempData["Success"] = "Tax payment saved successfully!";
-                    return RedirectToAction("Theater_Tax");
-                }
-                catch (Exception ex)
-                {
-                    transaction.Rollback();
-                    TempData["Error"] = "Error saving data: " + ex.Message;
-                    return RedirectToAction("Index");
-                }
-            }
-        }
-      
+   
         public ActionResult Login()
         {
             Session["HideMenu"] = null;  // Reset sidebar visibility after login
@@ -1309,7 +1285,7 @@ namespace Amc_theater.Controllers
             {
                 TheaterId = theater_id,
                 FromMonth = DateTime.Now.ToString("MMMM"), // Default to current month
-                ToMonth = DateTime.Now.Year // Default to current year
+                ToMonth = DateTime.Now.Year.ToString()// ✅ Convert int to string
             };
 
             // ✅ Step 1: Fetch screen prices first and store in memory
