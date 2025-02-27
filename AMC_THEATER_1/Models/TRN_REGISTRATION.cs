@@ -11,10 +11,11 @@ namespace AMC_THEATER_1.Models
 {
     using System;
     using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations.Schema;
-
+    
     public partial class TRN_REGISTRATION
     {
+        internal readonly string SCREEN_TYPE;
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public TRN_REGISTRATION()
         {
@@ -32,7 +33,7 @@ namespace AMC_THEATER_1.Models
             this.TRN_REGISTRATION_LOG = new HashSet<TRN_REGISTRATION_LOG>();
             this.TRN_THEATRE_DOCS_LOG = new HashSet<TRN_THEATRE_DOCS_LOG>();
         }
-
+    
         public int T_ID { get; set; }
         public string T_NAME { get; set; }
         public string T_ADDRESS { get; set; }
@@ -60,12 +61,7 @@ namespace AMC_THEATER_1.Models
         public string STATUS { get; set; }
         public string REJECT_REASON { get; set; }
         public string REG_ID { get; set; }
-
-        [ForeignKey("Month")]
-        public int? MonthID { get; set; } // Nullable if not always required
-
-        public virtual MonthTable Month { get; set; }
-
+    
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<NO_OF_SCREENS> NO_OF_SCREENS { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
@@ -92,7 +88,6 @@ namespace AMC_THEATER_1.Models
         public virtual ICollection<TRN_REGISTRATION_LOG> TRN_REGISTRATION_LOG { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<TRN_THEATRE_DOCS_LOG> TRN_THEATRE_DOCS_LOG { get; set; }
-        public string SCREEN_TYPE { get; internal set; }
         public bool IsEditMode { get; internal set; }
     }
 }
