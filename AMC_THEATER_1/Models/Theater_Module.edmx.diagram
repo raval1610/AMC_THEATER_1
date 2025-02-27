@@ -53,6 +53,7 @@
         <AssociationConnector Association="THEATER_MODULEModel.FK_TRN_REGISTRATION_LOG_T_ID" ManuallyRouted="false" />
         <AssociationConnector Association="THEATER_MODULEModel.FK_TRN_THEATRE_DOCS_LOG_T_ID" ManuallyRouted="false" />
         <AssociationConnector Association="THEATER_MODULEModel.FK_TRN_THEATRE_DOCS_LOG_TH_DOC_ID" ManuallyRouted="false" />
+        <EntityTypeShape EntityType="THEATER_MODULEModel.MonthTable" Width="1.5" PointX="9.375" PointY="3.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

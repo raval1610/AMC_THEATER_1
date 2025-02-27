@@ -149,6 +149,9 @@
     <Compile Include="Models\LOGIN_DETAILS.cs">
       <DependentUpon>Theater_Module.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\MonthTable.cs">
+      <DependentUpon>Theater_Module.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\MST_DOCS.cs">
       <DependentUpon>Theater_Module.tt</DependentUpon>
     </Compile>

@@ -30,6 +30,8 @@ namespace AMC_THEATER_1.Models
         public DbSet<NO_OF_SCREENS_TAX> NO_OF_SCREENS_TAX { get; set; }
         public DbSet<TRN_THEATRE_DOCS> TRN_THEATRE_DOCS { get; set; }
         public DbSet<MST_DOCS> MST_DOCS { get; set; }
+        public DbSet<MonthTable> MonthTables { get; set; }
+
 
 
     }

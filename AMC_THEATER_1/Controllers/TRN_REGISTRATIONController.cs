@@ -49,12 +49,54 @@ namespace AMC_THEATER_1.Controllers
             return View("Registration", model);
         }
 
+        //public ActionResult Registration(int? id, bool isViewPage = false, string mode = "create")
+        //{
+        //    ViewBag.PageTitle = "Theater Registration";
+        //    ViewBag.Mode = mode; // ✅ Set mode initially
+
+        //    ViewBag.Documents = GetActiveDocuments() ?? new List<MST_DOCS>();
+
+        //    var model = new TRN_REGISTRATION
+        //    {
+        //        NO_OF_SCREENS = new List<NO_OF_SCREENS> { new NO_OF_SCREENS { SCREEN_ID = 1 } },
+        //        TRN_THEATRE_DOCS = new List<TRN_THEATRE_DOCS>()
+        //    };
+
+        //    if (id.HasValue)
+        //    {
+        //        var registrationData = GetRegistrationData(id.Value);
+        //        if (registrationData == null || registrationData.T_ID == 0)
+        //        {
+        //            TempData["ErrorMessage"] = "No registration data found for the provided ID.";
+        //            return RedirectToAction("Index");
+        //        }
+
+        //        ViewBag.Screens = registrationData.NO_OF_SCREENS ?? new List<NO_OF_SCREENS>();
+
+        //        // ✅ Fetch Uploaded Documents
+        //        ViewBag.UploadedDocs = GetUploadedDocs(id.Value);
+
+        //        // 🔥 Debugging: Print uploaded docs in Output Window
+
+        //        model = registrationData;
+
+        //        //if (mode == "create")
+        //        //{
+        //        //    mode = isViewPage ? "view" : "edit";
+        //        //}
+        //    }
+
+        //    ViewBag.Mode = mode; // ✅ Correctly assign mode
+        //    return View(model);
+        //}
         public ActionResult Registration(int? id, bool isViewPage = false, string mode = "create")
         {
             ViewBag.PageTitle = "Theater Registration";
-            ViewBag.Mode = mode; // ✅ Set mode initially
-
+            ViewBag.Mode = mode;
             ViewBag.Documents = GetActiveDocuments() ?? new List<MST_DOCS>();
+
+            // Fetch months from the database
+            ViewBag.Months = GetMonthsList();
 
             var model = new TRN_REGISTRATION
             {
@@ -72,23 +114,23 @@ namespace AMC_THEATER_1.Controllers
                 }
 
                 ViewBag.Screens = registrationData.NO_OF_SCREENS ?? new List<NO_OF_SCREENS>();
-
-                // ✅ Fetch Uploaded Documents
                 ViewBag.UploadedDocs = GetUploadedDocs(id.Value);
-
-                // 🔥 Debugging: Print uploaded docs in Output Window
-
                 model = registrationData;
-
-                //if (mode == "create")
-                //{
-                //    mode = isViewPage ? "view" : "edit";
-                //}
             }
 
-            ViewBag.Mode = mode; // ✅ Correctly assign mode
             return View(model);
         }
+
+        private List<SelectListItem> GetMonthsList()
+        {
+            return Enumerable.Range(1, 12)
+                .Select(i => new SelectListItem
+                {
+                    Value = i.ToString("D2"),  // 01, 02, ..., 12
+                    Text = new DateTime(2000, i, 1).ToString("MMMM")  // January, February, etc.
+                }).ToList();
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Registration(TRN_REGISTRATION model, HttpPostedFileBase[] documents, string actionType, string rejectReason = null)

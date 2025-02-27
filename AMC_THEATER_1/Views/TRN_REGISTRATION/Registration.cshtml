@@ -184,11 +184,16 @@
                         </div>
 
                         <div class="col-md-4 d-inline-block fw-bold">
-                            <label for="offlineTaxPaidDate" class="form-label ms-2">Offline Tax Paid Date</label>
-                            <input type="date" id="offlineTaxPaidDate" name="OFFLINE_TAX_PAID_DATE"
-                                   class="form-control ms-2 me-5 readonly-field"
-                                   value="@Model?.OFFLINE_TAX_PAID_DATE?.ToString(" yyyy-MM-dd")" />
+                            <label for="offlineTaxPaidDate" class="form-label ms-2"> Month</label>
+                            <select id="offlineTaxPaidDate" name="OFFLINE_TAX_PAID_DATE" class="form-control ms-2 me-5">
+                                <option value="">-- Select Month --</option>
+                                @foreach (var month in ViewBag.Months)
+                                {
+                                    <option value="@month.Value">@month.Text</option>
+                                }
+                            </select>
                         </div>
+
 
 
                         <div class="col-md-4 d-inline-block fw-bold">

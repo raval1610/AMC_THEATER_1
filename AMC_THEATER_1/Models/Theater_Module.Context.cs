@@ -52,5 +52,6 @@ namespace AMC_THEATER_1.Models
         public virtual DbSet<MST_STATUS> MST_STATUS { get; set; }
         public virtual DbSet<PENDING_DUES> PENDING_DUES { get; set; }
         public virtual DbSet<TRN_SCREEN_TAX_PRICE> TRN_SCREEN_TAX_PRICE { get; set; }
+        public virtual DbSet<MonthTable> MonthTables { get; set; }
     }
 }

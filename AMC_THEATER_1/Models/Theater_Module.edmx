@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="THEATER_MODULEModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="THEATER_MODULEModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="ActionRequests">
           <Key>
             <PropertyRef Name="Id" />
@@ -47,6 +47,13 @@ warning 6002: The table/view 'THEATER_MODULE.dbo.LOGIN_DETAILS' does not have a 
           </Key>
           <Property Name="LOG_ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="PHONE_NUMBER" Type="int" />
+        </EntityType>
+        <EntityType Name="MonthTable">
+          <Key>
+            <PropertyRef Name="MonthID" />
+          </Key>
+          <Property Name="MonthID" Type="int" Nullable="false" />
+          <Property Name="MonthName" Type="nvarchar" MaxLength="20" Nullable="false" />
         </EntityType>
         <EntityType Name="MST_DOC_SERVICE_MPG">
           <Key>
@@ -609,6 +616,7 @@ warning 6002: The table/view 'THEATER_MODULE.dbo.TRN_SCREEN_TAX_PRICE' does not 
           <EntitySet Name="ActionRequests" EntityType="Self.ActionRequests" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DEPARTMENT_LOGIN" EntityType="Self.DEPARTMENT_LOGIN" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Facility" EntityType="Self.Facility" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="MonthTable" EntityType="Self.MonthTable" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MST_DOC_SERVICE_MPG" EntityType="Self.MST_DOC_SERVICE_MPG" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MST_DOCS" EntityType="Self.MST_DOCS" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MST_SERVICE" EntityType="Self.MST_SERVICE" Schema="dbo" store:Type="Tables" />
@@ -749,8 +757,7 @@ warning 6002: The table/view 'THEATER_MODULE.dbo.TRN_SCREEN_TAX_PRICE' does not 
             <End Role="TRN_THEATRE_DOCS" EntitySet="TRN_THEATRE_DOCS" />
           </AssociationSet>
         </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="THEATER_MODULEModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -1498,7 +1505,15 @@ warning 6002: The table/view 'THEATER_MODULE.dbo.TRN_SCREEN_TAX_PRICE' does not 
             <End Role="TRN_THEATRE_DOCS" EntitySet="TRN_THEATRE_DOCS" />
             <End Role="TRN_THEATRE_DOCS_LOG" EntitySet="TRN_THEATRE_DOCS_LOG" />
           </AssociationSet>
+          <EntitySet Name="MonthTables" EntityType="THEATER_MODULEModel.MonthTable" />
         </EntityContainer>
+        <EntityType Name="MonthTable">
+          <Key>
+            <PropertyRef Name="MonthID" />
+          </Key>
+          <Property Name="MonthID" Type="Int32" Nullable="false" />
+          <Property Name="MonthName" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1853,6 +1868,14 @@ warning 6002: The table/view 'THEATER_MODULE.dbo.TRN_SCREEN_TAX_PRICE' does not 
                 <ScalarProperty Name="PRICE_ID" ColumnName="PRICE_ID" />
                 <ScalarProperty Name="SCREEN_TYPE" ColumnName="SCREEN_TYPE" />
                 <ScalarProperty Name="SCREEN_PRICE" ColumnName="SCREEN_PRICE" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="MonthTables">
+            <EntityTypeMapping TypeName="THEATER_MODULEModel.MonthTable">
+              <MappingFragment StoreEntitySet="MonthTable">
+                <ScalarProperty Name="MonthName" ColumnName="MonthName" />
+                <ScalarProperty Name="MonthID" ColumnName="MonthID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
