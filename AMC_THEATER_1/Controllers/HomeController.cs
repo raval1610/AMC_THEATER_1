@@ -29,7 +29,7 @@ namespace Amc_theater.Controllers
         private string connectionString = "Server=localhost\\SQLEXPRESS;Database=THEATER_MODULE;Integrated Security=True;";
 
         [HttpPost]
-        public ActionResult Theater_Tax(int theater_id)
+        public ActionResult Theater_Tax(int theater_id, DateTime dateTime)
         {
             if (theater_id <= 0)
             {
@@ -121,7 +121,7 @@ namespace Amc_theater.Controllers
                     }
 
                     // ✅ **Step 2: Fetch and Validate FromMonth & ToMonth**
-                    if (string.IsNullOrWhiteSpace(model.FromMonth) || string.IsNullOrWhiteSpace(model.ToMonth))
+                    if (!(!string.IsNullOrWhiteSpace(model.FromMonth) && !string.IsNullOrWhiteSpace(model.ToMonth)))
                     {
                         TempData["Error"] = "From Month and To Month cannot be empty.";
                         return RedirectToAction("Index");
@@ -529,9 +529,107 @@ namespace Amc_theater.Controllers
         }
 
 
+        //public ActionResult Theater_List(string theaterId, DateTime? fromDate, DateTime? toDate,
+        //                        string statusFilter, string cityFilter,
+        //                        string wardFilter, string zoneFilter, int? deleteId)
+        //{
+        //    // ✅ Debugging - Log Incoming Data
+        //    Debug.WriteLine($"Received Data -> FromDate: {fromDate}, ToDate: {toDate}");
+
+        //    // ✅ Soft delete logic
+        //    if (deleteId.HasValue)
+        //    {
+        //        var theaterToDelete = db.TRN_REGISTRATION.FirstOrDefault(t => t.T_ID == deleteId.Value);
+        //        if (theaterToDelete != null)
+        //        {
+        //            theaterToDelete.T_ACTIVE = false;  // Soft delete (mark inactive)
+        //            db.SaveChanges();
+        //        }
+        //    }
+
+        //    // Static status values for the filter dropdown
+        //    var statuses = new List<string> { "Pending", "Approved", "Reject" };
+
+        //    // ✅ Base Query - Fetch Active Theaters
+        //    var query = db.TRN_REGISTRATION.Where(tr => tr.T_ACTIVE == true);
+
+        //    // ✅ Apply Filters and Persist Them in ViewBag
+        //    if (!string.IsNullOrEmpty(theaterId) && int.TryParse(theaterId, out int theaterIdInt))
+        //    {
+        //        query = query.Where(tr => tr.T_ID == theaterIdInt);
+        //        ViewBag.SelectedTheaterId = theaterId;
+        //    }
+        //    else
+        //    {
+        //        if (fromDate.HasValue)
+        //        {
+        //            DateTime from = fromDate.Value.Date; // Start of the day (00:00:00)
+        //            query = query.Where(tr => tr.T_COMMENCEMENT_DATE.HasValue && tr.T_COMMENCEMENT_DATE.Value >= from);
+        //        }
+
+        //        if (toDate.HasValue)
+        //        {
+        //            DateTime to = toDate.Value.Date.AddDays(1).AddTicks(-1); // End of the day (23:59:59)
+        //            query = query.Where(tr => tr.T_COMMENCEMENT_DATE.HasValue && tr.T_COMMENCEMENT_DATE.Value <= to);
+        //        }
+        //    }
+
+        //    if (!string.IsNullOrEmpty(cityFilter))
+        //    {
+        //        query = query.Where(tr => tr.T_CITY == cityFilter);
+        //        ViewBag.SelectedCity = cityFilter;
+        //    }
+
+        //    if (!string.IsNullOrEmpty(wardFilter))
+        //    {
+        //        query = query.Where(tr => tr.T_WARD == wardFilter);
+        //        ViewBag.SelectedWard = wardFilter;
+        //    }
+
+        //    if (!string.IsNullOrEmpty(zoneFilter))
+        //    {
+        //        query = query.Where(tr => tr.T_ZONE == zoneFilter);
+        //        ViewBag.SelectedZone = zoneFilter;
+        //    }
+
+        //    if (!string.IsNullOrEmpty(statusFilter) && statuses.Contains(statusFilter))
+        //    {
+        //        query = query.Where(tr => tr.STATUS == statusFilter);
+        //        ViewBag.SelectedStatus = statusFilter;
+        //    }
+
+        //    var result = query.ToList();
+
+        //    // ✅ Persist Dates in ViewBag for input fields
+        //    ViewBag.FromDate = fromDate?.ToString("yyyy-MM-dd");
+        //    ViewBag.ToDate = toDate?.ToString("yyyy-MM-dd");
+
+        //    // ✅ Populate Filter Dropdowns
+        //    ViewBag.Cities = result.Select(tr => tr.T_CITY).Distinct().ToList();
+        //    ViewBag.Wards = result.Select(tr => tr.T_WARD).Distinct().ToList();
+        //    ViewBag.Zones = result.Select(tr => tr.T_ZONE).Distinct().ToList();
+        //    ViewBag.Statuses = statuses;
+
+        //    // ✅ Convert Result to ViewModel
+        //    var theaterList = result.Select(tr => new TheaterViewModel
+        //    {
+        //        T_ID = tr.T_ID,
+        //        T_NAME = tr.T_NAME,
+        //        T_CITY = tr.T_CITY,
+        //        T_ADDRESS = tr.T_ADDRESS,
+        //        T_TENAMENT_NO = tr.T_TENAMENT_NO,
+        //        T_WARD = tr.T_WARD,
+        //        T_ZONE = tr.T_ZONE,
+        //        STATUS = tr.STATUS
+        //    }).ToList();
+
+        //    return View(theaterList);
+        //}
+
         public ActionResult Theater_List(string theaterId, DateTime? fromDate, DateTime? toDate,
-                                string statusFilter, string cityFilter,
-                                string wardFilter, string zoneFilter, int? deleteId)
+                          string statusFilter, string cityFilter,
+                          string wardFilter, string zoneFilter,
+                          string theaterTypeFilter, int? deleteId)
         {
             // ✅ Debugging - Log Incoming Data
             Debug.WriteLine($"Received Data -> FromDate: {fromDate}, ToDate: {toDate}");
@@ -592,6 +690,13 @@ namespace Amc_theater.Controllers
                 ViewBag.SelectedZone = zoneFilter;
             }
 
+            // Theater Type Filter
+            if (!string.IsNullOrEmpty(theaterTypeFilter))
+            {
+                query = query.Where(tr => tr.SCREEN_TYPE == theaterTypeFilter);  // Adjust this part as needed for correct column name
+                ViewBag.SelectedTheaterType = theaterTypeFilter;
+            }
+
             if (!string.IsNullOrEmpty(statusFilter) && statuses.Contains(statusFilter))
             {
                 query = query.Where(tr => tr.STATUS == statusFilter);
@@ -609,6 +714,11 @@ namespace Amc_theater.Controllers
             ViewBag.Wards = result.Select(tr => tr.T_WARD).Distinct().ToList();
             ViewBag.Zones = result.Select(tr => tr.T_ZONE).Distinct().ToList();
             ViewBag.Statuses = statuses;
+
+            // Fetch theater types from TRN_SCREEN_TAX_PRICE table (adjust the table and column names as needed)
+            ViewBag.TheaterTypes = db.TRN_SCREEN_TAX_PRICE.Select(t => t.SCREEN_TYPE)
+                                                           .Distinct()
+                                                           .ToList();
 
             // ✅ Convert Result to ViewModel
             var theaterList = result.Select(tr => new TheaterViewModel

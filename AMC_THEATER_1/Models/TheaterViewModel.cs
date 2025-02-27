@@ -30,9 +30,22 @@ namespace AMC_THEATER_1.Models
         public int THEATER_SCREEN_COUNT { get; set; } // Separate count for Theater
         public int VIDEO_THEATER_SCREEN_COUNT { get; set; } // Separate count for Video Theater
         public List<ScreenViewModel> Screens { get; set; }
+        // ✅ New Property for SCREEN TYPE
+        public string SCREEN_TYPE { get; set; }
+
+
+        public List<TRN_SCREEN_TAX_PRICE> ScreenTypes { get; set; }
+
+        // ✅ Method to Get SCREEN_TYPE from `ScreenTypes` List
+        public string GetScreenType()
+        {
+            return ScreenTypes?.FirstOrDefault()?.SCREEN_TYPE ?? "N/A";
+        }
+
+
     }
 
 
 
-    
+
 }

@@ -199,6 +199,21 @@
                     </select>
                 </div>
             </div>
+            <!-- Theater Type Filter -->
+            <div class="col-md-3 d-inline-block">
+                <label for="theaterTypeFilter" class="fw-bold text-dark" style="font-size: 14px;">Theater Type:</label>
+                <select id="theaterTypeFilter" name="theaterTypeFilter" class="form-control form-control-sm">
+                    <option value="">All</option>
+                    @if (ViewBag.TheaterTypes != null)
+                    {
+                        foreach (var type in ViewBag.TheaterTypes as IEnumerable<string>)
+                        {
+                            <option value="@type">@type</option>
+                        }
+                    }
+                </select>
+            </div>
+
         </div>
     </form>
 

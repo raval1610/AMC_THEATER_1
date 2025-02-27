@@ -90,5 +90,6 @@ namespace AMC_THEATER_1.Models
 
         [NotMapped]  // This ensures it's not stored in the database
         public bool IsEditMode { get; set; }
+        public string SCREEN_TYPE { get; internal set; }
     }
 }

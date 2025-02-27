@@ -21,9 +21,7 @@ namespace AMC_THEATER_1.Models
         public string MonthYear { get; set; }
 
 
-       
-        public int SelectedMonth { get; set; }  // ✅ Add this
-        public int SelectedYear { get; set; }   // ✅ Add this
+        
         public int ScreenId { get; set; }
         public int TotalShow { get; set; }
         
@@ -36,5 +34,7 @@ namespace AMC_THEATER_1.Models
         public string DocumentPath { get; set; }
        
         public List<ScreenViewModel> Screens { get; set; }
+
+       
     }
 }
