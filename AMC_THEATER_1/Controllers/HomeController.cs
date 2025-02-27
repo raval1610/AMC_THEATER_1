@@ -1333,6 +1333,105 @@ namespace Amc_theater.Controllers
 
             return View(model);
         }
+
+        public ActionResult ProcessTaxPaymentSeprate(TaxPaymentViewModel model, HttpPostedFileBase DocumentPath)
+        {
+            if (model == null || model.Screens == null || model.Screens.Count == 0)
+            {
+                TempData["Error"] = "Invalid data. Please check your input.";
+                return RedirectToAction("Index");
+            }
+
+            using (var transaction = db.Database.BeginTransaction())
+            {
+                try
+                {
+                    string filePath = "Generated Automatically"; // Default value
+
+                    // ✅ **Step 1: Handle File Upload**
+                    if (DocumentPath != null && DocumentPath.ContentLength > 0)
+                    {
+                        string fileName = Path.GetFileName(DocumentPath.FileName);
+                        string uploadPath = Path.Combine(Server.MapPath("~/UploadedDoc/"), fileName);
+
+                        if (!Directory.Exists(Server.MapPath("~/UploadedDoc/")))
+                        {
+                            Directory.CreateDirectory(Server.MapPath("~/UploadedDoc/"));
+                        }
+
+                        DocumentPath.SaveAs(uploadPath);
+                        filePath = "/UploadedDoc/" + fileName;
+                    }
+
+                    // ✅ **Step 2: Fetch and Validate FromMonth & ToMonth**
+                    if (string.IsNullOrWhiteSpace(model.FromMonth) || string.IsNullOrWhiteSpace(model.ToMonth))
+                    {
+                        TempData["Error"] = "From Month and To Month cannot be empty.";
+                        return RedirectToAction("Index");
+                    }
+
+                    DateTime fromDate, toDate;
+                    bool isFromValid = DateTime.TryParseExact(model.FromMonth + "-01", "yyyy-MM-dd", null, System.Globalization.DateTimeStyles.None, out fromDate);
+                    bool isToValid = DateTime.TryParseExact(model.ToMonth + "-01", "yyyy-MM-dd", null, System.Globalization.DateTimeStyles.None, out toDate);
+
+                    if (!isFromValid || !isToValid)
+                    {
+                        TempData["Error"] = "Invalid date format. Please select valid From and To months.";
+                        return RedirectToAction("Index");
+                    }
+
+                    // ✅ **Step 3: Insert into THEATER_TAX_PAYMENT (Main Table)**
+
+                    // ✅ **Step 4: Iterate through the months and insert into NO_OF_SCREENS_TAX**
+                    for (DateTime currentDate = fromDate; currentDate <= toDate; currentDate = currentDate.AddMonths(1))
+                    {
+                        var taxPayment = new THEATER_TAX_PAYMENT
+                        {
+                            T_ID = model.TheaterId,
+                            PAYMENT_MONTH = currentDate.ToString("MMMM"), // Store the correct month name dynamically
+                            PAYMENT_YEAR = currentDate.Year, // Ensure the correct year is stored
+                            TAX_AMOUNT = model.Screens.Sum(s => s.AmtPerScreen),
+                            SHOW_STATEMENT = filePath,
+                            CREATE_USER = "System",
+                            CREATE_DATE = DateTime.Now
+                        };
+                        db.THEATER_TAX_PAYMENT.Add(taxPayment);
+                        db.SaveChanges();
+
+                        foreach (var screen in model.Screens)
+                        {
+                            var screenTax = new NO_OF_SCREENS_TAX
+                            {
+                                T_ID = model.TheaterId,
+                                TAX_ID = taxPayment.TAX_ID,
+                                SCREEN_TYPE = screen.ScreenType,
+                                TOTAL_SHOW = screen.TotalShow,
+                                CANCEL_SHOW = screen.CancelShow,
+                                ACTUAL_SHOW = screen.TotalShow - screen.CancelShow,
+                                RATE_PER_SCREEN = (screen.ScreenType == "Theater") ? 75 : 25,
+                                AMT_PER_SCREEN = screen.AmtPerScreen
+                            };
+
+                            db.NO_OF_SCREENS_TAX.Add(screenTax);
+                        }
+                    }
+
+
+                    db.SaveChanges();
+                    transaction.Commit();
+                    TempData["Success"] = "Tax payment saved successfully!";
+                    return RedirectToAction("Theater_Tax");
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    TempData["Error"] = "An error occurred while processing your request: " + ex.Message;
+                    return RedirectToAction("Index");
+                }
+            }
+        }
+
+
         public JsonResult GetTheaters(string term)
     {
         var theaters = db.TRN_REGISTRATION
