@@ -158,17 +158,25 @@
                         @Html.TextBoxFor(m => m.T_PRC_NO, new { @class = "form-control readonly-field", placeholder = "PRC No" })
                     </div>
                 </div>
-
+                <div class="col-md-4 mb-3">
+                    <label for="SelfTenant" class="form-label fw-bold">Theater Type</label>
+                    @Html.DropDownList("SelfTenant", new List<SelectListItem>
+                    {
+                        new SelectListItem { Text = "-- Select --", Value = "" },
+                        new SelectListItem { Text = "Self", Value = "Self" },
+                        new SelectListItem { Text = "Tenant", Value = "Tenant" }
+                    }, new { @class = "form-control" })
+                </div>
                 <!-- Tax Payment -->
                 <div class="col-12 ms-4 fw-bold">
                     <label for="T_TAX_PAYING_OFFLINE" class="form-label fw-bold">Already Paying Theater Tax Offline <span class="text-danger">*</span></label>
                     <div class="form-check d-inline-block me-3">
                         @Html.RadioButtonFor(m => m.T_TAX_PAYING_OFFLINE, "true", new { @class = "form-check-input readonly-field", id = "yes", required = "required", onclick = "toggleFields(true)" })
-                        <label   for="T_TAX_PAYING_OFFLINE" class="form-check-label" for="yes">Yes</label>
+                        <label for="T_TAX_PAYING_OFFLINE" class="form-check-label" for="yes">Yes</label>
                     </div>
                     <div class="form-check d-inline-block">
                         @Html.RadioButtonFor(m => m.T_TAX_PAYING_OFFLINE, "false", new { @class = "form-check-input readonly-field", id = "no", required = "required", onclick = "toggleFields(false)" })
-                        <label  for="T_TAX_PAYING_OFFLINE" class="form-check-label" for="no">No</label>
+                        <label for="T_TAX_PAYING_OFFLINE" class="form-check-label" for="no">No</label>
                     </div>
                 </div>
 
@@ -254,133 +262,133 @@
 
                 <div class="row">
 
-                        <div class="col-md-12">
-                            <table class="table table-bordered table-striped">
-                                <thead>
+                    <div class="col-md-12">
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th class="fw-bold">Document Name</th>
+                                    <th class="fw-bold">Document Type</th>
+                                    <th class="fw-bold">Allowed Size (MB)</th>
+                                    <th class="fw-bold">Uploaded Size (MB)</th>
+                                    <th class="fw-bold HideAtDept">Upload</th>
+                                    <th class="fw-bold">View</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                @foreach (var doc in documentList)
+                                {
+                                    var uploadedDoc = (uDocs)?.FirstOrDefault(d => d.DOC_ID == doc.DOC_ID);
+                                    string filePath = uploadedDoc?.DOC_FILEPATH ?? string.Empty;
+
+                                    <!-- Debugging: Print matching DOC_IDs and file paths -->
                                     <tr>
-                                        <th class="fw-bold">Document Name</th>
-                                        <th class="fw-bold">Document Type</th>
-                                        <th class="fw-bold">Allowed Size (MB)</th>
-                                        <th class="fw-bold">Uploaded Size (MB)</th>
-                                        <th class="fw-bold HideAtDept">Upload</th>
-                                        <th class="fw-bold">View</th>
+                                        <td>@doc.DOC_NAME</td>
+                                        <td>@doc.FILE_TYPE</td>
+                                        <td>@doc.FILE_SIZE_MB MB</td>
+                                        <td id="size-@doc.DOC_ID">@(filePath != "" ? GetFileSize(filePath) + " MB" : "0 MB")</td>
+
+                                        <td class="HideAtDept">
+                                            <input type="file"
+                                                   class="form-control"
+                                                   id="file-@doc.DOC_ID"
+                                                   name="documents"
+                                                   accept=".pdf,.jpg,.png,.docx"
+                                                   onchange="updateFileSize('@doc.DOC_ID'); showViewButton('@doc.DOC_ID', this)" />
+                                        </td>
+
+                                        <td id="viewBtn-@doc.DOC_ID">
+                                            @if (!string.IsNullOrEmpty(filePath))
+                                            {
+                                                <a href="@Url.Content("~/UploadedFiles/" + Path.GetFileName(filePath))"
+                                                   target="_blank"
+                                                   class="btn btn-primary btn-sm">View</a>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">Not Available</span>
+                                            }
+                                        </td>
                                     </tr>
-                                </thead>
-                                <tbody>
-
-                                    @foreach (var doc in documentList)
-                                    {
-                                        var uploadedDoc = (uDocs)?.FirstOrDefault(d => d.DOC_ID == doc.DOC_ID);
-                                        string filePath = uploadedDoc?.DOC_FILEPATH ?? string.Empty;
-
-                                        <!-- Debugging: Print matching DOC_IDs and file paths -->
-                                        <tr>
-                                            <td>@doc.DOC_NAME</td>
-                                            <td>@doc.FILE_TYPE</td>
-                                            <td>@doc.FILE_SIZE_MB MB</td>
-                                            <td id="size-@doc.DOC_ID">@(filePath != "" ? GetFileSize(filePath) + " MB" : "0 MB")</td>
-
-                                            <td class="HideAtDept">
-                                                <input type="file"
-                                                       class="form-control"
-                                                       id="file-@doc.DOC_ID"
-                                                       name="documents"
-                                                       accept=".pdf,.jpg,.png,.docx"
-                                                       onchange="updateFileSize('@doc.DOC_ID'); showViewButton('@doc.DOC_ID', this)" />
-                                            </td>
-
-                                            <td id="viewBtn-@doc.DOC_ID">
-                                                @if (!string.IsNullOrEmpty(filePath))
-                                                {
-                                                    <a href="@Url.Content("~/UploadedFiles/" + Path.GetFileName(filePath))"
-                                                       target="_blank"
-                                                       class="btn btn-primary btn-sm">View</a>
-                                                }
-                                                else
-                                                {
-                                                    <span class="text-muted">Not Available</span>
-                                                }
-                                            </td>
-                                        </tr>
-                                    }
-                                </tbody>
+                                }
+                            </tbody>
 
 
-                            </table>
-                        </div>
-                  
-               
-                        </div>
+                        </table>
+                    </div>
 
-       
+
+                </div>
+
+
 
 
 
 
                 <div class="text-center">
-                 
 
-                        @if (ViewBag.Mode == "create")
-                        {
-                            <button type="submit" class="btn btn-success mt-4 w-25">Submit</button> }
-                        else if (ViewBag.Mode == "edit")
-                        {
-                            <button type="submit" class="btn btn-success" onclick="enableEditMode()">Update</button>
 
-                            <button type="button" class="btn btn-warning" onclick="location.href='@Url.Action("List_of_Application", "Home")'">Cancel</button>
-                        }
-                        else if (ViewBag.Mode == "view")
-                        {
+                    @if (ViewBag.Mode == "create")
+                    {
+                        <button type="submit" class="btn btn-success mt-4 w-25">Submit</button> }
+                    else if (ViewBag.Mode == "edit")
+                    {
+                        <button type="submit" class="btn btn-success" onclick="enableEditMode()">Update</button>
 
-                            <button type="button" class="btn btn-secondary" onclick="window.history.back()">Back</button>
-                        }
-                        else if (ViewBag.Mode == "approve")
-                        {
-                            ViewBag.ShowBasicNavbar = false;
-                            ViewBag.ShowNavbar = true;
-                            ViewBag.ShowSideBar = false;
-                            ViewBag.ShowSideBar1 = true;
-                            ViewBag.Login = false;
-                            ViewBag.ShowHomeIcon = true;
-                            ViewBag.Module = true;
-                            ViewBag.IsViewPAge = true;
-                            @Html.HiddenFor(m => m.T_ID)
+                        <button type="button" class="btn btn-warning" onclick="location.href='@Url.Action("List_of_Application", "Home")'">Cancel</button>
+                    }
+                    else if (ViewBag.Mode == "view")
+                    {
 
-                            <input type="hidden" id="actionType" name="actionType" />
-                            <input type="hidden" id="rejectReasonInput" name="rejectReason" />
+                        <button type="button" class="btn btn-secondary" onclick="window.history.back()">Back</button>
+                    }
+                    else if (ViewBag.Mode == "approve")
+                    {
+                        ViewBag.ShowBasicNavbar = false;
+                        ViewBag.ShowNavbar = true;
+                        ViewBag.ShowSideBar = false;
+                        ViewBag.ShowSideBar1 = true;
+                        ViewBag.Login = false;
+                        ViewBag.ShowHomeIcon = true;
+                        ViewBag.Module = true;
+                        ViewBag.IsViewPAge = true;
+                        @Html.HiddenFor(m => m.T_ID)
 
-                            <button type="submit" class="btn btn-success" onclick="setAction('Approve')">
-                                <i class="fa fa-check"></i> Approve
-                            </button>
+                        <input type="hidden" id="actionType" name="actionType" />
+                        <input type="hidden" id="rejectReasonInput" name="rejectReason" />
 
-                            <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#rejectModal">
-                                <i class="fa fa-times"></i> Reject
-                            </button>
+                        <button type="submit" class="btn btn-success" onclick="setAction('Approve')">
+                            <i class="fa fa-check"></i> Approve
+                        </button>
 
-                            <div class="modal fade" id="rejectModal" tabindex="-1" role="dialog">
-                                <div class="modal-dialog" role="document">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title">Provide a Reason for Rejection</h5>
-                                            <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <textarea id="rejectReason" class="form-control" rows="4" placeholder="Enter reason here..."></textarea>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                            <button type="button" class="btn btn-danger" onclick="setAction('Reject')">Reject</button>
-                                        </div>
+                        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#rejectModal">
+                            <i class="fa fa-times"></i> Reject
+                        </button>
+
+                        <div class="modal fade" id="rejectModal" tabindex="-1" role="dialog">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Provide a Reason for Rejection</h5>
+                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <textarea id="rejectReason" class="form-control" rows="4" placeholder="Enter reason here..."></textarea>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                        <button type="button" class="btn btn-danger" onclick="setAction('Reject')">Reject</button>
                                     </div>
                                 </div>
                             </div>
-                        }
-                        else if (ViewBag.Mode == "back" && ViewBag.IsViewPAge == true)
-                        {
+                        </div>
+                    }
+                    else if (ViewBag.Mode == "back" && ViewBag.IsViewPAge == true)
+                    {
 
-                            ViewBag.IsViewPAge = true;
-                            <button type="button" class="btn btn-secondary" onclick="window.history.back()">Back</button>
-                        }
+                        ViewBag.IsViewPAge = true;
+                        <button type="button" class="btn btn-secondary" onclick="window.history.back()">Back</button>
+                    }
 
                     <!-- Reject Reason Modal -->
                     <div class="modal fade" id="rejectModal" tabindex="-1" role="dialog" aria-labelledby="rejectModalLabel" aria-hidden="true">
@@ -402,9 +410,9 @@
                             </div>
                         </div>
                     </div>
-                </div>  
+                </div>
             }
-            </div>
+        </div>
         </div>
 </body>
 </html>

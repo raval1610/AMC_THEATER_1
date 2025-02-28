@@ -150,21 +150,21 @@
         </div>
     </form>
 
-    
+
     <div class="row">
         <div class="col-md-12">
-            <table class="table table-bordered  mt-5 table-striped">
+            <table class="table table-bordered mt-5 table-striped">
                 <thead>
                     <tr>
                         <th class="fw-bold">Theater ID</th>
                         <th class="fw-bold">Theater Name</th>
-                        <th class="fw-bold">city</th>
+                        <th class="fw-bold">City</th>
                         <th class="fw-bold">Ward</th>
                         <th class="fw-bold">Zone</th>
                         <th class="fw-bold">Address</th>
                         <th class="fw-bold">Tenament Number</th>
                         <th class="fw-bold">Status</th>
-                  
+                        <th class="fw-bold">Since Month</th> <!-- New Column -->
                     </tr>
                 </thead>
                 <tbody>
@@ -183,20 +183,21 @@
                                 <td class="status-cell @(theater.P_STATUS == "Approved" ? "text-success" : (theater.P_STATUS == "Rejected" ? "text-danger" : "text-warning"))">
                                     @(theater.P_STATUS == "Approved" ? "Approved" : theater.P_STATUS == "Rejected" ? "Rejected" : "Pending")
                                 </td>
-                                
+                                <td>@theater.SINCE_MONTH</td> <!-- New Data Column -->
                             </tr>
                         }
                     }
                     else
                     {
                         <tr>
-                            <td colspan="9" class="text-center">No theater data available.</td>
+                            <td colspan="10" class="text-center">No theater data available.</td>
                         </tr>
                     }
                 </tbody>
             </table>
         </div>
     </div>
+
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
