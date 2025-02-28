@@ -15,5 +15,6 @@ namespace AMC_THEATER_1.Models
         public string T_ADDRESS { get; set; }
         public string T_TENAMENT_NO { get; set; }
         public string P_STATUS { get; set; }
+        public string SINCE_MONTH { get; set; } // New Property
     }
 }
