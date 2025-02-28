@@ -196,8 +196,7 @@
                             <input type="text" id="offlineTaxPayment" name="OFFLINE_TAX_PAYMENT"
                                    class="form-control ms-3"
                                    placeholder="Offline Tax Payment"
-                                   value="@(Model?.OFFLINE_TAX_PAYMENT != null ? Model.OFFLINE_TAX_PAYMENT.ToString() : "")" 
-/>
+                                   value="@(Model?.OFFLINE_TAX_PAYMENT != null ? Model.OFFLINE_TAX_PAYMENT.ToString() : "")" />
                         </div>
 
                         <div class="col-md-4 d-inline-block fw-bold">
@@ -380,10 +379,13 @@
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <h5 class="modal-title">Provide a Reason for Rejection</h5>
-                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                        <button type="button" class="btn btn-light" data-dismiss="modal">
+                                            <i class="bi bi-x-lg"></i>
+                                        </button>
+
                                     </div>
                                     <div class="modal-body">
-                                        <textarea id="rejectReason" class="form-control" rows="4" placeholder="Enter reason here..."></textarea>
+                                        <textarea id="rejectReason" class="form-control" rows="4" placeholder="Enter reason here..." style="max-width:100%;"></textarea>
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -423,7 +425,7 @@
                 </div>
             }
         </div>
-        </div>
+    </div>
 </body>
 </html>
 
@@ -451,25 +453,53 @@
         if (!tableBody) return;
 
         const rows = tableBody.getElementsByTagName("tr");
-        if (rows.length === 0) return;
 
-        const lastIndex = rows.length;
-        const newRow = rows[0].cloneNode(true);
+        if (rows.length >= 10) {
+            // Show error message in a prompt instead of displaying it below buttons
+            alert("Maximum 10 screens can be added.");
+            return;
+        }
 
-        newRow.querySelectorAll("input").forEach(input => {
-            if (input.name) {
-                input.name = input.name.replace(/\d+/, lastIndex);
-                if (input.type !== "hidden") input.value = ""; // Clear all non-hidden fields
+        // Validate if all fields in the last row are filled
+        const lastRow = rows[rows.length - 1];
+        const inputs = lastRow.querySelectorAll("input");
+
+        for (let input of inputs) {
+            if (input.value.trim() === "") {
+                showErrorMessage(input, "This field is required.");
+                return;
             }
+        }
+
+        // Clone the last row
+        const newRow = lastRow.cloneNode(true);
+
+        // Reset input values except hidden fields
+        newRow.querySelectorAll("input").forEach(input => {
+            if (input.type !== "hidden") input.value = "";
         });
+
+        // Make screen number field editable and attach validation event
+        const screenIdInput = newRow.querySelector('input[name*=".SCREEN_ID"]');
+        screenIdInput.removeAttribute("readonly");
+        screenIdInput.addEventListener("input", function () {
+            validateScreenNumber(screenIdInput);
+        });
+
+        // Clear any previous error messages when a new row is successfully added
+        inputs.forEach(clearErrorMessage);
 
         tableBody.appendChild(newRow);
     }
+
+
+
     function removeRow(button) {
         const tableBody = document.querySelector("#screenTableBody");
         const rows = tableBody.getElementsByTagName("tr");
 
         if (rows.length === 1) {
+            // Show error message in a prompt instead of displaying it in the table
             alert("At least one screen entry must be present.");
             return;
         }
@@ -478,7 +508,6 @@
         row.parentNode.removeChild(row);
     }
 
-
     function editRow(button) {
         var row = button.parentNode.parentNode;
         var seatCapacityInput = row.cells[1].querySelector("input");
@@ -486,18 +515,73 @@
     }
 
     function updateScreenType(input) {
-        debugger;
-        var seatCapacity = input.value;
+        var seatCapacity = input.value.trim();
         var row = input.parentNode.parentNode;
         var screenTypeInput = row.cells[2].querySelector("input");
 
-        if (seatCapacity > 125) {
+        if (!seatCapacity || isNaN(seatCapacity)) {
+            showErrorMessage(input, "Please enter a valid seat capacity.");
+            input.value = "";
+            return;
+        }
+
+        clearErrorMessage(input);
+
+        if (parseInt(seatCapacity) > 125) {
             screenTypeInput.value = "Theater";
         } else {
             screenTypeInput.value = "Video";
         }
     }
+
+    function validateScreenNumber(input) {
+        const enteredNumber = input.value.trim();
+        const existingScreenNumbers = [...document.querySelectorAll('input[name*=".SCREEN_ID"]')]
+            .map(inp => inp.value.trim())
+            .filter(value => value !== "");
+
+        if (existingScreenNumbers.filter(num => num === enteredNumber).length > 1) {
+            showErrorMessage(input, "Duplicate screen number is not allowed.");
+        } else {
+            clearErrorMessage(input); // ✅ Remove error when screen number is valid
+        }
+    }
+
+    function showErrorMessage(input, message, type = "input") {
+        let errorElement;
+        if (type === "general") {
+            errorElement = document.getElementById("generalErrorMessage");
+            if (!errorElement) {
+                errorElement = document.createElement("div");
+                errorElement.id = "generalErrorMessage";
+                errorElement.style.color = "red";
+                errorElement.style.marginTop = "5px";
+                input.appendChild(errorElement);
+            }
+        } else {
+            errorElement = input.nextElementSibling;
+            if (!errorElement || !errorElement.classList.contains("error-message")) {
+                errorElement = document.createElement("div");
+                errorElement.classList.add("error-message");
+                errorElement.style.color = "red";
+                errorElement.style.fontSize = "12px";
+                errorElement.style.marginTop = "2px";
+                input.parentNode.appendChild(errorElement);
+            }
+        }
+        errorElement.textContent = message;
+    }
+
+    function clearErrorMessage(input) {
+        const errorElement = input.nextElementSibling;
+        if (errorElement && errorElement.classList.contains("error-message")) {
+            errorElement.remove();
+        }
+    }
 </script>
+
+
+
 
 @*offlineTax*@
 
