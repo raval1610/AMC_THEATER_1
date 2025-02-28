@@ -69,17 +69,17 @@
                 <!-- Theatre Registration Fields -->
                 <div class="row ms-4">
                     <div class="col-md-4 mb-3">
-                        <label for="TheaterName" class="form-label fw-bold">Theatre Name <span class="text-danger">*</span></label>
+                        <label for="T_NAME" class="form-label fw-bold">Theatre Name</label>
                         @Html.TextBoxFor(m => m.T_NAME, new { @class = "form-control readonly-field", placeholder = "Enter theater name", required = "required" })
                     </div>
 
                     <div class="col-md-4 mb-3">
-                        <label for="OwnerName" class="form-label fw-bold">Theater License Holder Name <span class="text-danger">*</span></label>
+                        <label for="T_OWNER_NAME" class="form-label fw-bold">Theater License Holder Name <span class="text-danger">*</span></label>
                         @Html.TextBoxFor(m => m.T_OWNER_NAME, new { @class = "form-control readonly-field", placeholder = "Enter owner's name", required = "required" })
                     </div>
 
                     <div class="col-md-4 mb-3">
-                        <label for="RepresentativeContact" class="form-label fw-bold">Representative / Manager Contact No. <span class="text-danger">*</span></label>
+                        <label for="T_OWNER_NUMBER" class="form-label fw-bold">Representative / Manager Contact No.</label>
                         @Html.TextBoxFor(m => m.T_OWNER_NUMBER, new { @class = "form-control readonly-field", placeholder = "Enter contact number", required = "required" })
                     </div>
 
@@ -89,36 +89,36 @@
                 <!-- Address, Email, Commencement Date -->
                 <div class="row ms-4">
                     <div class="col-md-4 mb-3">
-                        <label for="RepresentativeContact" class="form-label fw-bold">Manager Name <span class="text-danger">*</span></label>
+                        <label for="T_OWNER_NUMBER" class="form-label fw-bold">Manager Name <span class="text-danger">*</span></label>
                         @Html.TextBoxFor(m => m.T_OWNER_NUMBER, new { @class = "form-control readonly-field", placeholder = "Enter Manager Name" })
                     </div>
 
 
                     <div class="col-md-4 mb-3">
-                        <label for="EmailID" class="form-label fw-bold">Email ID <span class="text-danger">*</span></label>
+                        <label for="T_OWNER_EMAIL" class="form-label fw-bold">Email ID <span class="text-danger">*</span></label>
                         @Html.TextBoxFor(m => m.T_OWNER_EMAIL, new { @class = "form-control readonly-field", placeholder = "Enter email ID", required = "required" })
                     </div>
                 </div>
 
                 <div class="row ms-4">
                     <div class="col-md-8 mb-3">
-                        <label for="TheaterAddress" class="form-label fw-bold required-field">Theatre Address </label>
+                        <label for="T_ADDRESS" class="form-label fw-bold required-field">Theatre Address </label>
                         @Html.TextAreaFor(m => m.T_ADDRESS, new { @class = "form-control readonly-field", rows = "1", style = "max-width:92%", placeholder = "Enter theater address", required = "required" })
                     </div>
                     <div class="col-md-4 mb-3">
-                        <label for="City" class="form-label fw-bold">City <span class="text-danger">*</span></label>
+                        <label for="T_CITY" class="form-label fw-bold">City <span class="text-danger">*</span></label>
                         @Html.TextBoxFor(m => m.T_CITY, new { @class = "form-control readonly-field ddrread", placeholder = "Enter city", required = "required" })
                     </div>
                 </div>
                 <div class="row ms-4">
                     <div class="col-md-4 mb-3">
-                        <label for="TheaterCommencementDate" class="form-label fw-bold">Theatre Commencement Date <span class="text-danger">*</span></label>
+                        <label for="T_COMMENCEMENT_DATE" class="form-label fw-bold">Theatre Commencement Date <span class="text-danger">*</span></label>
                         @Html.TextBoxFor(m => m.T_COMMENCEMENT_DATE, "{0:yyyy-MM-dd}", new { @class = "form-control readonly-field", type = "date", required = "required" })
 
                     </div>
 
                     <div class="col-md-4 mb-3">
-                        <label for="TheaterCommencementDate" class="form-label fw-bold">License Date <span class="text-danger">*</span></label>
+                        <label for="T_COMMENCEMENT_DATE" class="form-label fw-bold">License Date <span class="text-danger">*</span></label>
                         @Html.TextBoxFor(m => m.T_COMMENCEMENT_DATE, "{0:yyyy-MM-dd}", new { @class = "form-control readonly-field", type = "date" })
 
                     </div>
@@ -129,17 +129,17 @@
                 <div class="row ms-4">
 
                     <div class="col-md-4 mb-3">
-                        <label for="AMCPropertyTaxTenementNo" class="form-label fw-bold">AMC Property Tax Tenement No <span class="text-danger">*</span></label>
+                        <label for="T_TENAMENT_NO" class="form-label fw-bold">AMC Property Tax Tenement No <span class="text-danger">*</span></label>
                         @Html.TextBoxFor(m => m.T_TENAMENT_NO, new { @class = "form-control readonly-field", placeholder = "Tenement No", required = "required" })
                     </div>
                     <div class="col-md-4 mb-3">
-                        <label for="Zone" class="form-label fw-bold">Zone <span class="text-danger">*</span></label>
+                        <label for="T_ZONE" class="form-label fw-bold">Zone <span class="text-danger">*</span></label>
                         @Html.DropDownListFor(m => m.T_ZONE, new SelectList(new[] { "Zone1", "Zone2", "Zone3", "Zone4" }), "-- Select Zone --",
                      new { @class = "form-control readonly-field ddrread" })
                     </div>
 
                     <div class="col-md-4 mb-3">
-                        <label for="WardZone" class="form-label fw-bold">Ward <span class="text-danger">*</span></label>
+                        <label for="T_WARD" class="form-label fw-bold">Ward <span class="text-danger">*</span></label>
                         @Html.DropDownListFor(m => m.T_WARD, new SelectList(new[] { "Ward1", "Ward2", "Ward3", "Ward4" }), "-- Select Ward Zone --",
                      new { @class = "form-control readonly-field" })
                     </div>
@@ -149,30 +149,30 @@
                 <div class="row ms-4">
 
                     <div class="col-md-4 mb-3">
-                        <label for="AMCProfessionalTaxPECNo" class="form-label fw-bold">AMC Professional Tax PEC No </label>
+                        <label for="T_PEC_NO" class="form-label fw-bold">AMC Professional Tax PEC No </label>
                         @Html.TextBoxFor(m => m.T_PEC_NO, new { @class = "form-control readonly-field", placeholder = "PEC No" })
                     </div>
 
                     <div class="col-md-4 mb-3">
-                        <label for="PRCNo" class="form-label fw-bold">PRC No</label>
+                        <label for="T_PRC_NO" class="form-label fw-bold">PRC No</label>
                         @Html.TextBoxFor(m => m.T_PRC_NO, new { @class = "form-control readonly-field", placeholder = "PRC No" })
                     </div>
                 </div>
 
                 <!-- Tax Payment -->
                 <div class="col-12 ms-4 fw-bold">
-                    <label for="TheaterTaxPaidOffline" class="form-label fw-bold">Already Paying Theater Tax Offline <span class="text-danger">*</span></label>
+                    <label for="T_TAX_PAYING_OFFLINE" class="form-label fw-bold">Already Paying Theater Tax Offline <span class="text-danger">*</span></label>
                     <div class="form-check d-inline-block me-3">
                         @Html.RadioButtonFor(m => m.T_TAX_PAYING_OFFLINE, "true", new { @class = "form-check-input readonly-field", id = "yes", required = "required", onclick = "toggleFields(true)" })
-                        <label class="form-check-label" for="yes">Yes</label>
+                        <label   for="T_TAX_PAYING_OFFLINE" class="form-check-label" for="yes">Yes</label>
                     </div>
                     <div class="form-check d-inline-block">
                         @Html.RadioButtonFor(m => m.T_TAX_PAYING_OFFLINE, "false", new { @class = "form-check-input readonly-field", id = "no", required = "required", onclick = "toggleFields(false)" })
-                        <label class="form-check-label" for="no">No</label>
+                        <label  for="T_TAX_PAYING_OFFLINE" class="form-check-label" for="no">No</label>
                     </div>
                 </div>
 
-                <div id="offlineTaxDetails" class="ms-4" style="display: none;">
+                <div id="OFFLINE_TAX_PAYMENT" class="ms-4" style="display: none;">
                     <div class="row">
                         <div class="col-md-4 d-inline-block fw-bold">
                             <label for="offlineTaxPaidDate" class="form-label ms-2">Offline Tax Payment</label>
@@ -184,20 +184,15 @@
                         </div>
 
                         <div class="col-md-4 d-inline-block fw-bold">
-                            <label for="offlineTaxPaidDate" class="form-label ms-2"> Month</label>
-                            <select id="offlineTaxPaidDate" name="OFFLINE_TAX_PAID_DATE" class="form-control ms-2 me-5">
-                                <option value="">-- Select Month --</option>
-                                @foreach (var month in ViewBag.Months)
-                                {
-                                    <option value="@month.Value">@month.Text</option>
-                                }
-                            </select>
+                            <label for="OFFLINE_TAX_PAID_DATE" class="form-label ms-2">Offline Tax Paid Date</label>
+                            <input type="date" id="offlineTaxPaidDate" name="OFFLINE_TAX_PAID_DATE"
+                                   class="form-control ms-2 me-5 readonly-field"
+                                   value="@Model?.OFFLINE_TAX_PAID_DATE?.ToString(" yyyy-MM-dd")" />
                         </div>
 
 
-
                         <div class="col-md-4 d-inline-block fw-bold">
-                            <label for="offlineDueDate" class="form-label ms-1">Offline Tax Due Date</label>
+                            <label for="OFFLINE_DUE_DATE" class="form-label ms-1">Offline Tax Due Date</label>
                             <input type="date" id="offlineDueDate" name="OFFLINE_DUE_DATE"
                                    class="form-control ms-1 readonly-field"
                                    value="@Model?.OFFLINE_DUE_DATE?.ToString(" yyyy-MM-dd")" />
@@ -258,7 +253,7 @@
                 <h2 class="text-bg-light p-2">Upload Required Documents:</h2>
 
                 <div class="row">
-                    <form method="post" enctype="multipart/form-data">
+
                         <div class="col-md-12">
                             <table class="table table-bordered table-striped">
                                 <thead>
@@ -313,7 +308,7 @@
 
                             </table>
                         </div>
-                            </form>
+                  
                
                         </div>
 
@@ -323,7 +318,7 @@
 
 
                 <div class="text-center">
-                    <form method="post">
+                 
 
                         @if (ViewBag.Mode == "create")
                         {
@@ -350,7 +345,7 @@
                             ViewBag.Module = true;
                             ViewBag.IsViewPAge = true;
                             @Html.HiddenFor(m => m.T_ID)
-                      
+
                             <input type="hidden" id="actionType" name="actionType" />
                             <input type="hidden" id="rejectReasonInput" name="rejectReason" />
 
@@ -387,7 +382,6 @@
                             <button type="button" class="btn btn-secondary" onclick="window.history.back()">Back</button>
                         }
 
-                    </form>
                     <!-- Reject Reason Modal -->
                     <div class="modal fade" id="rejectModal" tabindex="-1" role="dialog" aria-labelledby="rejectModalLabel" aria-hidden="true">
                         <div class="modal-dialog" role="document">
@@ -408,7 +402,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div>  
             }
             </div>
         </div>

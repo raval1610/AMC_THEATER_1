@@ -55,6 +55,7 @@ namespace Amc_theater.Controllers
                 .Select(t => new
                 {
                     TheaterID = t.T_ID,
+                    TheaterName =t.T_NAME,
                     OwnerName = t.T_OWNER_NAME,
                     MobileNo = t.T_OWNER_NUMBER != null ? t.T_OWNER_NUMBER.ToString() : string.Empty,
                     Address = t.T_ADDRESS,
@@ -83,6 +84,7 @@ namespace Amc_theater.Controllers
                 }).ToList();
 
             model.OwnerName = theaterDetails.OwnerName;
+            model.TheaterName = theaterDetails.TheaterName;
             model.MobileNo = theaterDetails.MobileNo;
             model.Address = theaterDetails.Address;
             model.Email = theaterDetails.Email;
@@ -219,6 +221,7 @@ namespace Amc_theater.Controllers
                 {
                     TheaterID = t.T_ID,
                     OwnerName = t.T_OWNER_NAME,
+                    TheaterName =t.T_NAME,
                     MobileNo = t.T_OWNER_NUMBER != null ? t.T_OWNER_NUMBER.ToString() : string.Empty,
                     Address = t.T_ADDRESS,
                     Email = t.T_OWNER_EMAIL,
@@ -249,6 +252,8 @@ namespace Amc_theater.Controllers
             model.MobileNo = theaterDetails.MobileNo;
             model.Address = theaterDetails.Address;
             model.Email = theaterDetails.Email;
+            model.TheaterName = theaterDetails.TheaterName;
+
 
             return View(model);
         }
@@ -378,11 +383,16 @@ namespace Amc_theater.Controllers
             ViewBag.CurrentAction = "ActionRequests"; // This is important!
 
             var query = from tr in db.TRN_REGISTRATION
-                        where tr.T_ACTIVE == true 
+                        where (tr.STATUS.Trim().ToLower() == "pending"
+                            || tr.STATUS.Trim().ToLower() == "rejected"
+                            || tr.STATUS.Trim().ToLower() == "approved")  // ✅ Include "Approved"
+                            && tr.T_ACTIVE == true
                         select new
 
                         {
                             tr.T_ID,
+                            tr.REG_ID,
+
                             tr.T_NAME,
                             tr.T_CITY,
                             tr.T_ADDRESS,
@@ -403,6 +413,8 @@ namespace Amc_theater.Controllers
             var theaterList = result.Select(tr => new TheaterViewModel
             {
                 T_ID = tr.T_ID,
+                REG_ID = tr.REG_ID,
+
                 T_NAME = tr.T_NAME,
                 T_CITY = tr.T_CITY,
                 T_ADDRESS = tr.T_ADDRESS,
@@ -428,11 +440,14 @@ namespace Amc_theater.Controllers
             ViewBag.CurrentAction = "List of Application"; // This is important!
 
             var query = from tr in db.TRN_REGISTRATION
-                        where (tr.STATUS.Trim().ToLower() == "pending" || tr.STATUS.Trim().ToLower() == "rejected")
-                              && tr.T_ACTIVE == true
+                        where (tr.STATUS.Trim().ToLower() == "pending"
+                            || tr.STATUS.Trim().ToLower() == "rejected"
+                            || tr.STATUS.Trim().ToLower() == "approved")  // ✅ Include "Approved"
+                            && tr.T_ACTIVE == true
                         select new
                         {
                             tr.T_ID,
+                            tr.REG_ID,
                             tr.T_NAME,
                             tr.T_CITY,
                             tr.T_ADDRESS,
@@ -454,6 +469,7 @@ namespace Amc_theater.Controllers
             var theaterList = result.Select(tr => new TheaterViewModel
             {
                 T_ID = tr.T_ID,
+                REG_ID = tr.REG_ID,
                 T_NAME = tr.T_NAME,
                 T_CITY = tr.T_CITY,
                 T_ADDRESS = tr.T_ADDRESS,
@@ -607,7 +623,7 @@ namespace Amc_theater.Controllers
                 return View(model);
             }
 
-            return RedirectToAction("Theater_List", "Home");
+            return RedirectToAction("List_of_Application", "Home");
         }
         public ActionResult Department_Login()
         {

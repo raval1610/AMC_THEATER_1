@@ -75,7 +75,7 @@
                                     </button>
                                 </div>
                                 <div class="text-end">
-                                    <a href="javascript:void(0);" id="forgotIdLink" class="btn pe-3 ps-3 mt-3 w-2me-5 btn-secondary" onclick="handleForgotIdClick()">Search ID</a>
+                                    <a href="@Url.Action("SearchID", "Home")" id="forgotIdLink" class="btn pe-3 ps-3 mt-3 w-2me-5 btn-secondary">Search ID</a>
                                 </div>
                             </div>
                         </div>
@@ -142,6 +142,7 @@
 
 
 
+
                                 </div>
                             </div>
 
@@ -178,57 +179,57 @@
                                         <tr>
                                             <td class="text-start">
                                                 @Model.Screens[i].ScreenId
-                                            <input type="hidden" name="Screens[@i].ScreenId" value="@Model.Screens[i].ScreenId" />
-                                        </td>
+                                                <input type="hidden" name="Screens[@i].ScreenId" value="@Model.Screens[i].ScreenId" />
+                                            </td>
 
 
 
-                                        <td>
-                                            <input type="text" class="form-control text-end screenPrice small-input"
-                                                   name="Screens[@i].ScreenPrice"
-                                                   value="@Model.Screens[i].ScreenPrice"
-                                                   readonly />
-                                        </td>
+                                            <td>
+                                                <input type="text" class="form-control text-end screenPrice small-input"
+                                                       name="Screens[@i].ScreenPrice"
+                                                       value="@Model.Screens[i].ScreenPrice"
+                                                       readonly />
+                                            </td>
 
-                                        <td data-type="@Model.Screens[i].ScreenType">
-                                            <input type="hidden" name="Screens[@i].ScreenType" value="@Model.Screens[i].ScreenType" />
-                                            @Model.Screens[i].ScreenType
-                                        </td>
+                                            <td data-type="@Model.Screens[i].ScreenType">
+                                                <input type="hidden" name="Screens[@i].ScreenType" value="@Model.Screens[i].ScreenType" />
+                                                @Model.Screens[i].ScreenType
+                                            </td>
 
 
 
-                                        <td>
-                                            <input type="number" class="form-control text-end totalShow small-input"
-                                                   name="Screens[@i].TotalShow"
-                                                   data-index="@i"
-                                                   oninput="calculateActualShow(@i)"
-                                                   required />
-                                        </td>
+                                            <td>
+                                                <input type="number" class="form-control text-end totalShow small-input"
+                                                       name="Screens[@i].TotalShow"
+                                                       data-index="@i"
+                                                       oninput="calculateActualShow(@i)"
+                                                       required />
+                                            </td>
 
-                                        <td>
-                                            <input type="number" class="form-control text-end cancelShow small-input"
-                                                   name="Screens[@i].CancelShow"
-                                                   data-index="@i"
-                                                   oninput="calculateActualShow(@i)"
-                                                   required />
-                                        </td>
+                                            <td>
+                                                <input type="number" class="form-control text-end cancelShow small-input"
+                                                       name="Screens[@i].CancelShow"
+                                                       data-index="@i"
+                                                       oninput="calculateActualShow(@i)"
+                                                       required />
+                                            </td>
 
-                                        <td>
-                                            <input type="number" class="form-control text-end actualShow small-input"
-                                                   name="Screens[@i].ActualShow"
-                                                   id="actualShow_@i"
-                                                   value="0"
-                                                   readonly />
-                                        </td>
+                                            <td>
+                                                <input type="number" class="form-control text-end actualShow small-input"
+                                                       name="Screens[@i].ActualShow"
+                                                       id="actualShow_@i"
+                                                       value="0"
+                                                       readonly />
+                                            </td>
 
-                                        <td>
-                                            <input type="text" class="form-control text-end amount small-input"
-                                                   name="Screens[@i].AmtPerScreen"
-                                                   id="amtPerScreen_@i"
-                                                   value="0" readonly />
-                                        </td>
-                                    </tr>
-                                }
+                                            <td>
+                                                <input type="text" class="form-control text-end amount small-input"
+                                                       name="Screens[@i].AmtPerScreen"
+                                                       id="amtPerScreen_@i"
+                                                       value="0" readonly />
+                                            </td>
+                                        </tr>
+                                    }
                                 </tbody>
 
 
@@ -313,12 +314,6 @@
                 row.querySelector(".cancelShow").insertAdjacentElement("afterend", errorSpan);
                 return errorSpan;
             }
-
-
-
-
-
-
 
             document.addEventListener("change", function (event) {
                 if (event.target.classList.contains("screenType")) {
@@ -489,6 +484,22 @@
             document.getElementById("totalAmount").innerText = `₹${totalAmount.toFixed(2)}`;
         }
 
+
+    </script>
+    <script>
+           document.addEventListener("DOMContentLoaded", function () {
+        let today = new Date();
+        let year = today.getFullYear();
+        let month = String(today.getMonth() + 1).padStart(2, '0'); // Ensures two-digit month
+
+        let currentMonth = `${year}-${month}`;
+
+        document.getElementById("fromDate").value = currentMonth;
+        document.getElementById("toDate").value = currentMonth;
+
+        // Generate table automatically with the default month
+        generateTable();
+    });
 
     </script>
 </body>
