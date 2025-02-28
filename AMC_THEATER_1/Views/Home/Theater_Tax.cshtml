@@ -72,7 +72,7 @@
                                     </button>
                                 </div>
                                 <div class="text-end">
-                                <a href="@Url.Action("SearchID", "Home")" id="forgotIdLink" class="btn pe-3 ps-3 mt-3 w-2me-5 btn-secondary">Search ID</a>
+                                    <a href="@Url.Action("SearchID", "Home")" id="forgotIdLink" class="btn pe-3 ps-3 mt-3 w-2me-5 btn-secondary">Search ID</a>
                                 </div>
                             </div>
                         </div>
@@ -130,7 +130,7 @@
                                             </div>
                                             <div class="col-md-4">
                                                 <label for="toDate" class="form-label ms-3 fw-bold">To Month</label>
-                                                <input type="month" id="toDate"  name="ToMonth" class="form-control ms-2">
+                                                <input type="month" id="toDate" name="ToMonth" class="form-control ms-2">
                                             </div>
                                             <div class="col-md-4">
                                                 <button type="button" class="btn btn-primary ms-5 w-75" id="generateBtn">Generate Table</button>
@@ -173,10 +173,12 @@
                                         }
 
                                         <tr>
-                                            <td class="text-start">@Model.Screens[i].ScreenId
-                                             <input type="hidden" name="Screens[@i].ScreenId" value="@Model.Screens[i].ScreenId" /></td>
+                                            <td class="text-start">
+                                                @Model.Screens[i].ScreenId
+                                                <input type="hidden" name="Screens[@i].ScreenId" value="@Model.Screens[i].ScreenId" />
+                                            </td>
 
-                                           
+
 
                                             <td>
                                                 <input type="text" class="form-control text-end screenPrice small-input"
@@ -190,29 +192,26 @@
                                                 @Model.Screens[i].ScreenType
                                             </td>
 
-                                           
+
 
                                             <td>
                                                 <input type="number" class="form-control text-end totalShow small-input"
                                                        name="Screens[@i].TotalShow"
                                                        data-index="@i"
-                                                       oninput="calculateActualShow(@i)"
-                                                       required />
+                                                       oninput="calculateActualShow(@i)" />
                                             </td>
 
                                             <td>
                                                 <input type="number" class="form-control text-end cancelShow small-input"
                                                        name="Screens[@i].CancelShow"
                                                        data-index="@i"
-                                                       oninput="calculateActualShow(@i)"
-                                                       required />
+                                                       oninput="calculateActualShow(@i)" />
                                             </td>
 
                                             <td>
                                                 <input type="number" class="form-control text-end actualShow small-input"
                                                        name="Screens[@i].ActualShow"
                                                        id="actualShow_@i"
-                                                       value="0"
                                                        readonly />
                                             </td>
 
@@ -220,7 +219,7 @@
                                                 <input type="text" class="form-control text-end amount small-input"
                                                        name="Screens[@i].AmtPerScreen"
                                                        id="amtPerScreen_@i"
-                                                       value="0" readonly />
+                                                       readonly />
                                             </td>
                                         </tr>
                                     }
@@ -258,11 +257,11 @@
                 </div>
             </div>
         </div>
-            </div>
-            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 
 
-            <script>
+    <script>
                 document.addEventListener("DOMContentLoaded", function () {
                     document.getElementById("generateBtn").addEventListener("click", generateTable);
 
@@ -274,7 +273,7 @@
                             !target.classList.contains("rate")) return;
 
                         // Prevent negative values
-                        target.value = Math.max(0, target.value);
+                        target.value = Math.max( target.value);
 
                         let row = target.closest("tr");
 
@@ -308,12 +307,6 @@
                         row.querySelector(".cancelShow").insertAdjacentElement("afterend", errorSpan);
                         return errorSpan;
                     }
-
-
-
-
-
-
 
                     document.addEventListener("change", function (event) {
                         if (event.target.classList.contains("screenType")) {
@@ -483,8 +476,122 @@
 
                     document.getElementById("totalAmount").innerText = `₹${totalAmount.toFixed(2)}`;
                 }
+           //VALIDATION SCRIPT
+           // Disable browser validation
+document.querySelector("form").setAttribute("novalidate", true);
+
+// Function to create or fetch an error span next to the input field
+function createFieldErrorSpan(input) {
+    let errorSpan = input.nextElementSibling;
+
+    if (!errorSpan || !errorSpan.classList.contains("error-message")) {
+        errorSpan = document.createElement("span");
+        errorSpan.className = "error-message text-danger small d-block mt-1";
+        input.insertAdjacentElement("afterend", errorSpan);
+    }
+
+    return errorSpan;
+}
+
+// Function to validate an input field
+function validateInput(input) {
+    let value = input.value.trim();
+    let errorSpan = createFieldErrorSpan(input);
+    let numericValue = parseFloat(value);
+
+    // Reset error message
+    errorSpan.innerText = "";
+    input.classList.remove("is-invalid");
+
+    // General validation: Must not be empty and must be a valid number
+    if (!value || isNaN(numericValue)) {
+        errorSpan.innerText = "This field is required!";
+        input.classList.add("is-invalid");
+        return false;
+    }
+
+    // Prevent negative numbers
+    if (numericValue < 0) {
+        errorSpan.innerText = "Negative values are not allowed!";
+        input.classList.add("is-invalid");
+        return false;
+    }
+
+    // Special validation for "Total Show" (must be at least 1)
+    if (input.classList.contains("totalShow") && numericValue < 1) {
+        errorSpan.innerText = "Total Show must be at least 1!";
+        input.classList.add("is-invalid");
+        return false;
+    }
+
+    // If all validations pass, clear the error
+    errorSpan.innerText = "";
+    input.classList.remove("is-invalid");
+    return true;
+}
+
+// Attach real-time validation (Event Delegation for dynamic rows)
+document.addEventListener("input", function (event) {
+    if (event.target.matches(".totalShow, .cancelShow, .rate")) {
+        validateInput(event.target);
+    }
+});
+
+// Validate inputs on form submission
+document.querySelector(".btn-success").addEventListener("click", function (event) {
+    let inputs = document.querySelectorAll(".totalShow, .cancelShow, .rate");
+    let isFormValid = true;
+
+    for (let input of inputs) {
+        if (!validateInput(input)) {
+            isFormValid = false;
+            input.focus(); // Focus on the first invalid input
+            event.preventDefault(); // Prevent form submission
+            return;
+        }
+    }
+
+    // Validate file input
+    let fileInput = document.getElementById("fileInput");
+    if (!fileInput.files.length) {
+        alert("Please upload a Show Statement file.");
+        event.preventDefault();
+        fileInput.focus();
+    }
+});
 
 
-            </script>
+// Clear error messages dynamically when user enters valid input
+document.querySelectorAll(".totalShow, .cancelShow, .rate").forEach(input => {
+    input.addEventListener("input", function () {
+        let errorSpan = createFieldErrorSpan(input);
+        let numericValue = parseFloat(this.value.trim());
+
+        if (!isNaN(numericValue) && numericValue >= 0) {
+            errorSpan.innerText = ""; // Clear error message
+            this.classList.remove("is-invalid"); // Remove invalid class
+        }
+    });
+});
+
+//to month and from month 
+ document.addEventListener("DOMContentLoaded", function () {
+     // Get the current date
+     let today = new Date();
+
+     // Format it to YYYY-MM (required for <input type="month">)
+     let currentMonth = today.toISOString().slice(0, 7);
+
+     // Set the default values for "From Month" and "To Month"
+     document.getElementById("fromDate").value = currentMonth;
+     document.getElementById("toDate").value = currentMonth;
+
+     // Call generateTable function automatically after setting default values
+     generateTable();
+ });
+
+ // Ensure generateTable is called when the button is clicked
+ document.getElementById("generateBtn").addEventListener("click", generateTable);
+    </script>
 </body>
 </html>
