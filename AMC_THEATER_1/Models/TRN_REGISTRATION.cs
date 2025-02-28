@@ -11,11 +11,10 @@ namespace AMC_THEATER_1.Models
 {
     using System;
     using System.Collections.Generic;
-    
+    using System.ComponentModel.DataAnnotations.Schema;
+
     public partial class TRN_REGISTRATION
     {
-        internal readonly string SCREEN_TYPE;
-
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public TRN_REGISTRATION()
         {
@@ -38,7 +37,6 @@ namespace AMC_THEATER_1.Models
         public string T_NAME { get; set; }
         public string T_ADDRESS { get; set; }
         public Nullable<bool> T_ACTIVE { get; set; }
-        public string T_OWNER_NAME { get; set; }
         public Nullable<long> T_OWNER_NUMBER { get; set; }
         public string T_OWNER_EMAIL { get; set; }
         public Nullable<System.DateTime> T_COMMENCEMENT_DATE { get; set; }
@@ -61,6 +59,10 @@ namespace AMC_THEATER_1.Models
         public string STATUS { get; set; }
         public string REJECT_REASON { get; set; }
         public string REG_ID { get; set; }
+        public string LICENSE_HOLDER_NAME { get; set; }
+        public string PROPERTY_TYPE { get; set; }
+        public string MANAGER_NAME { get; set; }
+        public Nullable<System.DateTime> LICENSE_DATE { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<NO_OF_SCREENS> NO_OF_SCREENS { get; set; }
@@ -88,6 +90,9 @@ namespace AMC_THEATER_1.Models
         public virtual ICollection<TRN_REGISTRATION_LOG> TRN_REGISTRATION_LOG { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<TRN_THEATRE_DOCS_LOG> TRN_THEATRE_DOCS_LOG { get; set; }
-        public bool IsEditMode { get; internal set; }
+
+        [NotMapped]
+        public bool IsEditMode { get; set; }
+
     }
 }

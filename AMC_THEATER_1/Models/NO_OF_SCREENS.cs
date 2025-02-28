@@ -24,6 +24,7 @@ namespace AMC_THEATER_1.Models
         public int T_ID { get; set; }
         public Nullable<int> AUDIENCE_CAPACITY { get; set; }
         public string SCREEN_TYPE { get; set; }
+        public Nullable<int> SCREEN_NO { get; set; }
     
         public virtual TRN_REGISTRATION TRN_REGISTRATION { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

@@ -50,6 +50,8 @@ namespace AMC_THEATER_1.Controllers
             return View("Registration", model);
         }
 
+
+
         public ActionResult Registration(int? id, bool isViewPage = false, string mode = "create")
         {
             //string token = AntiForgery.GetHtml().ToString(); // ✅ Generate token

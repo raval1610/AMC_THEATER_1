@@ -56,7 +56,7 @@ namespace Amc_theater.Controllers
                 {
                     TheaterID = t.T_ID,
                     TheaterName =t.T_NAME,
-                    OwnerName = t.T_OWNER_NAME,
+                    //OwnerName = t.T_OWNER_NAME,
                     MobileNo = t.T_OWNER_NUMBER != null ? t.T_OWNER_NUMBER.ToString() : string.Empty,
                     Address = t.T_ADDRESS,
                     Email = t.T_OWNER_EMAIL,
@@ -83,7 +83,7 @@ namespace Amc_theater.Controllers
                     ScreenPrice = screenPrices.ContainsKey(s.SCREEN_TYPE) ? screenPrices[s.SCREEN_TYPE].GetValueOrDefault(0) : 0
                 }).ToList();
 
-            model.OwnerName = theaterDetails.OwnerName;
+            //model.OwnerName = theaterDetails.OwnerName;
             model.TheaterName = theaterDetails.TheaterName;
             model.MobileNo = theaterDetails.MobileNo;
             model.Address = theaterDetails.Address;
@@ -220,7 +220,7 @@ namespace Amc_theater.Controllers
                 .Select(t => new
                 {
                     TheaterID = t.T_ID,
-                    OwnerName = t.T_OWNER_NAME,
+                    //OwnerName = t.T_OWNER_NAME,
                     TheaterName =t.T_NAME,
                     MobileNo = t.T_OWNER_NUMBER != null ? t.T_OWNER_NUMBER.ToString() : string.Empty,
                     Address = t.T_ADDRESS,
@@ -248,7 +248,7 @@ namespace Amc_theater.Controllers
                     ScreenPrice = screenPrices.ContainsKey(s.SCREEN_TYPE) ? screenPrices[s.SCREEN_TYPE].GetValueOrDefault(0) : 0
                 }).ToList();
 
-            model.OwnerName = theaterDetails.OwnerName;
+            //model.OwnerName = theaterDetails.OwnerName;
             model.MobileNo = theaterDetails.MobileNo;
             model.Address = theaterDetails.Address;
             model.Email = theaterDetails.Email;
@@ -371,7 +371,7 @@ namespace Amc_theater.Controllers
 
             var theater = db.TRN_REGISTRATION
                  .Where(t => t.T_ID.ToString().StartsWith(theaterId))
-                 .Select(t => new { T_Name = t.T_NAME ?? "", T_Owner = t.T_OWNER_NAME ?? "" }) // Ensure values are not null
+                 .Select(t => new { T_Name = t.T_NAME ?? "" }) // Ensure values are not null
                  .ToList();
 
 
@@ -402,7 +402,7 @@ namespace Amc_theater.Controllers
                             tr.STATUS,
                             tr.REJECT_REASON,
                             tr.UPDATE_DATE,
-                            tr.T_OWNER_NAME,
+                            //tr.T_OWNER_NAME,
 
                             TheaterScreenCount = db.NO_OF_SCREENS.Count(s => s.T_ID == tr.T_ID && s.SCREEN_TYPE == "Theater"),
                             VideoTheaterScreenCount = db.NO_OF_SCREENS.Count(s => s.T_ID == tr.T_ID && s.SCREEN_TYPE == "Video")
@@ -422,7 +422,7 @@ namespace Amc_theater.Controllers
                 T_ZONE = tr.T_ZONE,
                 T_WARD = tr.T_WARD,
                 STATUS = tr.STATUS,
-                T_OWNER_NAME = tr.T_OWNER_NAME,
+                //T_OWNER_NAME = tr.T_OWNER_NAME,
                 REJECTREASON = tr.REJECT_REASON,
                 UPDATE_DATE = tr.UPDATE_DATE ?? DateTime.MinValue,
                 SCREEN_COUNT = tr.TheaterScreenCount + tr.VideoTheaterScreenCount,
@@ -457,7 +457,7 @@ namespace Amc_theater.Controllers
                             tr.STATUS,
                             tr.REJECT_REASON,
                             tr.UPDATE_DATE,
-                            tr.T_OWNER_NAME,
+                            //tr.T_OWNER_NAME,
                             tr.T_COMMENCEMENT_DATE,
 
                             TheaterScreenCount = db.NO_OF_SCREENS.Count(s => s.T_ID == tr.T_ID && s.SCREEN_TYPE == "Theater"),
@@ -477,7 +477,7 @@ namespace Amc_theater.Controllers
                 T_ZONE = tr.T_ZONE,
                 T_WARD = tr.T_WARD,
                 STATUS = tr.STATUS,
-                T_OWNER_NAME = tr.T_OWNER_NAME,
+              //  T_OWNER_NAME = tr.T_OWNER_NAME,
                 T_COMMENCEMENT_DATE = (DateTime)tr.T_COMMENCEMENT_DATE,
                 REJECTREASON = tr.REJECT_REASON,
                 UPDATE_DATE = tr.UPDATE_DATE ?? DateTime.MinValue,
@@ -669,7 +669,7 @@ namespace Amc_theater.Controllers
                             tr.STATUS,
                             tr.REJECT_REASON,
                             tr.UPDATE_DATE,
-                            tr.T_OWNER_NAME,
+                            //tr.T_OWNER_NAME,
                             tr.T_COMMENCEMENT_DATE,
                             TheaterScreenCount = db.NO_OF_SCREENS.Count(s => s.T_ID == tr.T_ID && s.SCREEN_TYPE == "Theater"),
                             VideoTheaterScreenCount = db.NO_OF_SCREENS.Count(s => s.T_ID == tr.T_ID && s.SCREEN_TYPE == "Video")
@@ -692,7 +692,7 @@ namespace Amc_theater.Controllers
                 T_ZONE = tr.T_ZONE,
                 T_WARD = tr.T_WARD,
                 STATUS = tr.STATUS,
-                T_OWNER_NAME = tr.T_OWNER_NAME,
+                //T_OWNER_NAME = tr.T_OWNER_NAME,
                 REJECTREASON = tr.REJECT_REASON,
                 T_COMMENCEMENT_DATE = (DateTime)tr.T_COMMENCEMENT_DATE,
                 UPDATE_DATE = tr.UPDATE_DATE ?? DateTime.MinValue,
@@ -868,11 +868,11 @@ namespace Amc_theater.Controllers
             }
 
             // Theater Type Filter
-            if (!string.IsNullOrEmpty(theaterTypeFilter))
-            {
-                query = query.Where(tr => tr.SCREEN_TYPE == theaterTypeFilter);  // Adjust this part as needed for correct column name
-                ViewBag.SelectedTheaterType = theaterTypeFilter;
-            }
+            //if (!string.IsNullOrEmpty(theaterTypeFilter))
+            //{
+            //    query = query.Where(tr => tr.SCREEN_TYPE == theaterTypeFilter);  // Adjust this part as needed for correct column name
+            //    ViewBag.SelectedTheaterType = theaterTypeFilter;
+            //}
 
             if (!string.IsNullOrEmpty(statusFilter) && statuses.Contains(statusFilter))
             {
@@ -1564,7 +1564,7 @@ namespace Amc_theater.Controllers
                           {
                               Id = t.T_ID,  // Theater ID
                               T_NAME = t.T_NAME, // Theater Name
-                              T_OWNER_NAME = t.T_OWNER_NAME // Owner Name
+                              //T_OWNER_NAME = t.T_OWNER_NAME // Owner Name
                           })
                           .ToList();
 

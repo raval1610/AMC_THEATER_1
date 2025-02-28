@@ -33,6 +33,7 @@ namespace AMC_THEATER_1.Models
         // ✅ New Property for SCREEN TYPE
         public string SCREEN_TYPE { get; set; }
 
+        public bool IsEditMode { get; set; }
 
         public List<TRN_SCREEN_TAX_PRICE> ScreenTypes { get; set; }
 

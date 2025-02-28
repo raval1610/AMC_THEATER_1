@@ -101,6 +101,7 @@ warning 6002: The table/view 'THEATER_MODULE.dbo.MST_STATUS' does not have a pri
           <Property Name="T_ID" Type="int" Nullable="false" />
           <Property Name="AUDIENCE_CAPACITY" Type="int" />
           <Property Name="SCREEN_TYPE" Type="varchar" MaxLength="50" />
+          <Property Name="SCREEN_NO" Type="int" />
         </EntityType>
         <EntityType Name="NO_OF_SCREENS_LOG">
           <Key>
@@ -235,7 +236,6 @@ warning 6002: The table/view 'THEATER_MODULE.dbo.PENDING_DUES' does not have a p
           <Property Name="T_NAME" Type="varchar" MaxLength="255" />
           <Property Name="T_ADDRESS" Type="varchar" MaxLength="255" />
           <Property Name="T_ACTIVE" Type="bit" />
-          <Property Name="T_OWNER_NAME" Type="varchar" MaxLength="255" />
           <Property Name="T_OWNER_NUMBER" Type="bigint" />
           <Property Name="T_OWNER_EMAIL" Type="varchar" MaxLength="255" />
           <Property Name="T_COMMENCEMENT_DATE" Type="date" />
@@ -258,6 +258,10 @@ warning 6002: The table/view 'THEATER_MODULE.dbo.PENDING_DUES' does not have a p
           <Property Name="STATUS" Type="varchar" MaxLength="10" />
           <Property Name="REJECT_REASON" Type="varchar(max)" />
           <Property Name="REG_ID" Type="varchar" MaxLength="10" />
+          <Property Name="LICENSE_HOLDER_NAME" Type="varchar" MaxLength="50" />
+          <Property Name="PROPERTY_TYPE" Type="varchar" MaxLength="50" />
+          <Property Name="MANAGER_NAME" Type="varchar" MaxLength="50" />
+          <Property Name="LICENSE_DATE" Type="date" />
         </EntityType>
         <EntityType Name="TRN_REGISTRATION_LOG">
           <Key>
@@ -829,6 +833,7 @@ warning 6002: The table/view 'THEATER_MODULE.dbo.TRN_SCREEN_TAX_PRICE' does not 
           <Property Name="SCREEN_TYPE" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="TRN_REGISTRATION" Relationship="Self.FK__NO_OF_SCRE__T_ID__145C0A3F" FromRole="NO_OF_SCREENS" ToRole="TRN_REGISTRATION" />
           <NavigationProperty Name="NO_OF_SCREENS_LOG" Relationship="Self.FK_NO_OF_SCREENS_LOG_SCREEN_ID" FromRole="NO_OF_SCREENS" ToRole="NO_OF_SCREENS_LOG" />
+          <Property Name="SCREEN_NO" Type="Int32" />
         </EntityType>
         <EntityType Name="NO_OF_SCREENS_LOG">
           <Key>
@@ -965,7 +970,6 @@ warning 6002: The table/view 'THEATER_MODULE.dbo.TRN_SCREEN_TAX_PRICE' does not 
           <Property Name="T_NAME" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
           <Property Name="T_ADDRESS" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
           <Property Name="T_ACTIVE" Type="Boolean" />
-          <Property Name="T_OWNER_NAME" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
           <Property Name="T_OWNER_NUMBER" Type="Int64" />
           <Property Name="T_OWNER_EMAIL" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
           <Property Name="T_COMMENCEMENT_DATE" Type="DateTime" Precision="0" />
@@ -1001,6 +1005,10 @@ warning 6002: The table/view 'THEATER_MODULE.dbo.TRN_SCREEN_TAX_PRICE' does not 
           <NavigationProperty Name="TRN_THEATRE_DOCS" Relationship="Self.FK_T_ID_REG" FromRole="TRN_REGISTRATION" ToRole="TRN_THEATRE_DOCS" />
           <NavigationProperty Name="TRN_REGISTRATION_LOG" Relationship="Self.FK_TRN_REGISTRATION_LOG_T_ID" FromRole="TRN_REGISTRATION" ToRole="TRN_REGISTRATION_LOG" />
           <NavigationProperty Name="TRN_THEATRE_DOCS_LOG" Relationship="Self.FK_TRN_THEATRE_DOCS_LOG_T_ID" FromRole="TRN_REGISTRATION" ToRole="TRN_THEATRE_DOCS_LOG" />
+          <Property Name="LICENSE_HOLDER_NAME" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="PROPERTY_TYPE" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="MANAGER_NAME" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="LICENSE_DATE" Type="DateTime" Precision="0" />
         </EntityType>
         <EntityType Name="TRN_REGISTRATION_LOG">
           <Key>
@@ -1581,6 +1589,7 @@ warning 6002: The table/view 'THEATER_MODULE.dbo.TRN_SCREEN_TAX_PRICE' does not 
           <EntitySetMapping Name="NO_OF_SCREENS">
             <EntityTypeMapping TypeName="THEATER_MODULEModel.NO_OF_SCREENS">
               <MappingFragment StoreEntitySet="NO_OF_SCREENS">
+                <ScalarProperty Name="SCREEN_NO" ColumnName="SCREEN_NO" />
                 <ScalarProperty Name="SCREEN_ID" ColumnName="SCREEN_ID" />
                 <ScalarProperty Name="T_ID" ColumnName="T_ID" />
                 <ScalarProperty Name="AUDIENCE_CAPACITY" ColumnName="AUDIENCE_CAPACITY" />
@@ -1714,11 +1723,14 @@ warning 6002: The table/view 'THEATER_MODULE.dbo.TRN_SCREEN_TAX_PRICE' does not 
           <EntitySetMapping Name="TRN_REGISTRATION">
             <EntityTypeMapping TypeName="THEATER_MODULEModel.TRN_REGISTRATION">
               <MappingFragment StoreEntitySet="TRN_REGISTRATION">
+                <ScalarProperty Name="LICENSE_DATE" ColumnName="LICENSE_DATE" />
+                <ScalarProperty Name="MANAGER_NAME" ColumnName="MANAGER_NAME" />
+                <ScalarProperty Name="PROPERTY_TYPE" ColumnName="PROPERTY_TYPE" />
+                <ScalarProperty Name="LICENSE_HOLDER_NAME" ColumnName="LICENSE_HOLDER_NAME" />
                 <ScalarProperty Name="T_ID" ColumnName="T_ID" />
                 <ScalarProperty Name="T_NAME" ColumnName="T_NAME" />
                 <ScalarProperty Name="T_ADDRESS" ColumnName="T_ADDRESS" />
                 <ScalarProperty Name="T_ACTIVE" ColumnName="T_ACTIVE" />
-                <ScalarProperty Name="T_OWNER_NAME" ColumnName="T_OWNER_NAME" />
                 <ScalarProperty Name="T_OWNER_NUMBER" ColumnName="T_OWNER_NUMBER" />
                 <ScalarProperty Name="T_OWNER_EMAIL" ColumnName="T_OWNER_EMAIL" />
                 <ScalarProperty Name="T_COMMENCEMENT_DATE" ColumnName="T_COMMENCEMENT_DATE" />
