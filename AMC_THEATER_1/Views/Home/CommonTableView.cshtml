@@ -133,9 +133,10 @@
                             {
                                 <tr>
                                     <td class="sticky-column-left">@theater.T_ID</td>
-                                    <td class="text-center">
-                                        @(theater.STATUS.Trim().ToLower() == "approved" ? theater.REG_ID.ToString() : "-")
+                                    <td class="text-center" style="white-space: nowrap; color: @(theater.STATUS.Trim().ToLower() == "approved" ? "green" : "red"); ">
+                                        @(theater.STATUS.Trim().ToLower() == "approved" ? theater.REG_ID.ToString() : "Not Generated")
                                     </td>
+
                                     <td>@theater.T_NAME</td>
                                     <td>@theater.T_ZONE  @theater.T_WARD</td>
                                     <td>@theater.T_OWNER_NAME</td>
@@ -162,22 +163,14 @@
 
                                         else
                                         {
-                                            if (theater.STATUS == "Pending")
-                                            {
-                                                <a href="@Url.Action("Registration", "TRN_REGISTRATION", new { id = theater.T_ID,mode="edit" })"
-                                                   class="btn btn-primary btn-sm mb-2 w-100">Edit</a>
-                                                <button type="button" onclick="confirmSoftDelete('@theater.T_ID')"
-                                                        class="btn btn-danger btn-sm">
-                                                    Delete
-                                                </button>
-                                            }
-                                            else
-                                            {
-                                                <button class="btn btn-primary  btn-sm  mb-2 w-100 d-block d-inline-block" >Edit</button>
-                                                <button type="button" onclick="confirmSoftDelete('@theater.T_ID')" class="btn btn-danger btn-sm" >
-                                                    Delete
-                                                </button>
-                                            }
+
+                                            <a href="@Url.Action("Registration", "TRN_REGISTRATION", new { id = theater.T_ID,mode="edit" })"
+                                               class="btn btn-primary btn-sm mb-2 w-100">Edit</a>
+                                            <button type="button" onclick="confirmSoftDelete('@theater.T_ID')"
+                                                    class="btn btn-danger btn-sm">
+                                                Delete
+                                            </button>
+
                                         }
                                     </td>
                                 </tr>
