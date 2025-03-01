@@ -237,8 +237,8 @@
                                     <td>
                                         <input type="hidden" name="NO_OF_SCREENS[@screenNo].T_ID" value="@screenList[screenNo].T_ID">
 
-                                        <input type="text" name="NO_OF_SCREENS[@screenNo].SCREEN_ID" class="form-control ms-4"
-                                               value="@screenList[screenNo].SCREEN_ID">
+                                        <input type="text" name="NO_OF_SCREENS[@screenNo].SCREEN_NO" class="form-control ms-4"
+                                               value="@screenList[screenNo].SCREEN_NO">
                                     </td>
 
                                     <td>
@@ -449,13 +449,18 @@
 <!-- Hidden input to store screen data -->
 <script>
     function addScreen() {
-        const tableBody = document.querySelector("#screenTableBody");
-        if (!tableBody) return;
+        debugger;
+        const tableBody = document.querySelector("#screenTableBody"); // Ensure tbody selection
+        if (!tableBody) {
+            console.error("Table body not found!");
+            return;
+        }
 
         const rows = tableBody.getElementsByTagName("tr");
 
+        if (rows.length === 0) return; // If no rows exist, do nothing
+
         if (rows.length >= 10) {
-            // Show error message in a prompt instead of displaying it below buttons
             alert("Maximum 10 screens can be added.");
             return;
         }
@@ -467,31 +472,39 @@
         for (let input of inputs) {
             if (input.value.trim() === "") {
                 showErrorMessage(input, "This field is required.");
+
+                // Attach event listener to remove error on input change
+                input.addEventListener("input", function () {
+                    if (input.value.trim() !== "") {
+                        clearErrorMessage(input);
+                    }
+                });
+
                 return;
             }
         }
 
-        // Clone the last row
-        const newRow = lastRow.cloneNode(true);
+        // Clone the first row to maintain consistency
+        const lastIndex = rows.length; // Get new row index
+        const newRow = rows[0].cloneNode(true);
 
-        // Reset input values except hidden fields
+        // Update input names and clear values
         newRow.querySelectorAll("input").forEach(input => {
-            if (input.type !== "hidden") input.value = "";
+            if (input.name) {
+                input.name = input.name.replace(/\d+/, lastIndex); // Update index
+                if (input.type !== "hidden") input.value = ""; // Clear values except hidden fields
+            }
         });
 
-        // Make screen number field editable and attach validation event
-        const screenIdInput = newRow.querySelector('input[name*=".SCREEN_ID"]');
-        screenIdInput.removeAttribute("readonly");
-        screenIdInput.addEventListener("input", function () {
-            validateScreenNumber(screenIdInput);
+        // Attach validation events
+        newRow.querySelectorAll("input").forEach(input => {
+            input.addEventListener("input", function () {
+                validateInput(input);
+            });
         });
-
-        // Clear any previous error messages when a new row is successfully added
-        inputs.forEach(clearErrorMessage);
 
         tableBody.appendChild(newRow);
     }
-
 
 
     function removeRow(button) {
@@ -499,14 +512,19 @@
         const rows = tableBody.getElementsByTagName("tr");
 
         if (rows.length === 1) {
-            // Show error message in a prompt instead of displaying it in the table
             alert("At least one screen entry must be present.");
             return;
         }
 
         var row = button.parentNode.parentNode;
         row.parentNode.removeChild(row);
+
+        // If no rows are left, add a new blank row automatically
+        if (tableBody.getElementsByTagName("tr").length === 0) {
+            addScreen();
+        }
     }
+
 
     function editRow(button) {
         var row = button.parentNode.parentNode;
@@ -515,6 +533,7 @@
     }
 
     function updateScreenType(input) {
+        debugger;
         var seatCapacity = input.value.trim();
         var row = input.parentNode.parentNode;
         var screenTypeInput = row.cells[2].querySelector("input");
@@ -534,40 +553,36 @@
         }
     }
 
+    function validateInput(input) {
+        if (input.name.includes("SCREEN_NO")) {
+            validateScreenNumber(input);
+        } else if (input.name.includes("AUDIENCE_CAPACITY")) {
+            updateScreenType(input);
+        }
+    }
+
     function validateScreenNumber(input) {
         const enteredNumber = input.value.trim();
-        const existingScreenNumbers = [...document.querySelectorAll('input[name*=".SCREEN_ID"]')]
+        const existingScreenNumbers = [...document.querySelectorAll('input[name*=".SCREEN_NO"]')]
             .map(inp => inp.value.trim())
             .filter(value => value !== "");
 
         if (existingScreenNumbers.filter(num => num === enteredNumber).length > 1) {
             showErrorMessage(input, "Duplicate screen number is not allowed.");
-        } else {
-            clearErrorMessage(input); // ✅ Remove error when screen number is valid
+        } else if (enteredNumber !== "") {
+            clearErrorMessage(input); // ✅ Remove error when a valid number is entered
         }
     }
 
-    function showErrorMessage(input, message, type = "input") {
-        let errorElement;
-        if (type === "general") {
-            errorElement = document.getElementById("generalErrorMessage");
-            if (!errorElement) {
-                errorElement = document.createElement("div");
-                errorElement.id = "generalErrorMessage";
-                errorElement.style.color = "red";
-                errorElement.style.marginTop = "5px";
-                input.appendChild(errorElement);
-            }
-        } else {
-            errorElement = input.nextElementSibling;
-            if (!errorElement || !errorElement.classList.contains("error-message")) {
-                errorElement = document.createElement("div");
-                errorElement.classList.add("error-message");
-                errorElement.style.color = "red";
-                errorElement.style.fontSize = "12px";
-                errorElement.style.marginTop = "2px";
-                input.parentNode.appendChild(errorElement);
-            }
+    function showErrorMessage(input, message) {
+        let errorElement = input.nextElementSibling;
+        if (!errorElement || !errorElement.classList.contains("error-message")) {
+            errorElement = document.createElement("div");
+            errorElement.classList.add("error-message");
+            errorElement.style.color = "red";
+            errorElement.style.fontSize = "12px";
+            errorElement.style.marginTop = "2px";
+            input.parentNode.appendChild(errorElement);
         }
         errorElement.textContent = message;
     }
@@ -578,9 +593,8 @@
             errorElement.remove();
         }
     }
+
 </script>
-
-
 
 
 @*offlineTax*@
