@@ -57,6 +57,7 @@
 
 
 
+
                         <!-- Status Column -->
                         <div class="col-md-3 d-inline-block">
                             <label for="statusFilter" class="fw-bold text-dark" style="font-size: 14px;">Status:</label>
@@ -127,6 +128,51 @@
         </div>
     </div>
     @*SCRIPTS*@
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            document.getElementById("fromDate").addEventListener("input", function () {
+                validateYear(this);
+            });
+
+            document.getElementById("toDate").addEventListener("input", function () {
+                validateYear(this);
+            });
+
+            function validateYear(input) {
+                let value = input.value;
+                let year = value.split("-")[0]; // Extract the year part
+
+                if (year.length > 4) {
+                    input.value = value.substring(0, 4) + value.substring(5); // Limit year to 4 digits
+                }
+            }
+        });
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let today = new Date();
+            let firstDay = new Date(today.getFullYear(), today.getMonth(), 1); // 1st day of the current month
+
+            let formatDate = (date) => {
+                let year = date.getFullYear();
+                let month = (date.getMonth() + 1).toString().padStart(2, '0'); // Ensure 2-digit month
+                let day = date.getDate().toString().padStart(2, '0'); // Ensure 2-digit day
+                return `${year}-${month}-${day}`;
+            };
+
+            let fromDateInput = document.getElementById("fromDate");
+            let toDateInput = document.getElementById("toDate");
+
+            // Only set default values if fields are empty (i.e., first time loading the page)
+            if (!fromDateInput.value) {
+                fromDateInput.value = formatDate(firstDay);
+            }
+            if (!toDateInput.value) {
+                toDateInput.value = formatDate(today);
+            }
+        });
+
+    </script>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const filters = ["theaterId", "fromDate", "toDate", "cityFilter", "wardFilter", "zoneFilter", "statusFilter"];
