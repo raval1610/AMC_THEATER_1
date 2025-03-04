@@ -79,6 +79,7 @@ namespace Amc_theater.Controllers
                     ScreenId = s.SCREEN_ID,
                     AudienceCapacity = (int)s.AUDIENCE_CAPACITY,
                     ScreenType = s.SCREEN_TYPE,
+                    SCREEN_NO = (int)s.SCREEN_NO,
 
                     ScreenPrice = screenPrices.ContainsKey(s.SCREEN_TYPE) ? screenPrices[s.SCREEN_TYPE].GetValueOrDefault(0) : 0
                 }).ToList();
@@ -91,19 +92,16 @@ namespace Amc_theater.Controllers
 
             return View(model);
         }
-        public ActionResult ProcessTaxPayment(TaxPaymentViewModel model, HttpPostedFileBase DocumentPath)
+        public ActionResult ProcessTaxPayment(TaxPaymentViewModel model, HttpPostedFileBase DocumentPath, FormCollection form)
         {
-            if (model == null || model.Screens == null || model.Screens.Count == 0)
-            {
-                TempData["Error"] = "Invalid data. Please check your input.";
-                return RedirectToAction("Index");
-            }
+            // ✅ Debug log to check received data
+            System.Diagnostics.Debug.WriteLine("Received Model: " + Newtonsoft.Json.JsonConvert.SerializeObject(model));
 
             using (var transaction = db.Database.BeginTransaction())
             {
                 try
                 {
-                    string filePath = "Generated Automatically"; // Default value
+                    string filePath = "Generated Automatically";
 
                     // ✅ **Step 1: Handle File Upload**
                     if (DocumentPath != null && DocumentPath.ContentLength > 0)
@@ -120,51 +118,74 @@ namespace Amc_theater.Controllers
                         filePath = "/UploadedDoc/" + fileName;
                     }
 
-                    // ✅ **Step 2: Fetch and Validate FromMonth & ToMonth**
+                    // ✅ **Step 2: Validate FromMonth & ToMonth**
                     if (string.IsNullOrWhiteSpace(model.FromMonth) || string.IsNullOrWhiteSpace(model.ToMonth))
                     {
                         TempData["Error"] = "From Month and To Month cannot be empty.";
                         return RedirectToAction("Index");
                     }
 
-                    DateTime fromDate, toDate;
-                    bool isFromValid = DateTime.TryParseExact(model.FromMonth + "-01", "yyyy-MM-dd", null, System.Globalization.DateTimeStyles.None, out fromDate);
-                    bool isToValid = DateTime.TryParseExact(model.ToMonth + "-01", "yyyy-MM-dd", null, System.Globalization.DateTimeStyles.None, out toDate);
-
-                    if (!isFromValid || !isToValid)
+                    if (!DateTime.TryParseExact(model.FromMonth + "-01", "yyyy-MM-dd", null, System.Globalization.DateTimeStyles.None, out DateTime fromDate) ||
+                        !DateTime.TryParseExact(model.ToMonth + "-01", "yyyy-MM-dd", null, System.Globalization.DateTimeStyles.None, out DateTime toDate))
                     {
                         TempData["Error"] = "Invalid date format. Please select valid From and To months.";
                         return RedirectToAction("Index");
                     }
 
-                    // ✅ **Step 3: Insert into THEATER_TAX_PAYMENT (Main Table)**
+                    // ✅ **Step 3: Ensure Screens List is Populated**
+                    if (model.Screens == null || model.Screens.Count == 0)
+                    {
+                        model.Screens = new List<ScreenViewModel>();
 
-                    // ✅ **Step 4: Iterate through the months and insert into NO_OF_SCREENS_TAX**
+                        int index = 0;
+                        while (form[$"Screens[{index}].ScreenType"] != null)
+                        {
+                            model.Screens.Add(new ScreenViewModel
+                            {
+                                ScreenType = form[$"Screens[{index}].ScreenType"],
+                                TotalShow = int.TryParse(form[$"Screens[{index}].TotalShow"], out int totalShow) ? totalShow : 0,
+                                CancelShow = int.TryParse(form[$"Screens[{index}].CancelShow"], out int cancelShow) ? cancelShow : 0,
+                                AmtPerScreen = decimal.TryParse(form[$"Screens[{index}].AmtPerScreen"], out decimal amt) ? amt : 0
+                            });
+
+                            index++;
+                        }
+                    }
+
+                    if (model.Screens.Count == 0)
+                    {
+                        TempData["Error"] = "No screen data available.";
+                        return RedirectToAction("Index");
+                    }
+
+                    // ✅ **Step 4: Insert into THEATER_TAX_PAYMENT**
                     for (DateTime currentDate = fromDate; currentDate <= toDate; currentDate = currentDate.AddMonths(1))
                     {
                         var taxPayment = new THEATER_TAX_PAYMENT
                         {
                             T_ID = model.TheaterId,
-                            PAYMENT_MONTH = currentDate.ToString("MMMM"), // Store the correct month name dynamically
-                            PAYMENT_YEAR = currentDate.Year, // Ensure the correct year is stored
+                            PAYMENT_MONTH = currentDate.ToString("MMMM"),
+                            PAYMENT_YEAR = currentDate.Year,
                             TAX_AMOUNT = model.Screens.Sum(s => s.AmtPerScreen),
                             SHOW_STATEMENT = filePath,
                             CREATE_USER = "System",
                             CREATE_DATE = DateTime.Now
                         };
+
                         db.THEATER_TAX_PAYMENT.Add(taxPayment);
                         db.SaveChanges();
 
+                        // ✅ **Step 5: Insert Screens into NO_OF_SCREENS_TAX**
                         foreach (var screen in model.Screens)
                         {
                             var screenTax = new NO_OF_SCREENS_TAX
                             {
                                 T_ID = model.TheaterId,
                                 TAX_ID = taxPayment.TAX_ID,
-                                SCREEN_TYPE = screen.ScreenType,
+                                SCREEN_TYPE = screen.ScreenType ?? "Unknown",
                                 TOTAL_SHOW = screen.TotalShow,
                                 CANCEL_SHOW = screen.CancelShow,
-                                ACTUAL_SHOW = screen.TotalShow - screen.CancelShow,
+                                ACTUAL_SHOW = Math.Max(0, screen.TotalShow - screen.CancelShow),
                                 RATE_PER_SCREEN = (screen.ScreenType == "Theater") ? 75 : 25,
                                 AMT_PER_SCREEN = screen.AmtPerScreen
                             };
@@ -172,7 +193,6 @@ namespace Amc_theater.Controllers
                             db.NO_OF_SCREENS_TAX.Add(screenTax);
                         }
                     }
-
 
                     db.SaveChanges();
                     transaction.Commit();
@@ -531,36 +551,149 @@ namespace Amc_theater.Controllers
             }
             base.Dispose(disposing);
         }
-  
 
 
         public ActionResult PendingDuesDept()
         {
+            // Get current month and year
+            int currentYear = DateTime.Now.Year;
+            int currentMonth = DateTime.Now.Month;
 
-            var theaters = (from tr in db.TRN_REGISTRATION
-                            join pd in db.PENDINGDUEADMINs
-                            on tr.T_ID equals pd.T_ID
-                            select new TheaterDueViewModel
-                            {
-                                T_ID = tr.T_ID,
-                                T_NAME = tr.T_NAME,
-                                T_CITY = tr.T_CITY,
-                                T_WARD = tr.T_WARD,
-                                T_ZONE = tr.T_ZONE,
-                                T_ADDRESS = tr.T_ADDRESS,
-                                T_TENAMENT_NO = tr.T_TENAMENT_NO,
-                                P_STATUS = pd.P_STATUS
-                            }).ToList();
+            // Fetch all approved theaters from DB
+            var theaters = db.TRN_REGISTRATION
+                .Where(tr => tr.STATUS == "Approved" && tr.LICENSE_DATE.HasValue) // Ensure LICENSE_DATE exists
+                .Select(tr => new
+                {
+                    tr.T_ID,
+                    tr.T_NAME,
+                    tr.T_CITY,
+                    tr.T_WARD,
+                    tr.T_ZONE,
+                    tr.T_ADDRESS,
+                    tr.T_TENAMENT_NO,
+                    tr.STATUS,
+                    tr.LICENSE_DATE
+                })
+                .ToList(); // Execute in memory
 
-            return View(theaters);
+            // Create list to store each month's pending payment status
+            var theaterDueList = new List<TheaterViewModel>();
 
+            // Loop through each theater and generate month-wise payment status
+            foreach (var theater in theaters)
+            {
+                DateTime startDate = theater.LICENSE_DATE.Value;
+                DateTime currentDate = new DateTime(currentYear, currentMonth, 1);
+
+                // Ensure startDate is before or equal to currentDate
+                if (startDate > currentDate)
+                    continue; // Skip if the LICENSE_DATE is in the future
+
+                // Generate months from LICENSE_DATE to current month
+                for (DateTime date = startDate; date <= currentDate; date = date.AddMonths(1))
+                {
+                    string monthName = date.ToString("MMMM", System.Globalization.CultureInfo.InvariantCulture); // Ensure correct case
+                    int year = date.Year;
+
+                    bool isPaid = db.THEATER_TAX_PAYMENT
+                        .Any(tp => tp.T_ID == theater.T_ID
+                                && tp.PAYMENT_MONTH == monthName
+                                && tp.PAYMENT_YEAR == year);
+
+                    if (!isPaid) // Only add if payment is NOT made
+                    {
+                        theaterDueList.Add(new TheaterViewModel
+                        {
+                            T_ID = theater.T_ID,
+                            T_NAME = theater.T_NAME,
+                            T_CITY = theater.T_CITY,
+                            T_WARD = theater.T_WARD,
+                            T_ZONE = theater.T_ZONE,
+                            T_ADDRESS = theater.T_ADDRESS,
+                            T_TENAMENT_NO = theater.T_TENAMENT_NO,
+                            STATUS = theater.STATUS,
+                            SINCE_MONTH = date.ToString("MMMM yyyy"), // Display as "March 2025"
+                            PAYMENT_STATUS = "Not Paid"
+                        });
+                    }
+                }
+            }
+
+            return View(theaterDueList);
         }
+
+
+
+
         [HttpGet]
         public ActionResult PaymentList()
         {
-            ViewBag.StatusFilterOptions = new SelectList(new List<string> { "Paid", "Pending", "Overdue" });
-            return View(new List<PAYMENTLIST>()); // Return an empty list initially
+            // Get current month and year
+            int currentYear = DateTime.Now.Year;
+            int currentMonth = DateTime.Now.Month;
+
+            // Fetch all approved theaters from DB
+            var theaters = db.TRN_REGISTRATION
+                .Where(tr => tr.STATUS == "Approved" && tr.LICENSE_DATE.HasValue) // Ensure LICENSE_DATE exists
+                .Select(tr => new
+                {
+                    tr.T_ID,
+                    tr.T_NAME,
+                    tr.T_CITY,
+                    tr.T_WARD,
+                    tr.T_ZONE,
+                    tr.T_ADDRESS,
+                    tr.T_TENAMENT_NO,
+                    tr.STATUS,
+                    tr.LICENSE_DATE
+                })
+                .ToList(); // Execute in memory
+
+            // Create list to store each month's payment status
+            var theaterDueList = new List<TheaterViewModel>();
+
+            // Loop through each theater and generate month-wise payment status
+            foreach (var theater in theaters)
+            {
+                DateTime startDate = theater.LICENSE_DATE.Value;
+                DateTime currentDate = new DateTime(currentYear, currentMonth, 1);
+
+                // Generate months from LICENSE_DATE to current month
+                for (DateTime date = startDate; date <= currentDate; date = date.AddMonths(1))
+                {
+                    string monthName = date.ToString("MMMM"); // Convert month to string
+                    int year = date.Year;
+
+                    bool isPaid = db.THEATER_TAX_PAYMENT
+                        .Any(tp => tp.T_ID == theater.T_ID
+                                && tp.PAYMENT_MONTH == monthName
+                                && tp.PAYMENT_YEAR == year);
+
+                    if (isPaid) // Filter to show only Paid records
+                    {
+                        theaterDueList.Add(new TheaterViewModel
+                        {
+                            T_ID = theater.T_ID,
+                            T_NAME = theater.T_NAME,
+                            T_CITY = theater.T_CITY,
+                            T_WARD = theater.T_WARD,
+                            T_ZONE = theater.T_ZONE,
+                            T_ADDRESS = theater.T_ADDRESS,
+                            T_TENAMENT_NO = theater.T_TENAMENT_NO,
+                            STATUS = theater.STATUS,
+                            SINCE_MONTH = date.ToString("MMMM yyyy"), // Display as "March 2025"
+                            PAYMENT_STATUS = "Paid"
+                        });
+                    }
+                }
+            }
+
+            // Create filter options for the view
+            ViewBag.StatusFilterOptions = new SelectList(new List<string> { "All", "Paid", "Not Paid Yet" });
+
+            return View(theaterDueList);
         }
+
 
         [HttpPost]
         public ActionResult PaymentList(int? theaterId, string fromMonth, string fromYear, string toMonth, string toYear, string statusFilter)
@@ -916,32 +1049,71 @@ namespace Amc_theater.Controllers
 
         public ActionResult Dues()
         {
-            var query = from tr in db.PENDING_DUES
-                        where tr.D_ACTIVE == true
-                        select new
-                        {
-                            tr.D_MON,
-                            tr.D_YEAR,
-                            tr.D_STATUS
-                            
+            // Get current month and year
+            int currentYear = DateTime.Now.Year;
+            int currentMonth = DateTime.Now.Month;
 
-                        };
+            // Fetch all approved theaters from DB
+            var theaters = db.TRN_REGISTRATION
+                .Where(tr => tr.STATUS == "Approved" && tr.LICENSE_DATE.HasValue) // Ensure LICENSE_DATE exists
+                .Select(tr => new
+                {
+                    tr.T_ID,
+                    tr.T_NAME,
+                    tr.T_CITY,
+                    tr.T_WARD,
+                    tr.T_ZONE,
+                    tr.T_ADDRESS,
+                    tr.T_TENAMENT_NO,
+                    tr.STATUS,
+                    tr.LICENSE_DATE
+                })
+                .ToList(); // Execute in memory
 
+            // Create list to store each month's pending payment status
+            var theaterDueList = new List<TheaterViewModel>();
 
-            // Execute the query and convert to a list
-            var result = query.ToList();
-            Console.WriteLine("Total Theaters Found: " + result.Count);
-
-            // Convert the result to a list of ViewModel objects
-            var theaterList = result.Select(tr => new DueViewModel
+            // Loop through each theater and generate month-wise payment status
+            foreach (var theater in theaters)
             {
-                 D_MON = tr.D_MON,
-                D_YEAR = tr.D_YEAR,
-                D_STATUS = tr.D_STATUS
+                DateTime startDate = theater.LICENSE_DATE.Value;
+                DateTime currentDate = new DateTime(currentYear, currentMonth, 1);
 
-            }).ToList();
+                // Ensure startDate is before or equal to currentDate
+                if (startDate > currentDate)
+                    continue; // Skip if the LICENSE_DATE is in the future
 
-            return View(theaterList);
+                // Generate months from LICENSE_DATE to current month
+                for (DateTime date = startDate; date <= currentDate; date = date.AddMonths(1))
+                {
+                    string monthName = date.ToString("MMMM", System.Globalization.CultureInfo.InvariantCulture); // Ensure correct case
+                    int year = date.Year;
+
+                    bool isPaid = db.THEATER_TAX_PAYMENT
+                        .Any(tp => tp.T_ID == theater.T_ID
+                                && tp.PAYMENT_MONTH == monthName
+                                && tp.PAYMENT_YEAR == year);
+
+                    if (!isPaid) // Only add if payment is NOT made
+                    {
+                        theaterDueList.Add(new TheaterViewModel
+                        {
+                            T_ID = theater.T_ID,
+                            T_NAME = theater.T_NAME,
+                            T_CITY = theater.T_CITY,
+                            T_WARD = theater.T_WARD,
+                            T_ZONE = theater.T_ZONE,
+                            T_ADDRESS = theater.T_ADDRESS,
+                            T_TENAMENT_NO = theater.T_TENAMENT_NO,
+                            STATUS = theater.STATUS,
+                            SINCE_MONTH = date.ToString("MMMM yyyy"), // Display as "March 2025"
+                            PAYMENT_STATUS = "Not Paid"
+                        });
+                    }
+                }
+            }
+
+            return View(theaterDueList);
 
         }
 
@@ -1197,121 +1369,123 @@ namespace Amc_theater.Controllers
         }
 
 
-
-
         [HttpGet]
-        public ActionResult AllReceipt(
-            int? theaterId,
-            string fromDate,
-            string toDate,
-            string statusFilter,
-            string paymentModeFilter,
-            int? monthFilter,
-            int? yearFilter)
+        public ActionResult AllReceipt()
         {
-            // Initialize date variables
-            DateTime? startDate = null;
-            DateTime? endDate = null;
+            // Get current month and year
+            int currentYear = DateTime.Now.Year;
+            int currentMonth = DateTime.Now.Month;
 
-            // Parse From Date
-            if (!string.IsNullOrEmpty(fromDate) && DateTime.TryParse(fromDate, out DateTime parsedFromDate))
+            // Fetch all approved theaters from DB
+            var theaters = db.TRN_REGISTRATION
+                .Where(tr => tr.STATUS == "Approved" && tr.LICENSE_DATE.HasValue)
+                .Select(tr => new
+                {
+                    tr.T_ID,
+                    tr.T_NAME,
+                    tr.T_CITY,
+                    tr.T_WARD,
+                    tr.T_ZONE,
+                    tr.T_ADDRESS,
+                    tr.T_TENAMENT_NO,
+                    tr.STATUS,
+                    tr.LICENSE_DATE
+                })
+                .ToList(); // Execute in memory
+
+            // Create list to store each month's payment status
+            var theaterDueList = new List<TheaterViewModel>();
+
+            // Loop through each theater and generate month-wise payment status
+            foreach (var theater in theaters)
             {
-                startDate = parsedFromDate;
-            }
+                DateTime startDate = theater.LICENSE_DATE.Value;
+                DateTime currentDate = new DateTime(currentYear, currentMonth, 1);
 
-            // Parse To Date
-            if (!string.IsNullOrEmpty(toDate) && DateTime.TryParse(toDate, out DateTime parsedToDate))
-            {
-                endDate = parsedToDate;
-            }
+                if (startDate > currentDate)
+                    continue; // Skip future start dates
 
-            Console.WriteLine($"Theater ID: {theaterId}, Start Date: {startDate}, End Date: {endDate}, Status: {statusFilter}, Payment Mode: {paymentModeFilter}");
+                // Generate months from LICENSE_DATE to current month
+                for (DateTime date = startDate; date <= currentDate; date = date.AddMonths(1))
+                {
+                    string monthName = date.ToString("MMMM", System.Globalization.CultureInfo.InvariantCulture);
+                    int year = date.Year;
 
-            // Query to fetch filtered data from RECEIPT_FILTER and TRN_REGISTRATION
-            var query = from rf in db.RECEIPT_FILTER
-                        join tr in db.TRN_REGISTRATION on rf.T_ID equals tr.T_ID
-                        select new
+                    bool isPaid = db.THEATER_TAX_PAYMENT
+                        .Any(tp => tp.T_ID == theater.T_ID
+                                && tp.PAYMENT_MONTH == monthName
+                                && tp.PAYMENT_YEAR == year);
+
+                    if (isPaid)
+                    {
+                        // Fetch related receipts for this theater
+                        var receipts = db.RECEIPT_FILTER
+                            .Where(r => r.T_ID == theater.T_ID)
+                            .Select(r => new ReceiptFilterViewModel
+                            {
+                                RCPT_NO = r.RCPT_NO,
+                                RCPT_GEN_DATE = r.RCPT_GEN_DATE,
+                               T_ID = (int)r.T_ID,
+                                T_NAME = theater.T_NAME,
+                                PAY_MODE = r.PAY_MODE,
+                                STATUS = r.STATUS
+                            }).ToList();
+
+                        theaterDueList.Add(new TheaterViewModel
                         {
-                            rf.RCPT_NO,
-                            rf.RCPT_GEN_DATE,
-                            rf.T_ID,
-                            tr.T_NAME,
-                            rf.PAY_MODE,
-                            rf.STATUS
-                        };
-
-            // Apply filters dynamically
-            if (theaterId.HasValue)
-            {
-                query = query.Where(r => r.T_ID == theaterId.Value);
+                            T_ID = theater.T_ID,
+                            T_NAME = theater.T_NAME,
+                            T_CITY = theater.T_CITY,
+                            T_WARD = theater.T_WARD,
+                            T_ZONE = theater.T_ZONE,
+                            T_ADDRESS = theater.T_ADDRESS,
+                            T_TENAMENT_NO = theater.T_TENAMENT_NO,
+                            STATUS = theater.STATUS,
+                            SINCE_MONTH = date.ToString("MMMM yyyy"), // Display as "March 2025"
+                            PAYMENT_STATUS = "Paid",
+                            Receipts = receipts // Assign the fetched receipts
+                        });
+                    }
+                }
             }
 
-            if (!string.IsNullOrEmpty(statusFilter))
-            {
-                query = query.Where(r => r.STATUS == statusFilter);
-            }
-
-            if (!string.IsNullOrEmpty(paymentModeFilter))
-            {
-                query = query.Where(r => r.PAY_MODE == paymentModeFilter);
-            }
-
-            if (startDate.HasValue && endDate.HasValue)
-            {
-                query = query.Where(r => r.RCPT_GEN_DATE >= startDate.Value && r.RCPT_GEN_DATE <= endDate.Value);
-            }
-            else if (startDate.HasValue)
-            {
-                query = query.Where(r => r.RCPT_GEN_DATE >= startDate.Value);
-            }
-            else if (endDate.HasValue)
-            {
-                query = query.Where(r => r.RCPT_GEN_DATE <= endDate.Value);
-            }
-
-            var result = query.ToList();
-            Console.WriteLine("Total Records Found: " + result.Count);
-
-            var receiptList = result.Select(r => new ReceiptFilterViewModel
-            {
-                RCPT_NO = r.RCPT_NO,
-                RCPT_GEN_DATE = r.RCPT_GEN_DATE,
-                T_ID = r.T_ID ?? 0,
-                T_NAME = r.T_NAME,
-                PAY_MODE = r.PAY_MODE,
-                STATUS = r.STATUS
-            }).ToList();
-
-            return View(receiptList);
+            return View(theaterDueList);
         }
+
         [HttpPost]
         public ActionResult AllReceipt(ReceiptFilterViewModel model)
         {
             DateTime? startDate = null;
             DateTime? endDate = null;
 
+            // Parse From Date
             if (!string.IsNullOrEmpty(model.FromDate) && DateTime.TryParse(model.FromDate, out DateTime parsedFromDate))
             {
-                startDate = parsedFromDate.Date; // Remove time
+                startDate = parsedFromDate.Date;
             }
 
+            // Parse To Date
             if (!string.IsNullOrEmpty(model.ToDate) && DateTime.TryParse(model.ToDate, out DateTime parsedToDate))
             {
-                endDate = parsedToDate.Date; // Remove time
+                endDate = parsedToDate.Date;
             }
 
-            var query = from rf in db.RECEIPT_FILTER
-                        join tr in db.TRN_REGISTRATION on rf.T_ID equals tr.T_ID
-                        select new
-                        {
-                            rf.RCPT_NO,
-                            RCPT_GEN_DATE = rf.RCPT_GEN_DATE,  // Stored as Date only
-                            rf.T_ID,
-                            tr.T_NAME,
-                            rf.PAY_MODE,
-                            rf.STATUS
-                        };
+            // Query to fetch filtered receipt data
+            var query = db.RECEIPT_FILTER
+                .Join(db.TRN_REGISTRATION,
+                    rf => rf.T_ID,
+                    tr => tr.T_ID,
+                    (rf, tr) => new ReceiptFilterViewModel
+                    {
+                        RCPT_NO = rf.RCPT_NO,
+                        RCPT_GEN_DATE = rf.RCPT_GEN_DATE, // Ensure it's stored as Date
+                        T_ID = rf.T_ID ?? 0,
+                        T_NAME = tr.T_NAME,
+                        PAY_MODE = rf.PAY_MODE,
+                        STATUS = rf.STATUS
+                    });
 
+            // Apply Filters Dynamically
             if (model.TheaterId.HasValue)
             {
                 query = query.Where(r => r.T_ID == model.TheaterId.Value);
@@ -1327,6 +1501,7 @@ namespace Amc_theater.Controllers
                 query = query.Where(r => r.PAY_MODE == model.PaymentModeFilter);
             }
 
+            // Apply Date Range Filters
             if (startDate.HasValue && endDate.HasValue)
             {
                 query = query.Where(r => r.RCPT_GEN_DATE >= startDate.Value && r.RCPT_GEN_DATE <= endDate.Value);
@@ -1340,19 +1515,8 @@ namespace Amc_theater.Controllers
                 query = query.Where(r => r.RCPT_GEN_DATE <= endDate.Value);
             }
 
-            var result = query.ToList();
-
-            var receiptList = result.Select(r => new ReceiptFilterViewModel
-            {
-                RCPT_NO = r.RCPT_NO,
-                RCPT_GEN_DATE = r.RCPT_GEN_DATE, // Store as Date only
-
-                T_ID = r.T_ID ?? 0,
-                T_NAME = r.T_NAME,
-                PAY_MODE = r.PAY_MODE,
-                STATUS = r.STATUS
-            }).ToList();
-
+            // Execute Query and Return View
+            var receiptList = query.ToList();
             return View(receiptList);
         }
 

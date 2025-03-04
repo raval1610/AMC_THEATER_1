@@ -1,4 +1,4 @@
-﻿@model IEnumerable<AMC_THEATER_1.Models.ReceiptFilterViewModel>
+﻿@model IEnumerable<AMC_THEATER_1.Models.TheaterViewModel>
 
 @{
     ViewBag.Title = "AllReceipt";
@@ -31,12 +31,14 @@
             <div class="me-5">
                 <h2 class="mb-1 me-5 bg-light p-3 text-center">Receipt</h2>
             </div>
+
             <div class="me-5">
                 <div class="me-5">
+                    <!-- Filter Form -->
                     <form id="filterForm" class="p-3 border border-dark bg-light" method="get" action="@Url.Action("AllReceipt", "Home")">
                         <div class="row g-3">
-                            <!-- Theater ID Column -->
-                            <div class="col-md-3 d-inline-block">
+                            <!-- Theater ID -->
+                            <div class="col-md-3">
                                 <label for="theaterId" class="fw-bold text-dark" style="font-size: 14px;">Theater ID:</label>
                                 <input type="text" id="theaterId" name="theaterId" class="form-control form-control-sm" value="@Request.QueryString["theaterId"]" />
                             </div>
@@ -55,59 +57,75 @@
                                        value="@Request.QueryString["toDate"]" />
                             </div>
 
-                            <!-- Status Column -->
-                            <div class="col-md-3 d-inline-block">
+                            <!-- Status -->
+                            <div class="col-md-3">
                                 <label for="statusFilter" class="fw-bold text-dark" style="font-size: 14px;">Status:</label>
                                 <select id="statusFilter" name="statusFilter" class="form-control form-control-sm">
                                     <option value="">All</option>
-                                    <option value="Pending" @(Request.QueryString["statusFilter"] == "Pending" ? "selected" : "")>PENDING</option>
-                                    <option value="Completed" @(Request.QueryString["statusFilter"] == "Completed" ? "selected" : "")>COMPLETED</option>
+                                    <option value="Pending" @(Request.QueryString["statusFilter"] == "Pending" ? "selected" : "")>Pending</option>
+                                    <option value="Completed" @(Request.QueryString["statusFilter"] == "Completed" ? "selected" : "")>Completed</option>
                                 </select>
                             </div>
                         </div>
 
-                        <!-- Submit Button -->
+                        <!-- Buttons -->
                         <div class="d-flex gap-2 mt-3">
-                            <button type="submit" class="btn btn-primary btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="Apply Filters">
+                            <button type="submit" class="btn btn-primary btn-sm" data-bs-toggle="tooltip" title="Apply Filters">
                                 <i class="bi bi-funnel"></i> Submit
                             </button>
 
                             <!-- Reset Button -->
-                            <button type="button" id="resetButton" class="btn btn-secondary btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="Reset Filters" onclick="resetForm()">
-                                <i class="fa fa-refresh" aria-hidden="true"></i> Reset
+                            <button type="button" id="resetButton" class="btn btn-secondary btn-sm" title="Reset Filters" onclick="resetForm()">
+                                <i class="fa fa-refresh"></i> Reset
                             </button>
                         </div>
                     </form>
 
-                    <table class="table mt-5 table-bordered " id="receiptTable">
-                        <thead class="table-dark">
+                    <!-- Theater Table -->
+                    <table class="table table-bordered mt-5 table-striped">
+                        <thead>
                             <tr>
-                                <th>Receipt No</th>
-                                <th>Receipt Date</th>
-                                <th>Theater ID</th>
-                                <th>Theater Name</th>
-
-                                <th>Pay Mode</th>
-                                <th>Status</th>
-                                <th>Action</th>
+                                <th class="fw-bold">Theater ID</th>
+                                <th class="fw-bold">Theater Name</th>
+                                <th class="fw-bold">City</th>
+                                <th class="fw-bold">Ward</th>
+                                <th class="fw-bold">Zone</th>
+                                <th class="fw-bold">Address</th>
+                                <th class="fw-bold">Tenament Number</th>
+                                <th class="fw-bold">Status</th>
+                                <th class="fw-bold">Since Month</th>
+                                <th class="fw-bold">Receipt</th>
                             </tr>
                         </thead>
                         <tbody>
                             @if (Model != null && Model.Any())
                             {
-                                foreach (var receipt in Model)
+                                foreach (var theater in Model)
                                 {
-                                    <tr>
-                                        <td>@receipt.RCPT_NO</td>
-                                        <td>@receipt.RCPT_GEN_DATE_FORMATTED</td> @* Displays Date Only *@
-
-                                        <td>@receipt.T_ID</td>
-                                        <td>@receipt.T_NAME</td>
-
-                                        <td>@receipt.PAY_MODE</td>
-                                        <td class="status-cell @(receipt.STATUS == "Paid" ? "text-success" : "text-danger")">@receipt.STATUS</td>
+                                    <tr id="theater-@theater.T_ID">
+                                        <td>@theater.T_ID</td>
+                                        <td>@theater.T_NAME</td>
+                                        <td>@theater.T_CITY</td>
+                                        <td>@theater.T_WARD</td>
+                                        <td>@theater.T_ZONE</td>
+                                        <td>@theater.T_ADDRESS</td>
+                                        <td>@theater.T_TENAMENT_NO</td>
+                                        <td class="@(theater.PAYMENT_STATUS == "Paid" ? "text-success fw-bold" : "text-danger fw-bold")">
+                                            @theater.PAYMENT_STATUS
+                                        </td>
+                                        <td>@theater.SINCE_MONTH</td>
                                         <td>
-                                            <button class="btn btn-secondary btn-sm" onclick="window.location.href='@Url.Action("Receipt", "Home", new { id = receipt.RCPT_NO })'">Receipt</button>
+                                            @if (theater.PAYMENT_STATUS == "Paid")
+                                            {
+                                                <a href="@Url.Action("Receipt", "Home", new { theaterId = theater.T_ID })"
+                                                   class="btn btn-secondary btn-sm" data-bs-toggle="tooltip" title="View Receipt">
+                                                    <i class="bi bi-receipt"></i> Receipt
+                                                </a>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">N/A</span>
+                                            }
                                         </td>
                                     </tr>
                                 }
@@ -115,7 +133,7 @@
                             else
                             {
                                 <tr>
-                                    <td colspan="9" class="text-center">No receipts found</td>
+                                    <td colspan="10" class="text-center">No theater data available.</td>
                                 </tr>
                             }
                         </tbody>
@@ -125,16 +143,22 @@
         </div>
     </div>
 
+    <!-- Reset Form JavaScript -->
+    <script>
+        function resetForm() {
+            document.getElementById("theaterId").value = "";
+            document.getElementById("fromDate").value = "";
+            document.getElementById("toDate").value = "";
+            document.getElementById("statusFilter").value = "";
+            document.getElementById("filterForm").submit();
+        }
+    </script>
+
+
 </body>
 </html>
 
-<script>
-    // Reset the form to clear filters
-    function resetForm() {
-        document.getElementById("filterForm").reset();
-        window.location.href = '@Url.Action("AllReceipt", "Home")'; // Redirect to clear query parameters
-    }
-</script>
+
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("fromDate").addEventListener("input", function () {

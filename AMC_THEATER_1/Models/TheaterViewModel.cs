@@ -7,6 +7,11 @@ namespace AMC_THEATER_1.Models
 {
     public class TheaterViewModel
     {
+        
+                    public string PAYMENT_STATUS { get; set; } // Now holds "Not Paid Yet" or "Paid"
+
+        public string SINCE_MONTH { get; set; } // Now holds "Not Paid Yet" or "Paid"
+
         public int? T_ID { get; set; }
         public string Display_T_ID => STATUS?.Equals("Approved", StringComparison.OrdinalIgnoreCase) == true ?
                                       (T_ID?.ToString() ?? "NOT GENERATED") : "NOT GENERATED";
@@ -43,6 +48,7 @@ namespace AMC_THEATER_1.Models
             return ScreenTypes?.FirstOrDefault()?.SCREEN_TYPE ?? "N/A";
         }
 
+        public List<ReceiptFilterViewModel> Receipts { get; set; }
 
     }
 

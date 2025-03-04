@@ -32,9 +32,10 @@ namespace AMC_THEATER_1.Models
         public string Address { get; set; }
         public string Email { get; set; }
         public string DocumentPath { get; set; }
-       
-        public List<ScreenViewModel> Screens { get; set; }
 
-       
+        public List<ScreenViewModel> Screens { get; set; } = new List<ScreenViewModel>();
+
+
+
     }
 }

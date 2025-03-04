@@ -43,8 +43,6 @@
             background-color: #28a745;
             color: white;
         }
-
-
     </style>
 
 </head>
@@ -103,10 +101,10 @@
                                     <label for="Theater_Name" class="form-label fw-bold">Theater Name</label>
                                     <input type="text" id="Theater_Name" name="Theater_Name" class="form-control w-100" value="@Model.TheaterName" readonly required>
                                 </div>
-                                <div class="col-md-4">
-                                    <label for="owner_name" class="form-label fw-bold">Owner Name</label>
-                                    <input type="text" id="owner_name" name="owner_name" class="form-control w-100" value="@Model.OwnerName" readonly required>
-                                </div>
+                                @*<div class="col-md-4">
+                                        <label for="owner_name" class="form-label fw-bold">Owner Name</label>
+                                        <input type="text" id="owner_name" name="owner_name" class="form-control w-100" value="@Model.OwnerName" readonly required>
+                                    </div>*@
                                 <div class="col-md-4">
                                     <label for="mobile_no" class="form-label fw-bold">Mobile No</label>
                                     <input type="text" id="mobile_no" name="mobile_no" class="form-control w-100" value="@Model.MobileNo" readonly required>
@@ -134,7 +132,12 @@
                                             </div>
                                             <div class="col-md-4">
                                                 <button type="button" class="btn btn-primary ms-5 w-75" id="generateBtn">Generate Table</button>
+
                                             </div>
+                                            @*<p id="taskMessage" class="text-danger fw-bold"></p>
+                                                <button type="button" id="resetButton" class="btn btn-warning">Reset</button>*@
+
+
                                         </div>
 
 
@@ -155,7 +158,6 @@
                                         <th class="col-1">Amount</th>
                                     </tr>
                                 </thead>
-
                                 <tbody id="tableBody">
                                     @{
                                         string lastMonthYear = "";
@@ -167,18 +169,16 @@
                                         if (currentMonthYear != lastMonthYear)
                                         {
                                             <tr class="table-white">
-                                                @*<td colspan="7" class="fw-bold text-center">@currentMonthYear</td>*@
+                                                <td colspan="7" class="fw-bold text-center">@currentMonthYear</td>
                                             </tr>
                                             lastMonthYear = currentMonthYear;
                                         }
 
                                         <tr>
                                             <td class="text-start">
-                                                @Model.Screens[i].ScreenId
-                                                <input type="hidden" name="Screens[@i].ScreenId" value="@Model.Screens[i].ScreenId" />
+                                                @Model.Screens[i].SCREEN_NO
+                                                <input type="hidden" name="Screens[@i].SCREEN_NO" value="@Model.Screens[i].SCREEN_NO" />
                                             </td>
-
-
 
                                             <td>
                                                 <input type="text" class="form-control text-end screenPrice small-input"
@@ -192,12 +192,11 @@
                                                 @Model.Screens[i].ScreenType
                                             </td>
 
-
-
                                             <td>
                                                 <input type="number" class="form-control text-end totalShow small-input"
                                                        name="Screens[@i].TotalShow"
                                                        data-index="@i"
+                                                       value="@Model.Screens[i].TotalShow"
                                                        oninput="calculateActualShow(@i)" />
                                             </td>
 
@@ -205,6 +204,7 @@
                                                 <input type="number" class="form-control text-end cancelShow small-input"
                                                        name="Screens[@i].CancelShow"
                                                        data-index="@i"
+                                                       value="@Model.Screens[i].CancelShow"
                                                        oninput="calculateActualShow(@i)" />
                                             </td>
 
@@ -212,6 +212,7 @@
                                                 <input type="number" class="form-control text-end actualShow small-input"
                                                        name="Screens[@i].ActualShow"
                                                        id="actualShow_@i"
+                                                       value="@Model.Screens[i].ActualShow"
                                                        readonly />
                                             </td>
 
@@ -219,11 +220,13 @@
                                                 <input type="text" class="form-control text-end amount small-input"
                                                        name="Screens[@i].AmtPerScreen"
                                                        id="amtPerScreen_@i"
+                                                       value="@Model.Screens[i].AmtPerScreen"
                                                        readonly />
                                             </td>
                                         </tr>
                                     }
                                 </tbody>
+
 
 
                                 <tfoot>
@@ -252,346 +255,334 @@
 
 
                         </div>
-                    }
 
+                    }
+                    </form>
                 </div>
+
             </div>
+
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 
-
     <script>
-                document.addEventListener("DOMContentLoaded", function () {
-                    document.getElementById("generateBtn").addEventListener("click", generateTable);
+        document.addEventListener("DOMContentLoaded", function () {
+            document.getElementById("generateBtn").addEventListener("click", generateTable);
 
-                    // Attach event listeners for dynamically updating calculations
-                    document.addEventListener("input", function (event) {
-                        let target = event.target;
-                        if (!target.classList.contains("totalShow") &&
-                            !target.classList.contains("cancelShow") &&
-                            !target.classList.contains("rate")) return;
+            document.addEventListener("input", function (event) {
+                let target = event.target;
+                if (!target.classList.contains("totalShow") &&
+                    !target.classList.contains("cancelShow") &&
+                    !target.classList.contains("rate")) return;
 
-                        // Prevent negative values
-                        target.value = Math.max( target.value);
+                target.value = Math.max(target.value);
+                let row = target.closest("tr");
 
-                        let row = target.closest("tr");
+                if (target.classList.contains("cancelShow")) {
+                    validateCancelShows(row);
+                }
 
-                        // Validate cancelShow (must not exceed totalShow)
-                        if (target.classList.contains("cancelShow")) {
-                            validateCancelShows(row);
-                        }
+                calculateActualShow(row);
+                calculateAmount(row);
+            });
 
-                        calculateActualShow(row);
-                        calculateAmount(row);
-                    });
+            function validateCancelShows(row) {
+                let totalShows = parseInt(row.querySelector(".totalShow")?.value) || 0;
+                let cancelInput = row.querySelector(".cancelShow");
+                let cancelShows = parseInt(cancelInput.value) || 0;
 
-                    function validateCancelShows(row) {
-                        let totalShows = parseInt(row.querySelector(".totalShow")?.value) || 0;
-                        let cancelInput = row.querySelector(".cancelShow");
-                        let cancelShows = parseInt(cancelInput.value) || 0;
+                let errorSpan = row.querySelector(".cancelError") || createErrorSpan(row);
 
-                        let errorSpan = row.querySelector(".cancelError") || createErrorSpan(row);
+                if (cancelShows > totalShows) {
+                    errorSpan.innerText = "Canceled shows cannot be more than total shows!";
+                    cancelInput.value = totalShows;
+                } else {
+                    errorSpan.innerText = "";
+                }
+            }
 
-                        if (cancelShows > totalShows) {
-                            errorSpan.innerText = "Canceled shows cannot be more than total shows!";
-                            cancelInput.value = totalShows; // Reset to totalShows if exceeded
-                        } else {
-                            errorSpan.innerText = ""; // Clear error if valid
+            function createErrorSpan(row) {
+                let errorSpan = document.createElement("span");
+                errorSpan.className = "cancelError text-danger";
+                row.querySelector(".cancelShow").insertAdjacentElement("afterend", errorSpan);
+                return errorSpan;
+            }
+
+            document.addEventListener("change", function (event) {
+                if (event.target.classList.contains("screenType")) {
+                    let row = event.target.closest("tr");
+                    calculateActualShow(row);
+                }
+            });
+        });
+        function generateTable() {
+            let fromDate = document.getElementById("fromDate").value;
+            let toDate = document.getElementById("toDate").value;
+
+            if (!fromDate || !toDate) {
+                alert("Please select both From Date and To Date.");
+                return;
+            }
+
+            let from = new Date(fromDate + "-01T00:00:00");
+            let to = new Date(toDate + "-01T00:00:00");
+
+            if (from > to) {
+                alert("From Date cannot be greater than To Date.");
+                return;
+            }
+
+            let tableBody = document.getElementById("tableBody");
+            let existingRows = Array.from(tableBody.querySelectorAll("tr"));
+            let current = new Date(from);
+            let months = [];
+
+            while (current <= to) {
+                let monthYear = current.toLocaleString("default", { month: "short" }) + " " + current.getFullYear();
+                months.push(monthYear);
+                current.setMonth(current.getMonth() + 1);
+            }
+
+            let existingMonths = new Set();
+            existingRows.forEach(row => {
+                let firstCell = row.querySelector("td");
+                if (firstCell && firstCell.colSpan === 8) {
+                    existingMonths.add(firstCell.innerText);
+                }
+            });
+
+            existingRows.forEach(row => {
+                let firstCell = row.querySelector("td");
+                if (firstCell && firstCell.colSpan === 8 && firstCell.innerText === months[0]) {
+                    row.remove();
+                }
+            });
+
+            let firstMonthRow = document.createElement("tr");
+            firstMonthRow.className = "table-secondary";
+            let firstMonthCell = document.createElement("td");
+            firstMonthCell.colSpan = "8";
+            firstMonthCell.className = "fw-bold text-center";
+            firstMonthCell.innerText = months[0];
+            firstMonthRow.appendChild(firstMonthCell);
+            tableBody.prepend(firstMonthRow);
+
+            let firstRowUsed = false;
+            let existingScreens = new Map();
+            existingRows.forEach(row => {
+                if (!row.querySelector("td") || row.querySelector("td").colSpan !== 8) {
+                    let screenIdCell = row.querySelector("td:first-child");
+                    if (screenIdCell) {
+                        let screenId = screenIdCell.innerText.trim();
+                        if (screenId) {
+                            existingScreens.set(screenId, row.cloneNode(true));
                         }
                     }
+                }
+            });
 
-                    function createErrorSpan(row) {
-                        let errorSpan = document.createElement("span");
-                        errorSpan.className = "cancelError text-danger";
-                        row.querySelector(".cancelShow").insertAdjacentElement("afterend", errorSpan);
-                        return errorSpan;
+            months.forEach((month, monthIndex) => {
+                if (!existingMonths.has(month) || monthIndex === 0) {
+                    if (monthIndex > 0) {
+                        let monthRow = document.createElement("tr");
+                        monthRow.className = "table-secondary";
+                        let monthCell = document.createElement("td");
+                        monthCell.colSpan = "8";
+                        monthCell.className = "fw-bold text-center";
+                        monthCell.innerText = month;
+                        monthRow.appendChild(monthCell);
+                        tableBody.appendChild(monthRow);
                     }
 
-                    document.addEventListener("change", function (event) {
-                        if (event.target.classList.contains("screenType")) {
-                            let row = event.target.closest("tr");
-                            calculateActualShow(row);
-                        }
-                    });
-                });
+                    if (!firstRowUsed) {
+                        firstRowUsed = true;
+                    } else {
+                        existingScreens.forEach((row, key) => {
+                            let clonedRow = row.cloneNode(true);
+                            let inputs = clonedRow.querySelectorAll("input, select");
+                            inputs.forEach((input) => {
+                                let name = input.getAttribute("name");
+                                if (name) {
+                                    let newName = name.replace(/Screens\[\d+\]/, `Screens[${monthIndex}]`);
+                                    input.setAttribute("name", newName);
+                                }
 
-                function generateTable() {
-                    let fromDate = document.getElementById("fromDate").value;
-                    let toDate = document.getElementById("toDate").value;
+                                if (input.type === "number" || input.tagName === "SELECT") {
+                                    input.value = "";
+                                }
 
-                    if (!fromDate || !toDate) {
-                        alert("Please select both From Date and To Date.");
-                        return;
-                    }
+                                if (input.classList.contains("totalShow") || input.classList.contains("cancelShow") || input.classList.contains("rate")) {
+                                    input.setAttribute("data-index", monthIndex);
+                                    input.addEventListener("input", function () {
+                                        calculateActualShow(clonedRow);
+                                        calculateAmount(clonedRow);
+                                    });
+                                }
 
-                    let from = new Date(fromDate + "-01T00:00:00");
-                    let to = new Date(toDate + "-01T00:00:00");
-
-                    if (from > to) {
-                        alert("From Date cannot be greater than To Date.");
-                        return;
-                    }
-
-                    let tableBody = document.getElementById("tableBody");
-                    let existingRows = Array.from(tableBody.querySelectorAll("tr"));
-                    let current = new Date(from);
-                    let months = [];
-
-                    while (current <= to) {
-                        let monthYear = current.toLocaleString("default", { month: "short" }) + " " + current.getFullYear();
-                        months.push(monthYear);
-                        current.setMonth(current.getMonth() + 1);
-                    }
-
-                    let existingMonths = new Set();
-                    existingRows.forEach(row => {
-                        let firstCell = row.querySelector("td");
-                        if (firstCell && firstCell.colSpan === 8) {
-                            existingMonths.add(firstCell.innerText);
-                        }
-                    });
-
-                    existingRows.forEach(row => {
-                        let firstCell = row.querySelector("td");
-                        if (firstCell && firstCell.colSpan === 8 && firstCell.innerText === months[0]) {
-                            row.remove();
-                        }
-                    });
-
-                    let firstMonthRow = document.createElement("tr");
-                    firstMonthRow.className = "table-secondary";
-                    let firstMonthCell = document.createElement("td");
-                    firstMonthCell.colSpan = "8";
-                    firstMonthCell.className = "fw-bold text-center";
-                    firstMonthCell.innerText = months[0];
-                    firstMonthRow.appendChild(firstMonthCell);
-                    tableBody.prepend(firstMonthRow);
-
-                    let firstRowUsed = false;
-
-                    months.forEach((month, monthIndex) => {
-                        if (!existingMonths.has(month) || monthIndex === 0) {
-                            if (monthIndex > 0) {
-                                let monthRow = document.createElement("tr");
-                                monthRow.className = "table-secondary";
-                                let monthCell = document.createElement("td");
-                                monthCell.colSpan = "8";
-                                monthCell.className = "fw-bold text-center";
-                                monthCell.innerText = month;
-                                monthRow.appendChild(monthCell);
-                                tableBody.appendChild(monthRow);
-                            }
-
-                            let existingScreens = new Map();
-                            existingRows.forEach(row => {
-                                if (!row.querySelector("td") || row.querySelector("td").colSpan !== 8) {
-                                    let screenIdCell = row.querySelector("td:first-child");
-                                    if (screenIdCell) {
-                                        let screenId = screenIdCell.innerText.trim();
-                                        if (screenId) {
-                                            existingScreens.set(screenId, row.cloneNode(true));
-                                        }
-                                    }
+                                if (input.classList.contains("screenType")) {
+                                    input.addEventListener("change", function () {
+                                        calculateActualShow(clonedRow);
+                                    });
                                 }
                             });
 
-                            if (!firstRowUsed) {
-                                firstRowUsed = true;
-                            } else {
-                                existingScreens.forEach((row, key) => {
-                                    let clonedRow = row.cloneNode(true);
-                                    let inputs = clonedRow.querySelectorAll("input, select");
-                                    inputs.forEach((input) => {
-                                        let name = input.getAttribute("name");
-                                        if (name) {
-                                            let newName = name.replace(/Screens\[\d+\]/, `Screens[${monthIndex}]`);
-                                            input.setAttribute("name", newName);
-                                        }
-
-                                        if (input.type === "number" || input.tagName === "SELECT") {
-                                            input.value = "";
-                                        }
-
-                                        if (input.classList.contains("totalShow") || input.classList.contains("cancelShow") || input.classList.contains("rate")) {
-                                            input.setAttribute("data-index", monthIndex);
-                                            input.addEventListener("input", function () {
-                                                calculateActualShow(clonedRow);
-                                                calculateAmount(clonedRow); // Update amount dynamically
-                                            });
-                                        }
-
-                                        if (input.classList.contains("screenType")) {
-                                            input.addEventListener("change", function () {
-                                                calculateActualShow(clonedRow);
-                                            });
-                                        }
-                                    });
-
-                                    tableBody.appendChild(clonedRow);
-                                });
-                            }
-                        }
-                    });
-
-                    calculateTotalAmount();
-                }
-
-                function calculateActualShow(row) {
-                    let totalShows = parseInt(row.querySelector(".totalShow")?.value) || 0;
-                    let cancelShows = parseInt(row.querySelector(".cancelShow")?.value) || 0;
-                    let actualShow = Math.max(0, totalShows - cancelShows);
-                    let actualShowField = row.querySelector(".actualShow");
-
-                    if (actualShowField) {
-                        actualShowField.value = actualShow;
+                            tableBody.appendChild(clonedRow);
+                        });
                     }
-
-                    calculateAmount(row); // Update amount when actual show changes
                 }
+            });
 
-                function calculateAmount(row) {
-                    let actualShow = parseInt(row.querySelector(".actualShow")?.value) || 0;
-                    let rate = parseFloat(row.querySelector(".screenPrice")?.value) || 0;
-                    let amountField = row.querySelector(".amount");
-
-                    // Check if row is newly added, if so, set amount to 0
-                    if (row.dataset.newRow === "true") {
-                        amountField.value = "0.00";
-                        row.dataset.newRow = "false"; // Reset after first update
-                    } else {
-                        let amount = actualShow * rate;
-                        amountField.value = amount.toFixed(2);
-                    }
-
-                    calculateTotalAmount();
-                }
-
-
-                function calculateTotalAmount() {
-                    let totalAmount = 0;
-                    document.querySelectorAll(".amount").forEach(input => {
-                        totalAmount += parseFloat(input.value) || 0;
-                    });
-
-                    document.getElementById("totalAmount").innerText = `₹${totalAmount.toFixed(2)}`;
-                }
-           //VALIDATION SCRIPT
-           // Disable browser validation
-document.querySelector("form").setAttribute("novalidate", true);
-
-// Function to create or fetch an error span next to the input field
-function createFieldErrorSpan(input) {
-    let errorSpan = input.nextElementSibling;
-
-    if (!errorSpan || !errorSpan.classList.contains("error-message")) {
-        errorSpan = document.createElement("span");
-        errorSpan.className = "error-message text-danger small d-block mt-1";
-        input.insertAdjacentElement("afterend", errorSpan);
-    }
-
-    return errorSpan;
-}
-
-// Function to validate an input field
-function validateInput(input) {
-    let value = input.value.trim();
-    let errorSpan = createFieldErrorSpan(input);
-    let numericValue = parseFloat(value);
-
-    // Reset error message
-    errorSpan.innerText = "";
-    input.classList.remove("is-invalid");
-
-    // General validation: Must not be empty and must be a valid number
-    if (!value || isNaN(numericValue)) {
-        errorSpan.innerText = "This field is required!";
-        input.classList.add("is-invalid");
-        return false;
-    }
-
-    // Prevent negative numbers
-    if (numericValue < 0) {
-        errorSpan.innerText = "Negative values are not allowed!";
-        input.classList.add("is-invalid");
-        return false;
-    }
-
-    // Special validation for "Total Show" (must be at least 1)
-    if (input.classList.contains("totalShow") && numericValue < 1) {
-        errorSpan.innerText = "Total Show must be at least 1!";
-        input.classList.add("is-invalid");
-        return false;
-    }
-
-    // If all validations pass, clear the error
-    errorSpan.innerText = "";
-    input.classList.remove("is-invalid");
-    return true;
-}
-
-// Attach real-time validation (Event Delegation for dynamic rows)
-document.addEventListener("input", function (event) {
-    if (event.target.matches(".totalShow, .cancelShow, .rate")) {
-        validateInput(event.target);
-    }
-});
-
-// Validate inputs on form submission
-document.querySelector(".btn-success").addEventListener("click", function (event) {
-    let inputs = document.querySelectorAll(".totalShow, .cancelShow, .rate");
-    let isFormValid = true;
-
-    for (let input of inputs) {
-        if (!validateInput(input)) {
-            isFormValid = false;
-            input.focus(); // Focus on the first invalid input
-            event.preventDefault(); // Prevent form submission
-            return;
+            calculateTotalAmount();
         }
-    }
-
-    // Validate file input
-    let fileInput = document.getElementById("fileInput");
-    if (!fileInput.files.length) {
-        alert("Please upload a Show Statement file.");
-        event.preventDefault();
-        fileInput.focus();
-    }
-});
 
 
-// Clear error messages dynamically when user enters valid input
-document.querySelectorAll(".totalShow, .cancelShow, .rate").forEach(input => {
-    input.addEventListener("input", function () {
-        let errorSpan = createFieldErrorSpan(input);
-        let numericValue = parseFloat(this.value.trim());
 
-        if (!isNaN(numericValue) && numericValue >= 0) {
-            errorSpan.innerText = ""; // Clear error message
-            this.classList.remove("is-invalid"); // Remove invalid class
+
+        function calculateActualShow(row) {
+            let totalShows = parseInt(row.querySelector(".totalShow")?.value) || 0;
+            let cancelShows = parseInt(row.querySelector(".cancelShow")?.value) || 0;
+            let actualShow = Math.max(0, totalShows - cancelShows);
+            let actualShowField = row.querySelector(".actualShow");
+            if (actualShowField) {
+                actualShowField.value = actualShow;
+            }
+            calculateAmount(row);
         }
-    });
-});
 
-//to month and from month 
- document.addEventListener("DOMContentLoaded", function () {
-     // Get the current date
-     let today = new Date();
+        function calculateAmount(row) {
+            let actualShow = parseInt(row.querySelector(".actualShow")?.value) || 0;
+            let rate = parseFloat(row.querySelector(".screenPrice")?.value) || 0;
+            let amountField = row.querySelector(".amount");
+            let amount = actualShow * rate;
+            amountField.value = amount.toFixed(2);
+            calculateTotalAmount();
+        }
 
-     // Format it to YYYY-MM (required for <input type="month">)
-     let currentMonth = today.toISOString().slice(0, 7);
+        function calculateTotalAmount() {
+            let totalAmount = 0;
+            document.querySelectorAll(".amount").forEach(input => {
+                totalAmount += parseFloat(input.value) || 0;
+            });
+            document.getElementById("totalAmount").innerText = `₹${totalAmount.toFixed(2)}`;
+        }
 
-     // Set the default values for "From Month" and "To Month"
-     document.getElementById("fromDate").value = currentMonth;
-     document.getElementById("toDate").value = currentMonth;
+        //VALIDATION SCRIPT
+        // Disable browser validation
+        document.querySelector("form").setAttribute("novalidate", true);
 
-     // Call generateTable function automatically after setting default values
-     generateTable();
- });
+        // Function to create or fetch an error span next to the input field
+        function createFieldErrorSpan(input) {
+            let errorSpan = input.nextElementSibling;
 
- // Ensure generateTable is called when the button is clicked
- document.getElementById("generateBtn").addEventListener("click", generateTable);
+            if (!errorSpan || !errorSpan.classList.contains("error-message")) {
+                errorSpan = document.createElement("span");
+                errorSpan.className = "error-message text-danger small d-block mt-1";
+                input.insertAdjacentElement("afterend", errorSpan);
+            }
+
+            return errorSpan;
+        }
+
+        // Function to validate an input field
+        function validateInput(input) {
+            let value = input.value.trim();
+            let errorSpan = createFieldErrorSpan(input);
+            let numericValue = parseFloat(value);
+
+            // Reset error message
+            errorSpan.innerText = "";
+            input.classList.remove("is-invalid");
+
+            // General validation: Must not be empty and must be a valid number
+            if (!value || isNaN(numericValue)) {
+                errorSpan.innerText = "This field is required!";
+                input.classList.add("is-invalid");
+                return false;
+            }
+
+            // Prevent negative numbers
+            if (numericValue < 0) {
+                errorSpan.innerText = "Negative values are not allowed!";
+                input.classList.add("is-invalid");
+                return false;
+            }
+
+            // Special validation for "Total Show" (must be at least 1)
+            if (input.classList.contains("totalShow") && numericValue < 1) {
+                errorSpan.innerText = "Total Show must be at least 1!";
+                input.classList.add("is-invalid");
+                return false;
+            }
+
+            // If all validations pass, clear the error
+            errorSpan.innerText = "";
+            input.classList.remove("is-invalid");
+            return true;
+        }
+
+        // Attach real-time validation (Event Delegation for dynamic rows)
+        document.addEventListener("input", function (event) {
+            if (event.target.matches(".totalShow, .cancelShow, .rate")) {
+                validateInput(event.target);
+            }
+        });
+
+        // Validate inputs on form submission
+        document.querySelector(".btn-success").addEventListener("click", function (event) {
+            let inputs = document.querySelectorAll(".totalShow, .cancelShow, .rate");
+            let isFormValid = true;
+
+            for (let input of inputs) {
+                if (!validateInput(input)) {
+                    isFormValid = false;
+                    input.focus(); // Focus on the first invalid input
+                    event.preventDefault(); // Prevent form submission
+                    return;
+                }
+            }
+
+            // Validate file input
+            let fileInput = document.getElementById("fileInput");
+            if (!fileInput.files.length) {
+                alert("Please upload a Show Statement file.");
+                event.preventDefault();
+                fileInput.focus();
+            }
+        });
+
+
+        // Clear error messages dynamically when user enters valid input
+        document.querySelectorAll(".totalShow, .cancelShow, .rate").forEach(input => {
+            input.addEventListener("input", function () {
+                let errorSpan = createFieldErrorSpan(input);
+                let numericValue = parseFloat(this.value.trim());
+
+                if (!isNaN(numericValue) && numericValue >= 0) {
+                    errorSpan.innerText = ""; // Clear error message
+                    this.classList.remove("is-invalid"); // Remove invalid class
+                }
+            });
+        });
+
+        //to month and from month
+        document.addEventListener("DOMContentLoaded", function () {
+            // Get the current date
+            let today = new Date();
+
+            // Format it to YYYY-MM (required for <input type="month">)
+            let currentMonth = today.toISOString().slice(0, 7);
+
+            // Set the default values for "From Month" and "To Month"
+            document.getElementById("fromDate").value = currentMonth;
+            document.getElementById("toDate").value = currentMonth;
+
+            // Call generateTable function automatically after setting default values
+        });
+
+        // Ensure generateTable is called when the button is clicked
+        document.getElementById("generateBtn").addEventListener("click", generateTable);
     </script>
+
 </body>
-</html>
+</html >

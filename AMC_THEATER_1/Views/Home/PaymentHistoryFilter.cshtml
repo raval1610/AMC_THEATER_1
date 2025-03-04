@@ -1,4 +1,4 @@
-﻿@model IEnumerable<AMC_THEATER_1.Models.PaymentHistoryViewModel>
+﻿<!--@model IEnumerable<AMC_THEATER_1.Models.PaymentHistoryViewModel>
 
 @{
     ViewBag.ShowBasicNavbar = false;
@@ -36,30 +36,30 @@
                 <form id="filterForm" class="p-3 border border-dark bg-light" method="post" action="@Url.Action("PaymentHistoryFilter", "Home")">
                     <div class="row g-3">
                         <!-- Theater ID Column -->
-                        <div class="col-md-3 d-inline-block">
+                        <!--<div class="col-md-3 d-inline-block">
                             <label for="theaterId" class="fw-bold text-dark" style="font-size: 14px;">Theater ID:</label>
                             <input type="text" id="theaterId" name="theaterId" class="form-control form-control-sm" />
-                        </div>
+                        </div>-->
 
                         <!-- From Date -->
-                        <div class="col-md-3">
+                        <!--<div class="col-md-3">
                             <label for="fromDate" class="fw-bold text-dark" style="font-size: 14px;">From Date:</label>
                             <input type="date" id="fromDate" name="fromDate" class="form-control form-control-sm"
                                    value="@Request.QueryString["fromDate"]" />
-                        </div>
+                        </div>-->
 
                         <!-- To Date -->
-                        <div class="col-md-3">
+                        <!--<div class="col-md-3">
                             <label for="toDate" class="fw-bold text-dark" style="font-size: 14px;">To Date:</label>
                             <input type="date" id="toDate" name="toDate" class="form-control form-control-sm"
                                    value="@Request.QueryString["toDate"]" />
-                        </div>
+                        </div>-->
 
 
 
 
                         <!-- Status Column -->
-                        <div class="col-md-3 d-inline-block">
+                        <!--<div class="col-md-3 d-inline-block">
                             <label for="statusFilter" class="fw-bold text-dark" style="font-size: 14px;">Status:</label>
                             <select id="statusFilter" name="statusFilter" class="form-control form-control-sm">
                                 <option value="">All</option>
@@ -67,16 +67,16 @@
                                 <option value="Completed">Completed</option>
                             </select>
                         </div>
-                    </div>
+                    </div>-->
 
                     <!-- Submit Button -->
-                    <div class="d-flex gap-2 mt-3">
+                    <!--<div class="d-flex gap-2 mt-3">
                         <button type="submit" class="btn btn-primary btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="Apply Filters">
                             <i class="bi bi-funnel"></i> Submit
-                        </button>
+                        </button>-->
 
                         <!-- Reset Button -->
-                        <button type="button" id="resetButton" class="btn btn-secondary btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="Reset Filters" onclick="resetForm()">
+                        <!--<button type="button" id="resetButton" class="btn btn-secondary btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="Reset Filters" onclick="resetForm()">
                             <i class="fa fa-refresh" aria-hidden="true"></i> Reset
                         </button>
                     </div>
@@ -126,7 +126,7 @@
                 </table>
             </div>
         </div>
-    </div>
+    </div>-->
     @*SCRIPTS*@
     <script>
         document.addEventListener("DOMContentLoaded", function () {
@@ -225,4 +225,4 @@
     </script>
 
 </body>
-</html>
+</html>-->

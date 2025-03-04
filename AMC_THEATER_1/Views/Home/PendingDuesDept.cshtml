@@ -1,4 +1,4 @@
-﻿@model IEnumerable<AMC_THEATER_1.Models.TheaterDueViewModel>
+﻿@model IEnumerable<AMC_THEATER_1.Models.TheaterViewModel>
     @{
         ViewBag.Title = "PendingDuesDept";
         ViewBag.ShowBasicNavbar = false;
@@ -182,9 +182,13 @@
                                 <td>@theater.T_ZONE</td>
                                 <td>@theater.T_ADDRESS</td>
                                 <td>@theater.T_TENAMENT_NO</td>
-                                <td class="status-cell @(theater.P_STATUS == "Approved" ? "text-success" : (theater.P_STATUS == "Rejected" ? "text-danger" : "text-warning"))">
-                                    @(theater.P_STATUS == "Approved" ? "Approved" : theater.P_STATUS == "Rejected" ? "Rejected" : "Pending")
+                                <td>
+                                    @if (theater.PAYMENT_STATUS == "Not Paid")
+                                    {
+                                        @theater.PAYMENT_STATUS
+                                    }
                                 </td>
+
                                 <td>@theater.SINCE_MONTH</td> <!-- New Data Column -->
                             </tr>
                         }

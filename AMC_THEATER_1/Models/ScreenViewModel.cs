@@ -11,6 +11,7 @@ namespace AMC_THEATER_1.Models
         public int ScreenId { get; set; }
         public int AudienceCapacity { get; set; }
         public string MonthYear { get; set; }
+                    public int SCREEN_NO { get; set; }
 
         public string ScreenType { get; set; }
         public string SeatCapacity { get; set; }

@@ -1,4 +1,5 @@
-﻿@model IEnumerable<AMC_THEATER_1.Models.PAYMENTLIST>
+﻿@model IEnumerable<AMC_THEATER_1.Models.TheaterViewModel>
+
 
 @{
     ViewBag.Title = "Payment List";
@@ -108,40 +109,50 @@
                             </button>
                         </div>
                     </form>
-
-                    <!-- Payments Table -->
-                    <table class="table mt-5 table-bordered ">
-                        <thead class="table-light">
+                    <table class="table table-bordered mt-5 table-striped">
+                        <thead>
                             <tr>
-                                <th>Theater ID</th>
-                                <th>Theater Name</th>
-                                <th>Owner Name</th>
-                                <th>Start Date</th>
-                                <th>End Date</th>
-                                <th>Status</th>
-                                <th>Amount</th>
+                                <th class="fw-bold">Theater ID</th>
+                                <th class="fw-bold">Theater Name</th>
+                                <th class="fw-bold">City</th>
+                                <th class="fw-bold">Ward</th>
+                                <th class="fw-bold">Zone</th>
+                                <th class="fw-bold">Address</th>
+                                <th class="fw-bold">Tenament Number</th>
+                                <th class="fw-bold">Status</th>
+                                <th class="fw-bold">Since Month</th> <!-- New Column -->
                             </tr>
                         </thead>
                         <tbody>
                             @if (Model != null && Model.Any())
                             {
-                                foreach (var item in Model)
+                                foreach (var theater in Model)
                                 {
-                                    <tr>
-                                        <td>@item.T_ID</td>
-                                        <td>@item.T_NAME</td>
-                                        <td>@item.OWNER_NAME</td>
-                                        <td>@item.STARTDATE.ToString("dd/MMM/yyyy")</td>
-                                        <td>@item.ENDDATE.ToString("dd/MMM/yyyy")</td>
-                                        <td class="status-cell @(item.STATUS_PAYMENT == "Paid" ? "text-success" : "text-danger")">@item.STATUS_PAYMENT</td>
-                                        <td>@item.AMOUNT</td>
+                                    <tr id="theater-@theater.T_ID">
+                                        <td>@theater.T_ID</td>
+                                        <td>@theater.T_NAME</td>
+                                        <td>@theater.T_CITY</td>
+                                        <td>@theater.T_WARD</td>
+                                        <td>@theater.T_ZONE</td>
+                                        <td>@theater.T_ADDRESS</td>
+                                        <td>@theater.T_TENAMENT_NO</td>
+                                        <td>
+                                            @if (theater.PAYMENT_STATUS == "Paid")
+                                            {
+                                                @theater.PAYMENT_STATUS
+                                            }
+                                        </td>
+
+
+
+                                        <td>@theater.SINCE_MONTH</td> <!-- New Data Column -->
                                     </tr>
                                 }
                             }
                             else
                             {
                                 <tr>
-                                    <td colspan="7" class="text-center">No payments found</td>
+                                    <td colspan="10" class="text-center">No theater data available.</td>
                                 </tr>
                             }
                         </tbody>

@@ -1,4 +1,4 @@
-﻿@model IEnumerable<AMC_THEATER_1.Models.DueViewModel>
+﻿@model IEnumerable<AMC_THEATER_1.Models.TheaterViewModel>
 
 @{
     ViewBag.Title = "Dues";
@@ -21,32 +21,50 @@
 <html lang="en">
 <head>
 </head>
-<body>
-    <div class="container  justify-content-center">
-        <div class="w-75 ">
-            <h2 class="text-center mt-3 p-3 text-bg-light ">Pending Dues</h2>
-            <table class="table table-bordered ">
-                <thead class="table-dark">
+<body class="ms-5 container">
+   
+    <div class="row">
+        <div class="col-md-12">
+            <table class="table table-bordered mt-5 table-striped">
+                <thead>
                     <tr>
-                        <th>Month</th>
-                        <th>Year</th>
-                        <th>Status</th>
-                        <th>Action</th>
+                        <th class="fw-bold">Theater ID</th>
+                        <th class="fw-bold">Theater Name</th>
+                        <th class="fw-bold">City</th>
+                        <th class="fw-bold">Ward</th>
+                        <th class="fw-bold">Zone</th>
+                        <th class="fw-bold">Address</th>
+                        <th class="fw-bold">Tenament Number</th>
+                        <th class="fw-bold">Status</th>
+                        <th class="fw-bold">Since Month</th> <!-- New Column -->
+                        <th class="fw-bold">Action</th>
+
                     </tr>
                 </thead>
                 <tbody>
                     @if (Model != null && Model.Any())
                     {
-                        foreach (var due in Model)
+                        foreach (var theater in Model)
                         {
-                            <tr id="theater-@due.DUE_ID">
-                                <td>@due.D_MON</td>
-                                <td>@due.D_YEAR</td>
-                                <td>@due.D_STATUS</td>
-                                
+                            <tr id="theater-@theater.T_ID">
+                                <td>@theater.T_ID</td>
+                                <td>@theater.T_NAME</td>
+                                <td>@theater.T_CITY</td>
+                                <td>@theater.T_WARD</td>
+                                <td>@theater.T_ZONE</td>
+                                <td>@theater.T_ADDRESS</td>
+                                <td>@theater.T_TENAMENT_NO</td>
+                                <td class="@(theater.PAYMENT_STATUS == "Not Paid" ? "text-danger fw-bold" : "text-success fw-bold")">
+                                    @if (theater.PAYMENT_STATUS == "Not Paid")
+                                    {
+                                        @theater.PAYMENT_STATUS
+                                    }
+                                </td>
+
+                                <td>@theater.SINCE_MONTH</td> <!-- New Data Column -->
                                 <td>
                                     <a href="@Url.Action("Theater_Tax", "Home")" class="btn btn-primary btn-sm">Make Payment</a>
-                                    
+
                                 </td>
                             </tr>
                         }
@@ -54,12 +72,13 @@
                     else
                     {
                         <tr>
-                            <td colspan="6" class="text-center">No theater data available.</td>
+                            <td colspan="10" class="text-center">No theater data available.</td>
                         </tr>
                     }
                 </tbody>
             </table>
         </div>
     </div>
+
 </body>
 </html>
