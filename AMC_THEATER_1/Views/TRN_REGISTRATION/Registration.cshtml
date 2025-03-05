@@ -149,7 +149,7 @@
                 <div class="row ms-4">
 
                     <div class="col-md-4 mb-3">
-                        <label for="T_PEC_NO" class="form-label fw-bold">AMC Professional Tax PEC No </label>
+                        <label for="T_PEC_NO" class="form-label fw-bold">AMC Professional Tax PEC No </label><span class="text-danger">*</span>
                         @Html.TextBoxFor(m => m.T_PEC_NO, new { @class = "form-control readonly-field", placeholder = "PEC No" })
                     </div>
 
@@ -158,7 +158,7 @@
                         @Html.TextBoxFor(m => m.T_PRC_NO, new { @class = "form-control readonly-field", placeholder = "PRC No" })
                     </div>
                     <div class="col-md-4 mb-3">
-                        <label for="PROPERTY_TYPE" class="form-label fw-bold">Property Type</label>
+                        <label for="PROPERTY_TYPE" class="form-label fw-bold">Property Type</label><span class="text-danger">*</span>
                         @Html.DropDownListFor(m => m.PROPERTY_TYPE,
                             new List<SelectListItem>
                             {
@@ -191,16 +191,13 @@
                 <!-- ✅ Corrected ID for toggling -->
                 <div id="OFFLINE_TAX_PAYMENT" class="ms-4" style="display: none;">
                     <div class="row">
-                        <div class="col-md-4 d-inline-block fw-bold">
-                            <label for="offlineTaxPayment" class="form-label ms-2">Offline Tax Payment</label>
-                            <input type="text" id="offlineTaxPayment" name="OFFLINE_TAX_PAYMENT"
-                                   class="form-control ms-3"
-                                   placeholder="Offline Tax Payment"
-                                   value="@(Model?.OFFLINE_TAX_PAYMENT != null ? Model.OFFLINE_TAX_PAYMENT.ToString() : "")" />
+                        <div class="form-check d-inline-block">
+
+                            <label class="form-check-label fw-bold">Latest Payment Details:</label> <!-- ✅ Fixed for="no" -->
                         </div>
 
                         <div class="col-md-4 d-inline-block fw-bold">
-                            <label for="offlineTaxPaidMonth" class="form-label ms-2">Offline Tax Paid Month</label>
+                            <label for="offlineTaxPaidMonth" class="form-label ms-2">Latest Month</label>
                             <select id="offlineTaxPaidMonth" class="form-control ms-2 me-5">
                                 <option value="">-- Select Month --</option>
                                 <option value="01">January</option>
@@ -248,28 +245,24 @@
                         <div class="col-md-4 d-inline-block fw-bold">
                             <label for="offlineDueYear" class="form-label ms-1">Offline Tax Due Year</label>
                             <select id="offlineDueYear" class="form-control ms-1">
-                                <!-- Year options will be added dynamically -->
+                                <option value="">--- Select Year ---</option>
                             </select>
                             <input type="hidden" id="offlineDueDate" name="OFFLINE_DUE_DATE" />
                         </div>
 
-
-                    </div>
-                </div>
-
-                <script>
+                        <script>
     document.addEventListener("DOMContentLoaded", function () {
         let currentYear = new Date().getFullYear();
         let dropdown = document.getElementById("offlineDueYear");
         let storedYear = "@(Model?.OFFLINE_DUE_DATE?.Year)"; // Get stored year from model
 
-        // Populate dropdown with last 50 years
+        // Populate dropdown with years
         for (let i = currentYear; i >= currentYear - 50; i--) {
             let option = document.createElement("option");
             option.value = i;
             option.textContent = i;
             if (i == storedYear) {
-                option.selected = true; // Select the stored year
+                option.selected = true; // Preselect stored year
             }
             dropdown.appendChild(option);
         }
@@ -277,14 +270,30 @@
         // Set hidden field value
         function updateDueDate() {
             let selectedYear = dropdown.value;
-            document.getElementById("offlineDueDate").value = selectedYear + "-01-01"; // Store as full date
+            if (selectedYear) {
+                document.getElementById("offlineDueDate").value = selectedYear + "-01-01"; // Store as YYYY-01-01
+            } else {
+                document.getElementById("offlineDueDate").value = ""; // Clear hidden field if no selection
+            }
         }
 
         dropdown.addEventListener("change", updateDueDate);
         updateDueDate(); // Initialize hidden field on page load
     });
-                </script>
+                        </script>
 
+
+                        <div class="col-md-4 d-inline-block fw-bold">
+                            <label for="offlineTaxPayment" class="form-label ms-2">Amount(Rs.)</label>
+                            <input type="text" id="offlineTaxPayment" name="OFFLINE_TAX_PAYMENT"
+                                   class="form-control ms-3"
+                                   placeholder="Offline Tax Payment"
+                                   value="@(Model?.OFFLINE_TAX_PAYMENT != null ? Model.OFFLINE_TAX_PAYMENT.ToString() : "")" />
+                        </div>
+                    </div>
+                </div>
+
+               
                 <!-- Grid Table for Screen Capacity -->
                 <table id="screenCapacityTable" class="table table-bordered text-center mt-3">
                     <thead>

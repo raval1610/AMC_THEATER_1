@@ -182,13 +182,12 @@
                                 <td>@theater.T_ZONE</td>
                                 <td>@theater.T_ADDRESS</td>
                                 <td>@theater.T_TENAMENT_NO</td>
-                                <td>
+                                <td class="@(theater.PAYMENT_STATUS == "Not Paid" ? "text-danger fw-bold" : "text-success fw-bold")">
                                     @if (theater.PAYMENT_STATUS == "Not Paid")
                                     {
                                         @theater.PAYMENT_STATUS
                                     }
                                 </td>
-
                                 <td>@theater.SINCE_MONTH</td> <!-- New Data Column -->
                             </tr>
                         }
