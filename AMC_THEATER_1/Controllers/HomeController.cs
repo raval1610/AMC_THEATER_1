@@ -561,7 +561,7 @@ namespace Amc_theater.Controllers
 
             // Fetch all approved theaters from DB
             var theaters = db.TRN_REGISTRATION
-                .Where(tr => tr.STATUS == "Approved" && tr.LICENSE_DATE.HasValue) // Ensure LICENSE_DATE exists
+                .Where(tr => tr.STATUS == "Approved" && tr.LICENSE_DATE.HasValue && tr.T_ACTIVE == true) // Ensure LICENSE_DATE exists
                 .Select(tr => new
                 {
                     tr.T_ID,
@@ -1055,7 +1055,7 @@ namespace Amc_theater.Controllers
 
             // Fetch all approved theaters from DB
             var theaters = db.TRN_REGISTRATION
-                .Where(tr => tr.STATUS == "Approved" && tr.LICENSE_DATE.HasValue) // Ensure LICENSE_DATE exists
+                .Where(tr => tr.STATUS == "Approved" && tr.LICENSE_DATE.HasValue && tr.T_ACTIVE == true) // Ensure LICENSE_DATE exists
                 .Select(tr => new
                 {
                     tr.T_ID,
