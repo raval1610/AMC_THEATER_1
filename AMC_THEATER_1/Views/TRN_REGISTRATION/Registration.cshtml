@@ -173,7 +173,7 @@
 
                 <!-- Tax Payment -->
                 <div class="col-12 ms-4 fw-bold">
-                    <label for="T_TAX_PAYING_OFFLINE" class="form-label fw-bold">
+                    <label for="T_TAX_PAYING_OFFLINE" class="form-label fw-bold ms-3">
                         Already Paying Theater Tax Offline <span class="text-danger">*</span>
                     </label>
 
@@ -193,11 +193,11 @@
                     <div class="row">
                         <div class="form-check d-inline-block">
 
-                            <label class="form-check-label fw-bold">Latest Payment Details:</label> <!-- ✅ Fixed for="no" -->
+                            <label class="form-check-label fw-bold ms-1 text-muted">Latest Payment Details:</label> <!-- ✅ Fixed for="no" -->
                         </div>
 
                         <div class="col-md-4 d-inline-block fw-bold">
-                            <label for="offlineTaxPaidMonth" class="form-label ms-2">Latest Month</label>
+                            <label for="offlineTaxPaidMonth" class="form-label ms-3">Latest Month</label>
                             <select id="offlineTaxPaidMonth" class="form-control ms-2 me-5">
                                 <option value="">-- Select Month --</option>
                                 <option value="01">January</option>
@@ -216,31 +216,7 @@
                             <input type="hidden" id="offlineTaxPaidDate" name="OFFLINE_TAX_PAID_DATE" />
                         </div>
 
-                        <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        let storedDate = "@Model?.OFFLINE_TAX_PAID_DATE?.ToString("yyyy-MM-dd")"; // Get stored date
-        let selectedMonth = storedDate ? storedDate.split("-")[1] : ""; // Extract month (MM)
-        let selectedYear = storedDate ? storedDate.split("-")[0] : new Date().getFullYear(); // Extract year or set current year
 
-        let monthDropdown = document.getElementById("offlineTaxPaidMonth");
-        let hiddenDateField = document.getElementById("offlineTaxPaidDate");
-
-        // Preselect month if available
-        if (selectedMonth) {
-            monthDropdown.value = selectedMonth;
-        }
-
-        function updateHiddenField() {
-            let selectedMonth = monthDropdown.value;
-            if (selectedMonth) {
-                hiddenDateField.value = selectedYear + "-" + selectedMonth + "-01"; // Store as YYYY-MM-01
-            }
-        }
-
-        monthDropdown.addEventListener("change", updateHiddenField);
-        updateHiddenField(); // Initialize hidden field on page load
-    });
-                        </script>
 
                         <div class="col-md-4 d-inline-block fw-bold">
                             <label for="offlineDueYear" class="form-label ms-1">Offline Tax Due Year</label>
@@ -250,43 +226,11 @@
                             <input type="hidden" id="offlineDueDate" name="OFFLINE_DUE_DATE" />
                         </div>
 
-                        <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        let currentYear = new Date().getFullYear();
-        let dropdown = document.getElementById("offlineDueYear");
-        let storedYear = "@(Model?.OFFLINE_DUE_DATE?.Year)"; // Get stored year from model
-
-        // Populate dropdown with years
-        for (let i = currentYear; i >= currentYear - 50; i--) {
-            let option = document.createElement("option");
-            option.value = i;
-            option.textContent = i;
-            if (i == storedYear) {
-                option.selected = true; // Preselect stored year
-            }
-            dropdown.appendChild(option);
-        }
-
-        // Set hidden field value
-        function updateDueDate() {
-            let selectedYear = dropdown.value;
-            if (selectedYear) {
-                document.getElementById("offlineDueDate").value = selectedYear + "-01-01"; // Store as YYYY-01-01
-            } else {
-                document.getElementById("offlineDueDate").value = ""; // Clear hidden field if no selection
-            }
-        }
-
-        dropdown.addEventListener("change", updateDueDate);
-        updateDueDate(); // Initialize hidden field on page load
-    });
-                        </script>
-
 
                         <div class="col-md-4 d-inline-block fw-bold">
                             <label for="offlineTaxPayment" class="form-label ms-2">Amount(Rs.)</label>
                             <input type="text" id="offlineTaxPayment" name="OFFLINE_TAX_PAYMENT"
-                                   class="form-control ms-3"
+                                   class="form-control ms-1"
                                    placeholder="Offline Tax Payment"
                                    value="@(Model?.OFFLINE_TAX_PAYMENT != null ? Model.OFFLINE_TAX_PAYMENT.ToString() : "")" />
                         </div>
@@ -409,7 +353,7 @@
 
 
                 <div class="form-check mt-3">
-                        
+
                     <label class="form-check-label fw-bold text-muted">
                         <span class="text-danger fw-bold me-1">*</span> <!-- Asterisk before checkbox -->
                         <input class="form-check-input ms-1" type="checkbox" id="theatreTaxDeclaration" name="THEATRE_TAX_DECLARATION" required>
@@ -520,7 +464,67 @@
 
 @*SCRIPT*@
 
+@*Year Script*@
 
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let currentYear = new Date().getFullYear();
+        let dropdown = document.getElementById("offlineDueYear");
+        let storedYear = "@(Model?.OFFLINE_DUE_DATE?.Year)"; // Get stored year from model
+
+        // Populate dropdown with years
+        for (let i = currentYear; i >= currentYear - 50; i--) {
+            let option = document.createElement("option");
+            option.value = i;
+            option.textContent = i;
+            if (i == storedYear) {
+                option.selected = true; // Preselect stored year
+            }
+            dropdown.appendChild(option);
+        }
+
+        // Set hidden field value
+        function updateDueDate() {
+            let selectedYear = dropdown.value;
+            if (selectedYear) {
+                document.getElementById("offlineDueDate").value = selectedYear + "-01-01"; // Store as YYYY-01-01
+            } else {
+                document.getElementById("offlineDueDate").value = ""; // Clear hidden field if no selection
+            }
+        }
+
+        dropdown.addEventListener("change", updateDueDate);
+        updateDueDate(); // Initialize hidden field on page load
+    });
+</script>
+
+
+@*Month Script*@
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    let storedDate = "@Model?.OFFLINE_TAX_PAID_DATE?.ToString("yyyy-MM-dd")"; // Get stored date
+    let selectedMonth = storedDate ? storedDate.split("-")[1] : ""; // Extract month (MM)
+    let selectedYear = storedDate ? storedDate.split("-")[0] : new Date().getFullYear(); // Extract year or set current year
+
+    let monthDropdown = document.getElementById("offlineTaxPaidMonth");
+    let hiddenDateField = document.getElementById("offlineTaxPaidDate");
+
+    // Preselect month if available
+    if (selectedMonth) {
+        monthDropdown.value = selectedMonth;
+    }
+
+    function updateHiddenField() {
+        let selectedMonth = monthDropdown.value;
+        if (selectedMonth) {
+            hiddenDateField.value = selectedYear + "-" + selectedMonth + "-01"; // Store as YYYY-MM-01
+        }
+    }
+
+    monthDropdown.addEventListener("change", updateHiddenField);
+    updateHiddenField(); // Initialize hidden field on page load
+});
+</script>
 
 @functions {
     public string GetFileSize(string filePath)

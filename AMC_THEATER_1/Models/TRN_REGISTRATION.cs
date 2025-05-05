@@ -12,6 +12,7 @@ namespace AMC_THEATER_1.Models
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations.Schema;
+    using System.Data.Entity;
 
     public partial class TRN_REGISTRATION
     {
@@ -44,6 +45,9 @@ namespace AMC_THEATER_1.Models
         public string T_ZONE { get; set; }
         public string T_WARD { get; set; }
         public string T_TENAMENT_NO { get; set; }
+
+
+
         public string T_PEC_NO { get; set; }
         public string T_PRC_NO { get; set; }
         public Nullable<bool> T_TAX_PAYING_OFFLINE { get; set; }

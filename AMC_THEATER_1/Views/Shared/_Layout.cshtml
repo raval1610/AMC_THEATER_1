@@ -93,6 +93,10 @@
         </nav>
     }
 
+
+
+
+
     @if (ViewBag.ShowSideBar == true)
     {
         <!-- Sidebar Menu -->
@@ -101,15 +105,18 @@
                 <div class="mt-4">
                     <a href="@Url.Action("Registration", "TRN_REGISTRATION")">New Registration</a>
 
-                   
+
 
                     <a href="@Url.Action("Theater_Tax", "Home")">Make Payment</a>
 
                     <a href="@Url.Action("List_of_Application", "Home")">Registration Application Status</a>
-                    <a href="@Url.Action("PaymentHistoryFilter", "Home")">Payment History</a>
+                    @*<a href="@Url.Action("PaymentHistoryFilter", "Home")">Payment History</a>*@
                     <a href="@Url.Action("Dues", "Home")">Tax Dues Details</a>
                     <a href="@Url.Action("AllReceipt", "Home")">Tax Paid Details</a>
                     @*<a href="@Url.Action("Tax_Hold", "Home")">Tax Hold Period</a>*@
+                    <a href="@Url.Action("AllReceipt", "Home")">Change in Profile</a>
+                    <a href="@Url.Action("AllReceipt", "Home")">Register Complaint/Grievance/Query</a>
+
 
 
 
@@ -130,8 +137,8 @@
 
 
                 @*<a href="@Url.Action("History", "Home")">History</a>
-        <a href="@Url.Action("Dues", "Home")">Dues</a>
-        <a href="@Url.Action("AllReceipt", "Home")">Receipt</a>*@
+                    <a href="@Url.Action("Dues", "Home")">Dues</a>
+                    <a href="@Url.Action("AllReceipt", "Home")">Receipt</a>*@
             </div>
         </div>
     }
